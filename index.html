@@ -9,43 +9,51 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   
-  <!-- Firebase SDK -->
+  <!-- ===== FIREBASE SDK ===== -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
   <style>
-    /* ===== ALL STYLES ===== */
+    /* ============================================================
+       ALL STYLES - COMBINED
+       ============================================================ */
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { font-family: 'Inter', -apple-system, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #1e1e2a; }
+    
+    /* APP CONTAINER */
     .app-container { width: 100%; max-width: 430px; background: #fff; height: 100vh; max-height: 932px; display: flex; flex-direction: column; position: relative; margin: 0 auto; overflow: hidden; box-shadow: 0 0 60px rgba(0,0,0,0.1); }
     ::-webkit-scrollbar { width: 0px; background: transparent; display: none; }
     * { -ms-overflow-style: none; scrollbar-width: none; }
-    :root { --crimson: #DC143C; --crimson-dark: #b01030; --crimson-light: #e84a6a; --crimson-glow: rgba(220,20,60,0.25); --success: #2e7d32; --text-primary: #1e1e2a; --text-secondary: #8e8e93; }
+    :root { --crimson: #DC143C; --crimson-dark: #b01030; --crimson-light: #e84a6a; --crimson-glow: rgba(220,20,60,0.25); --success: #2e7d32; --success-bg: #e8f5e9; --gray-bg: #f1f1f4; --text-primary: #1e1e2a; --text-secondary: #8e8e93; }
     
-    /* Animations */
+    /* ===== ANIMATIONS ===== */
     @keyframes pulse-skeleton { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     @keyframes storyPop { 0% { opacity: 0; transform: scale(0.7); } 100% { opacity: 1; transform: scale(1); } }
     @keyframes fadeSlide { 0% { opacity: 0; transform: translateY(-10px); } 100% { opacity: 1; transform: translateY(0); } }
     @keyframes dropDown { 0% { opacity: 0; transform: translateY(-10px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
     @keyframes pulse-recording { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
     @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    @keyframes cardPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
     @keyframes slideInRight { 0% { transform: translateX(100%); } 100% { transform: translateX(0); } }
     @keyframes slideUp { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     
-    /* ===== AUTH PAGES ===== */
+    /* ============================================================
+       AUTH PAGES (TETHER LOGIN)
+       ============================================================ */
     .auth-page { display: none; flex-direction: column; gap: 16px; padding: 28px 24px 24px; justify-content: center; height: 100%; background: transparent; overflow-y: auto; position: relative; z-index: 1; animation: fadeSlide 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
     .auth-page.active { display: flex; }
     .auth-page h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.04em; color: var(--text-primary); line-height: 1.1; }
     .auth-page h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); margin-top: 4px; }
     .auth-page p { color: var(--text-secondary); font-size: 15px; font-weight: 400; line-height: 1.5; }
-    .auth-page .sub-text { color: var(--text-secondary); font-size: 13px; font-weight: 400; margin-top: -6px; }
+    .auth-page .sub-text { color: var(--text-muted); font-size: 13px; font-weight: 400; margin-top: -6px; }
     
-    .input-group { position: relative; width: 100%; transition: transform 0.2s; }
+    /* ===== INPUTS ===== */
+    .input-group { position: relative; width: 100%; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .input-group:focus-within { transform: scale(1.01); }
-    .input-group .input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 20px; transition: all 0.3s ease; pointer-events: none; }
+    .input-group .input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 20px; transition: all 0.3s ease; pointer-events: none; display: flex; align-items: center; justify-content: center; }
     .input-group:focus-within .input-icon { color: var(--crimson); }
     .input-group input, .input-group select, .input-group textarea {
       width: 100%; padding: 15px 16px 15px 48px; border-radius: 16px; border: 1.5px solid rgba(0,0,0,0.08);
@@ -59,6 +67,7 @@
     .input-group .toggle-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-secondary); padding: 4px; border-radius: 50%; font-size: 20px; }
     .input-group .dropdown-arrow { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none; font-size: 18px; }
     
+    /* ===== BUTTONS ===== */
     .btn-primary {
       padding: 15px 20px; border-radius: 16px; border: none; background: var(--crimson); color: #fff;
       font-weight: 600; font-size: 15px; cursor: pointer; width: 100%;
@@ -148,8 +157,11 @@
     }
     .terms-box strong { display: block; margin-bottom: 4px; color: var(--text-primary); font-weight: 600; }
     .terms-box ul { list-style: disc; padding-left: 18px; margin: 0; }
+    .terms-box ul li { margin-bottom: 2px; }
     
-    /* ===== SOCIAL APP ===== */
+    /* ============================================================
+       SOCIAL APP STYLES (After Login)
+       ============================================================ */
     #socialApp { display: none; flex-direction: column; height: 100%; width: 100%; background: #f8f8fa; }
     #socialApp.active { display: flex; }
     
@@ -170,7 +182,6 @@
     .avatar-ring .avatar-img { width: 100%; height: 100%; border-radius: 50%; background: #e5e7eb; border: 3px solid #fff; }
     .user-name { font-size: 11px; font-weight: 500; color: #333; text-align: center; }
     .suggestion-btn { padding: 4px 12px; border-radius: 12px; background: var(--crimson); color: #fff; font-size: 10px; font-weight: 600; border: none; cursor: pointer; }
-    .suggestion-btn.following { background: #888; }
     .fy-search-bar { padding: 0 16px 16px 16px; background: #fff; }
     .fy-search-input { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e5e7eb; background: #f5f5f7; font-size: 14px; outline: none; transition: all 0.2s; font-family: 'Inter', sans-serif; }
     .fy-search-input:focus { background: #fff; border-color: var(--crimson); }
@@ -178,29 +189,6 @@
     .fy-tab { padding: 14px 16px; font-size: 14px; font-weight: 600; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; background: transparent; border: none; font-family: inherit; white-space: nowrap; }
     .fy-tab.active { color: var(--crimson); border-bottom-color: var(--crimson); }
     
-    /* ===== POSTS ===== */
-    .post-card { background: #fff; border-radius: 16px; margin: 12px 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden; border: 1px solid #f0f0f2; }
-    .post-header { display: flex; align-items: center; padding: 14px 16px; gap: 10px; }
-    .post-avatar-sm { width: 36px; height: 36px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; }
-    .post-username { font-weight: 600; font-size: 14px; color: var(--text-primary); }
-    .post-time { font-size: 12px; color: var(--text-secondary); margin-left: auto; }
-    .post-text { padding: 0 16px 12px 16px; font-size: 15px; line-height: 1.5; color: var(--text-primary); }
-    .post-image { width: 100%; max-height: 300px; object-fit: cover; }
-    .post-actions { display: flex; padding: 8px 16px 12px 16px; gap: 20px; border-top: 1px solid #f0f0f2; }
-    .post-action-btn { display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-secondary); font-size: 14px; transition: all 0.2s; background: none; border: none; padding: 4px 8px; border-radius: 8px; }
-    .post-action-btn:hover { background: #f0f0f2; }
-    .post-action-btn.liked { color: var(--crimson); }
-    .post-action-btn .material-icons { font-size: 20px; }
-    .post-comments { padding: 0 16px 12px 16px; }
-    .comment-item { display: flex; gap: 8px; padding: 4px 0; font-size: 13px; }
-    .comment-user { font-weight: 600; color: var(--text-primary); }
-    .comment-text { color: var(--text-secondary); }
-    .comment-input-wrap { display: flex; gap: 8px; padding: 8px 16px 12px 16px; }
-    .comment-input-wrap input { flex: 1; padding: 8px 12px; border-radius: 20px; border: 1px solid #e5e7eb; font-size: 13px; outline: none; }
-    .comment-input-wrap input:focus { border-color: var(--crimson); }
-    .comment-send-btn { background: var(--crimson); color: #fff; border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    
-    /* ===== REELS ===== */
     .reels-full-container { display: none; flex-direction: column; height: 100%; width: 100%; background: #000; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 20; }
     .reels-full-container.active { display: flex; }
     .reels-scroll { flex: 1; overflow-y: scroll; scroll-snap-type: y mandatory; background: #000; }
@@ -214,11 +202,11 @@
     .reel-user { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
     .reel-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #e5e7eb; border: 2px solid #fff; }
     .reel-username { font-weight: 700; font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+    .reel-follow-btn { background: transparent; border: 1px solid rgba(255,255,255,0.6); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; }
     .reel-caption { font-size: 13px; line-height: 1.4; margin-bottom: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); opacity: 0.9; }
     .reel-music { display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: 0.8; }
     .close-reels-btn { position: absolute; top: 20px; left: 16px; z-index: 30; background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); color: #fff; border: none; border-radius: 30px; padding: 6px 14px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer; }
     
-    /* ===== STREAMS ===== */
     .streams-container { display: none; flex-direction: column; padding: 12px 16px 20px 16px; background: #fff; flex: 1; overflow-y: auto; gap: 20px; }
     .streams-container.active { display: flex; }
     .live-section { display: flex; flex-direction: column; gap: 10px; }
@@ -229,7 +217,54 @@
     .live-horizontal-scroll .live-card .live-badge { position: absolute; top: 10px; left: 10px; background: var(--crimson); color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; z-index: 2; }
     .live-horizontal-scroll .live-card .live-views { position: absolute; bottom: 14px; right: 14px; z-index: 2; color: rgba(255,255,255,0.6); font-size: 11px; background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 10px; }
     
-    /* ===== MESSAGES ===== */
+    .sports-list-section { display: flex; flex-direction: column; gap: 12px; }
+    .sports-list-section .section-title { font-size: 16px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+    .sport-list-item { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: #f8f8fa; border-radius: 14px; border: 1px solid #f0f0f2; animation: cardPulse 2s infinite; }
+    .sport-list-item .sport-icon-placeholder { width: 44px; height: 44px; border-radius: 12px; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #b0b0b8; flex-shrink: 0; background-image: linear-gradient(90deg, #e5e7eb 0%, #d5d7db 50%, #e5e7eb 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; }
+    .sport-list-item .sport-info { flex: 1; }
+    .sport-list-item .sport-badge-placeholder { padding: 4px 14px; border-radius: 20px; background: var(--crimson); color: #fff; font-size: 10px; font-weight: 600; opacity: 0.6; animation: pulse-skeleton 1.5s infinite; }
+    
+    .video-post-card { background: #ffffff; border-radius: 16px; margin: 12px 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden; border: 1px solid #f0f0f2; }
+    .video-post-card .video-thumbnail { width: 100%; aspect-ratio: 16/9; background: #f5f5f7; position: relative; display: flex; align-items: center; justify-content: center; background-image: linear-gradient(90deg, #ffffff 0%, #f0f0f2 20%, #ffffff 40%, #f0f0f2 60%, #ffffff 80%, #f0f0f2 100%); background-size: 200% 100%; animation: shimmer 2.2s infinite linear; }
+    .video-post-card .video-thumbnail .play-icon { font-size: 48px; color: #d0d0d5; background: rgba(255,255,255,0.7); border-radius: 50%; padding: 8px; backdrop-filter: blur(4px); }
+    .video-post-card .video-thumbnail .duration-badge { position: absolute; bottom: 10px; right: 12px; background: rgba(0,0,0,0.6); color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; backdrop-filter: blur(4px); }
+    .video-post-card .post-content { padding: 14px 16px 12px 16px; }
+    .video-post-card .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .video-post-card .post-avatar { width: 36px; height: 36px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; }
+    .video-post-card .post-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid #f0f0f2; }
+    .video-post-card .post-stats { display: flex; gap: 16px; font-size: 13px; color: var(--text-secondary); }
+    .video-post-card .post-actions { display: flex; gap: 12px; }
+    .video-post-card .post-actions .action-btn-placeholder { width: 28px; height: 28px; border-radius: 50%; background: var(--crimson); opacity: 0.7; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; animation: pulse-skeleton 1.5s infinite; }
+    .video-post-card .post-actions .action-btn-placeholder.outline { background: transparent; border: 1.5px solid var(--crimson); color: var(--crimson); opacity: 0.5; }
+    
+    .bottom-nav { flex-shrink: 0; background: #fff; border-top: 1px solid rgba(0,0,0,0.06); padding: 8px 0 20px 0; display: flex; justify-content: space-around; align-items: center; width: 100%; position: relative; z-index: 100; transition: transform 0.3s ease; }
+    .bottom-nav.hidden { transform: translateY(100%); }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 12px; background: transparent; border: none; color: var(--text-secondary); transition: transform 0.1s, color 0.2s; font-family: inherit; }
+    .nav-item:active { transform: scale(0.9); }
+    .nav-item .material-icons { font-size: 26px; }
+    .nav-item .label { font-size: 10px; font-weight: 500; }
+    .nav-item.active { color: var(--crimson); }
+    .nav-item.add-btn .icon-wrap { background: var(--crimson); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px var(--crimson-glow); margin-bottom: 4px; }
+    
+    .fab { position: absolute; bottom: 90px; right: 20px; width: 56px; height: 56px; background: var(--crimson); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px var(--crimson-glow); cursor: pointer; z-index: 20; transition: transform 0.2s ease, opacity 0.25s ease; border: none; }
+    .fab:active { transform: scale(0.90); }
+    .fab.hidden { opacity: 0; pointer-events: none; transform: scale(0.8); }
+    
+    .search-results-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 30; flex-direction: column; animation: fadeSlide 0.2s ease-out; }
+    .search-results-overlay.active { display: flex; }
+    .search-results-header { display: flex; align-items: center; padding: 12px 16px; gap: 12px; border-bottom: 1px solid #f0f0f0; background: #fff; }
+    .search-results-header .back-icon { cursor: pointer; color: var(--text-primary); font-size: 24px; }
+    .search-results-header input { flex: 1; padding: 10px 14px; border-radius: 20px; border: 1px solid #e5e7eb; background: #f5f5f7; font-size: 14px; outline: none; font-family: 'Inter', sans-serif; }
+    .search-results-list { flex: 1; overflow-y: auto; padding: 8px 0; }
+    .search-result-item { display: flex; align-items: center; padding: 12px 16px; gap: 14px; border-bottom: 1px solid #f5f5f5; cursor: pointer; }
+    .search-result-item .result-avatar { width: 44px; height: 44px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; }
+    .search-result-item .result-info { flex: 1; }
+    .search-result-item .result-name { font-weight: 600; font-size: 15px; color: var(--text-primary); }
+    .search-result-item .result-sub { font-size: 13px; color: var(--text-secondary); }
+    .search-result-item .result-badge { background: var(--crimson); color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; }
+    .empty-search { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); padding: 40px; text-align: center; }
+    .empty-search .material-icons { font-size: 48px; opacity: 0.2; margin-bottom: 12px; }
+    
     .messages-layout { position: relative; display: flex; flex-direction: column; height: 100%; }
     .chat-search-bar { padding: 8px 16px; background: #fff; border-bottom: 1px solid rgba(0,0,0,0.04); }
     .chat-search-input { width: 100%; padding: 10px 16px; border-radius: 20px; border: 1px solid #e5e7eb; background: #f5f5f7; font-size: 14px; outline: none; transition: all 0.2s; font-family: 'Inter', sans-serif; }
@@ -241,95 +276,54 @@
     .filter-btn { padding: 6px 16px; border-radius: 20px; border: 1px solid #e5e7eb; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; white-space: nowrap; }
     .filter-btn.active { background: var(--crimson); color: #fff; border-color: var(--crimson); box-shadow: 0 2px 8px var(--crimson-glow); }
     .thread-list-container { flex: 1; overflow-y: auto; background: #fff; }
-    .thread-item { display: flex; align-items: center; padding: 14px 16px; gap: 14px; border-bottom: 1px solid rgba(0,0,0,0.04); cursor: pointer; transition: background 0.15s; }
-    .thread-item:hover { background: #f8f8fa; }
-    .thread-avatar { width: 50px; height: 50px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; }
-    .thread-info { flex: 1; min-width: 0; }
-    .thread-name { font-weight: 600; font-size: 15px; color: var(--text-primary); }
-    .thread-last-msg { font-size: 13px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .thread-time { font-size: 11px; color: var(--text-secondary); }
+    .thread-skeleton { display: flex; align-items: center; padding: 14px 16px; gap: 14px; border-bottom: 1px solid rgba(0,0,0,0.04); background: #fff; cursor: pointer; }
+    .thread-skeleton .avatar-wrap { width: 50px; height: 50px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; position: relative; }
+    .thread-skeleton .avatar-status { position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background-color: #2e7d32; border: 2px solid #fff; border-radius: 50%; z-index: 2; }
+    .thread-skeleton .thread-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+    .thread-skeleton .name-line { height: 14px; width: 100px; border-radius: 6px; background: #e5e7eb; }
+    .thread-skeleton .snippet-line { height: 12px; width: 100%; border-radius: 6px; background: #f0f0f0; }
+    .thread-skeleton .timestamp-line { width: 40px; height: 10px; background: #e5e7eb; border-radius: 4px; }
     
     .chat-view { display: none; flex-direction: column; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 50; height: 100%; width: 100%; }
     .chat-view.active { display: flex; animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
     .chat-header { display: flex; align-items: center; padding: 10px 16px; gap: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); background: #fff; flex-shrink: 0; }
     .chat-header .back-icon { cursor: pointer; color: var(--text-primary); font-size: 24px; padding: 4px; }
-    .chat-header .chat-avatar { width: 36px; height: 36px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; }
+    .chat-header .chat-avatar { width: 36px; height: 36px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; }
     .chat-header .chat-name { flex: 1; font-weight: 600; font-size: 16px; color: var(--text-primary); }
-    .chat-header .header-actions { display: flex; gap: 12px; align-items: center; }
-    .chat-header .header-actions .icon-btn { color: var(--crimson); cursor: pointer; padding: 4px; border-radius: 50%; background: none; border: none; font-size: 22px; }
-    .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: #f8f8fa; }
-    .chat-message { max-width: 80%; padding: 12px 16px; border-radius: 24px; font-size: 14px; line-height: 1.4; background: #fff; color: var(--text-primary); align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-bottom-left-radius: 6px; }
+    .chat-header .header-actions { display: flex; gap: 12px; align-items: center; margin-left: auto; }
+    .chat-header .header-actions .icon-btn { color: var(--crimson); cursor: pointer; padding: 4px; border-radius: 50%; transition: background 0.2s, transform 0.15s; display: flex; align-items: center; justify-content: center; background: transparent; border: none; font-size: 22px; }
+    .chat-messages { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: #f8f8fa; }
+    .chat-message { max-width: 80%; padding: 12px 16px; border-radius: 24px; font-size: 14px; line-height: 1.4; background: #fff; color: var(--text-primary); align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,0.05); animation: fadeSlide 0.25s ease-out; border-bottom-left-radius: 6px; }
     .chat-message.sent { background: var(--crimson); color: #fff; align-self: flex-end; border-bottom-right-radius: 6px; border-bottom-left-radius: 24px; }
     .chat-message .msg-time { font-size: 10px; opacity: 0.6; margin-top: 4px; display: block; text-align: right; }
-    .chat-input-real { flex-shrink: 0; padding: 8px 12px; border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 6px; background: #fff; align-items: center; }
-    .chat-input-real input { flex: 1; height: 38px; border-radius: 20px; border: 1px solid #e5e7eb; padding: 0 14px; font-size: 14px; outline: none; background: #f5f5f7; }
-    .chat-input-real input:focus { background: #fff; border-color: var(--crimson); }
-    .send-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--crimson); color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px var(--crimson-glow); }
-    
-    /* ===== PROFILE ===== */
+    .chat-input-real { flex-shrink: 0; padding: 8px 12px 12px 12px; border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 6px; background: #fff; align-items: center; padding-bottom: max(12px, env(safe-area-inset-bottom)); position: relative; }
+    .chat-input-real .input-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #8e8e93; transition: background 0.15s, transform 0.15s, color 0.2s; background: transparent; border: none; font-size: 22px; flex-shrink: 0; }
+    .chat-input-real input { flex: 1; height: 38px; border-radius: 20px; border: 1px solid #e5e7eb; padding: 0 14px; font-size: 14px; outline: none; background: #f5f5f7; transition: all 0.2s; min-width: 0; }
+    .send-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--crimson); color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px var(--crimson-glow); transition: transform 0.15s, background 0.2s; flex-shrink: 0; }
     .profile-page { display: none; flex-direction: column; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 55; height: 100%; width: 100%; }
     .profile-page.active { display: flex; animation: slideUp 0.3s ease-out; }
-    .profile-header { display: flex; align-items: center; padding: 12px 16px; gap: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); background: #fff; flex-shrink: 0; z-index: 10; }
     .profile-content { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; align-items: center; }
-    .profile-avatar-large { width: 100px; height: 100px; border-radius: 50%; background: #e5e7eb; margin-bottom: 12px; border: 4px solid #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 32px; color: #fff; }
+    .profile-avatar-large { width: 100px; height: 100px; border-radius: 50%; background: #e5e7eb; margin-bottom: 12px; border: 4px solid #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.1); cursor: pointer; position: relative; display: flex; align-items: center; justify-content: center; }
+    .profile-avatar-large::after { content: 'person'; font-family: 'Material Icons'; position: absolute; font-size: 50px; color: #d1d5db; }
     .profile-name { font-size: 22px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px; }
     .profile-bio { font-size: 14px; color: var(--text-secondary); text-align: center; margin: 8px 0 16px; max-width: 80%; line-height: 1.4; }
     .profile-stats-row { display: flex; gap: 30px; padding: 16px 0; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; width: 100%; justify-content: center; margin-bottom: 20px; }
     .stat-number { font-size: 18px; font-weight: 700; color: var(--text-primary); }
     .stat-label { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
     .edit-profile-btn { background: var(--crimson); color: #fff; border: none; padding: 10px 32px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; margin-top: 4px; box-shadow: 0 2px 12px var(--crimson-glow); }
-    
-    /* ===== BOTTOM NAV ===== */
-    .bottom-nav { flex-shrink: 0; background: #fff; border-top: 1px solid rgba(0,0,0,0.06); padding: 8px 0 20px 0; display: flex; justify-content: space-around; align-items: center; width: 100%; position: relative; z-index: 100; }
-    .bottom-nav.hidden { transform: translateY(100%); }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 12px; background: transparent; border: none; color: var(--text-secondary); transition: transform 0.1s, color 0.2s; font-family: inherit; }
-    .nav-item:active { transform: scale(0.9); }
-    .nav-item .material-icons { font-size: 26px; }
-    .nav-item .label { font-size: 10px; font-weight: 500; }
-    .nav-item.active { color: var(--crimson); }
-    .nav-item.add-btn .icon-wrap { background: var(--crimson); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px var(--crimson-glow); margin-bottom: 4px; }
-    
-    .fab { position: absolute; bottom: 90px; right: 20px; width: 56px; height: 56px; background: var(--crimson); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px var(--crimson-glow); cursor: pointer; z-index: 20; transition: transform 0.2s ease; border: none; }
-    .fab:active { transform: scale(0.90); }
-    
-    .search-results-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 30; flex-direction: column; animation: fadeSlide 0.2s ease-out; }
-    .search-results-overlay.active { display: flex; }
-    .search-results-header { display: flex; align-items: center; padding: 12px 16px; gap: 12px; border-bottom: 1px solid #f0f0f0; background: #fff; }
-    .search-results-header .back-icon { cursor: pointer; color: var(--text-primary); font-size: 24px; }
-    .search-results-header input { flex: 1; padding: 10px 14px; border-radius: 20px; border: 1px solid #e5e7eb; background: #f5f5f7; font-size: 14px; outline: none; }
-    .search-results-list { flex: 1; overflow-y: auto; padding: 8px 0; }
-    .search-result-item { display: flex; align-items: center; padding: 12px 16px; gap: 14px; border-bottom: 1px solid #f5f5f5; cursor: pointer; }
-    .search-result-item .result-avatar { width: 44px; height: 44px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; }
-    .search-result-item .result-info { flex: 1; }
-    .search-result-item .result-name { font-weight: 600; font-size: 15px; color: var(--text-primary); }
-    .search-result-item .result-sub { font-size: 13px; color: var(--text-secondary); }
-    .empty-search { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); padding: 40px; text-align: center; }
-    .empty-search .material-icons { font-size: 48px; opacity: 0.2; margin-bottom: 12px; }
-    
     .contacts-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 60; flex-direction: column; animation: slideUp 0.3s ease-out; }
     .contacts-overlay.active { display: flex; }
-    .contact-list { flex: 1; overflow-y: auto; padding: 12px 16px; }
-    .contact-item { display: flex; align-items: center; padding: 12px 0; gap: 12px; border-bottom: 1px solid #f5f5f5; }
-    .contact-item .contact-avatar { width: 44px; height: 44px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; }
-    .contact-item .contact-info { flex: 1; }
-    .contact-item .contact-name { font-weight: 600; font-size: 15px; color: var(--text-primary); }
-    .contact-item .contact-status { font-size: 12px; color: var(--text-secondary); }
-    
     .recording-indicator { display: none; padding: 8px 16px; background: var(--crimson); color: #fff; font-size: 14px; font-weight: 500; align-items: center; gap: 10px; flex-shrink: 0; }
     .recording-indicator.active { display: flex; }
     .recording-indicator .dot { width: 12px; height: 12px; background: #fff; border-radius: 50%; animation: pulse-recording 0.8s infinite; }
     
-    .dropdown-menu { display: none; position: absolute; top: 55px; right: 16px; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 8px 0; min-width: 180px; z-index: 70; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); }
+    .dropdown-menu { display: none; position: absolute; top: 55px; right: 16px; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 8px 0; min-width: 180px; z-index: 70; overflow: hidden; animation: dropDown 0.2s ease-out; border: 1px solid rgba(0,0,0,0.05); }
     .dropdown-menu.active { display: block; }
     .menu-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; font-size: 14px; color: var(--text-primary); cursor: pointer; width: 100%; background: transparent; border: none; text-align: left; font-family: inherit; }
     .menu-item.danger { color: var(--crimson); }
     
     .empty-state { padding: 40px; text-align: center; color: #999; }
     .empty-state .material-icons { font-size: 48px; opacity: 0.3; }
-    
-    .channels-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 35; flex-direction: column; animation: fadeSlide 0.2s ease-out; }
-    .channels-overlay.active { display: flex; }
-    .channels-list { flex: 1; overflow-y: auto; padding: 12px 16px; }
     
     @media (max-width: 480px) {
       .auth-page { padding: 20px 18px 18px; }
@@ -343,81 +337,124 @@
 <body>
 
 <div class="app-container" id="app">
+
+  <!-- ============================================================
+       TOAST
+       ============================================================ -->
   <div class="toast" id="toast"></div>
 
-  <!-- ===== LOGIN PAGE ===== -->
+  <!-- ============================================================
+       AUTH PAGES (Tether Login)
+       ============================================================ -->
+
+  <!-- LOGIN -->
   <div class="auth-page active" id="loginPage">
     <h1>Welcome Back</h1>
     <p>Sign in to your Tether account</p>
+
     <div class="google-btn" id="googleSignIn">
-      <span class="material-icons">login</span> Continue with Google
+      <span class="material-icons">login</span>
+      Continue with Google
     </div>
+
     <div class="divider">or</div>
+
     <div class="input-group">
       <span class="input-icon material-icons">email</span>
-      <input id="loginEmail" placeholder="Email" type="email" />
+      <input id="loginEmail" placeholder="Email" type="email" autocomplete="email" />
     </div>
+
     <div class="input-group">
       <span class="input-icon material-icons">lock</span>
-      <input id="loginPassword" placeholder="Password" type="password" />
+      <input id="loginPassword" placeholder="Password" type="password" autocomplete="current-password" />
       <span class="toggle-icon material-icons" id="toggleLoginPassword">visibility</span>
     </div>
-    <button class="btn-primary" id="loginBtn"><span class="material-icons">login</span> Sign In</button>
+
+    <button class="btn-primary" id="loginBtn">
+      <span class="material-icons">login</span>
+      Sign In
+    </button>
+
     <span class="switch" id="forgotPasswordLink">Forgot Password?</span>
     <span class="switch" id="goToSignupLink">Don't have an account? Create one</span>
+
     <div class="error" id="loginError"></div>
   </div>
 
-  <!-- ===== FORGOT PASSWORD ===== -->
+  <!-- FORGOT PASSWORD -->
   <div class="auth-page" id="forgotPasswordPage">
     <h1>Reset Password</h1>
     <p>Enter your email to receive a reset link</p>
     <div class="input-group">
       <span class="input-icon material-icons">email</span>
-      <input id="resetEmail" placeholder="Email" type="email" />
+      <input id="resetEmail" placeholder="Email" type="email" autocomplete="email" />
     </div>
-    <button class="btn-primary" id="resetPasswordBtn"><span class="material-icons">send</span> Send Reset Link</button>
+    <button class="btn-primary" id="resetPasswordBtn">
+      <span class="material-icons">send</span>
+      Send Reset Link
+    </button>
     <span class="switch" id="backToLoginLink">Back to Sign In</span>
     <div class="success" id="resetSuccess"></div>
     <div class="error" id="resetError"></div>
   </div>
 
-  <!-- ===== SIGNUP ===== -->
+  <!-- SIGNUP STEP 1 -->
   <div class="auth-page" id="signup1">
-    <div class="progress-bar"><span class="progress-dot active"></span><span class="progress-dot"></span><span class="progress-dot"></span><span class="progress-dot"></span><span class="progress-dot"></span></div>
+    <div class="progress-bar">
+      <span class="progress-dot active"></span><span class="progress-dot"></span>
+      <span class="progress-dot"></span><span class="progress-dot"></span>
+      <span class="progress-dot"></span>
+    </div>
     <h1>Create Account</h1>
     <p>Choose a username, email, and password</p>
     <div class="input-group">
       <span class="input-icon material-icons">person</span>
-      <input id="signupUsername" placeholder="Username" />
+      <input id="signupUsername" placeholder="Username" autocomplete="username" />
     </div>
     <div class="input-group">
       <span class="input-icon material-icons">email</span>
-      <input id="signupEmail" placeholder="Email" type="email" />
+      <input id="signupEmail" placeholder="Email" type="email" autocomplete="email" />
     </div>
     <div class="input-group">
       <span class="input-icon material-icons">lock</span>
-      <input id="signupPassword" placeholder="Password (16+ chars)" type="password" />
+      <input id="signupPassword" placeholder="Password (16+ chars)" type="password" autocomplete="new-password" />
       <span class="toggle-icon material-icons" id="toggleSignupPassword">visibility</span>
     </div>
-    <button class="btn-primary" id="signup1Next"><span class="material-icons">arrow_forward</span> Continue</button>
+    <button class="btn-primary" id="signup1Next">
+      <span class="material-icons">arrow_forward</span>
+      Continue
+    </button>
     <span class="switch" id="signupToLoginLink">Already have an account? Sign In</span>
     <div class="error" id="signup1Error"></div>
   </div>
 
+  <!-- SIGNUP STEP 2: Verify Email -->
   <div class="auth-page" id="signup2">
-    <div class="progress-bar"><span class="progress-dot done"></span><span class="progress-dot active"></span><span class="progress-dot"></span><span class="progress-dot"></span><span class="progress-dot"></span></div>
+    <div class="progress-bar">
+      <span class="progress-dot done"></span><span class="progress-dot active"></span>
+      <span class="progress-dot"></span><span class="progress-dot"></span>
+      <span class="progress-dot"></span>
+    </div>
     <h2>Verify Your Email</h2>
-    <p id="verifyMessage">We sent a verification link to your email.</p>
-    <button class="btn-primary" id="verifyCheckBtn"><span class="material-icons">verified</span> I Verified My Email</button>
+    <p id="verifyMessage">We sent a verification link to your email. Check spam.</p>
+    <button class="btn-primary" id="verifyCheckBtn">
+      <span class="material-icons">verified</span>
+      I Verified My Email
+    </button>
     <span class="switch" id="resendVerifyEmail">Resend verification email</span>
     <div class="error" id="verifyError"></div>
     <div class="success" id="verifySuccess"></div>
   </div>
 
+  <!-- SIGNUP STEP 3: Profile Info -->
   <div class="auth-page" id="signup3">
-    <div class="progress-bar"><span class="progress-dot done"></span><span class="progress-dot done"></span><span class="progress-dot active"></span><span class="progress-dot"></span><span class="progress-dot"></span></div>
+    <div class="progress-bar">
+      <span class="progress-dot done"></span><span class="progress-dot done"></span>
+      <span class="progress-dot active"></span><span class="progress-dot"></span>
+      <span class="progress-dot"></span>
+    </div>
     <h2>Tell Us About You</h2>
+    <p class="sub-text">Country, age, city, and interests</p>
     <div class="input-group">
       <span class="input-icon material-icons">flag</span>
       <select id="signupCountry">
@@ -427,28 +464,43 @@
         <option value="UK">🇬🇧 United Kingdom</option>
         <option value="CA">🇨🇦 Canada</option>
         <option value="AU">🇦🇺 Australia</option>
+        <option value="DE">🇩🇪 Germany</option>
+        <option value="FR">🇫🇷 France</option>
+        <option value="IN">🇮🇳 India</option>
+        <option value="BR">🇧🇷 Brazil</option>
+        <option value="JP">🇯🇵 Japan</option>
       </select>
+      <span class="dropdown-arrow material-icons">expand_more</span>
     </div>
     <div class="input-group">
       <span class="input-icon material-icons">calendar_today</span>
-      <input id="signupAge" placeholder="Age (Minimum 13)" type="number" min="13" />
+      <input id="signupAge" placeholder="Your Age (Minimum 13)" type="number" min="13" max="120" />
     </div>
     <div class="input-group">
       <span class="input-icon material-icons">location_on</span>
-      <input id="signupLocation" placeholder="Your City" />
+      <input id="signupLocation" placeholder="Your City" type="text" />
     </div>
     <p class="sub-text">Select topics you're interested in</p>
     <div class="interests-grid" id="interestsGrid"></div>
-    <button class="btn-primary" id="signup3Next"><span class="material-icons">arrow_forward</span> Continue</button>
+    <button class="btn-primary" id="signup3Next">
+      <span class="material-icons">arrow_forward</span>
+      Continue
+    </button>
     <div class="error" id="signup3Error"></div>
   </div>
 
+  <!-- SIGNUP STEP 4: Profile Name + Picture -->
   <div class="auth-page" id="signup4">
-    <div class="progress-bar"><span class="progress-dot done"></span><span class="progress-dot done"></span><span class="progress-dot done"></span><span class="progress-dot active"></span><span class="progress-dot"></span></div>
+    <div class="progress-bar">
+      <span class="progress-dot done"></span><span class="progress-dot done"></span>
+      <span class="progress-dot done"></span><span class="progress-dot active"></span>
+      <span class="progress-dot"></span>
+    </div>
     <h2>Your Profile</h2>
+    <p class="sub-text">Full name and optional photo</p>
     <div class="input-group">
       <span class="input-icon material-icons">badge</span>
-      <input id="signupDisplayName" placeholder="Full Name" />
+      <input id="signupDisplayName" placeholder="Full Name" autocomplete="name" />
     </div>
     <div class="input-group">
       <span class="input-icon material-icons">description</span>
@@ -462,48 +514,64 @@
         </div>
       </div>
       <span class="material-icons">photo_camera</span>
-      <span class="upload-hint">Tap to upload a photo</span>
+      <span class="upload-hint">Tap to upload a photo (optional)</span>
       <input type="file" id="profilePicInput" accept="image/*" />
     </div>
-    <button class="btn-primary" id="signup4Next"><span class="material-icons">arrow_forward</span> Continue</button>
+    <button class="btn-primary" id="signup4Next">
+      <span class="material-icons">arrow_forward</span>
+      Continue
+    </button>
     <div class="error" id="signup4Error"></div>
   </div>
 
+  <!-- SIGNUP STEP 5: Final -->
   <div class="auth-page" id="signup5">
-    <div class="progress-bar"><span class="progress-dot done"></span><span class="progress-dot done"></span><span class="progress-dot done"></span><span class="progress-dot done"></span><span class="progress-dot active"></span></div>
+    <div class="progress-bar">
+      <span class="progress-dot done"></span><span class="progress-dot done"></span>
+      <span class="progress-dot done"></span><span class="progress-dot done"></span>
+      <span class="progress-dot active"></span>
+    </div>
     <h2>Almost There!</h2>
+    <p class="sub-text">Agree to our terms and enter</p>
     <div class="terms-box">
       <strong>Community Guidelines</strong>
       <ul>
         <li>Be respectful to all members</li>
         <li>No hate speech or harassment</li>
+        <li>No sharing of harmful content</li>
         <li>No spamming or impersonation</li>
       </ul>
     </div>
     <div class="checkbox-wrapper">
       <input type="checkbox" id="termsCheck" />
-      <label for="termsCheck">I agree to the <a href="#">Terms &amp; Conditions</a></label>
+      <label for="termsCheck">
+        I agree to the <a href="#">Terms &amp; Conditions</a>
+      </label>
     </div>
-    <button class="btn-primary" id="signupCompleteBtn"><span class="material-icons">check_circle</span> Enter Tether</button>
+    <button class="btn-primary" id="signupCompleteBtn">
+      <span class="material-icons">check_circle</span>
+      Enter Tether
+    </button>
     <div class="error" id="signup5Error"></div>
   </div>
 
-  <!-- ===== SOCIAL APP ===== -->
+  <!-- ============================================================
+       SOCIAL APP (After Login)
+       ============================================================ -->
   <div id="socialApp">
     <div class="scroll-content">
-      
-      <!-- FEED PAGE -->
+      <!-- FOR YOU PAGE -->
       <div class="page" id="page-feed">
         <div class="feed-scroll" id="feedScroll">
           <div class="feed-intro">
             <div class="feed-header-section">
-              <div class="feed-top-bar">
+              <div class="feed-top-bar feed-header">
                 <span class="page-title">For <span>You</span></span>
                 <span class="material-icons" style="font-size:24px;">cast</span>
               </div>
               <div class="suggestions-tray" id="suggestionsTray"></div>
               <div class="fy-search-bar">
-                <input type="text" class="fy-search-input" id="mainSearchInput" placeholder="Search users..." onclick="openSearchOverlay()" readonly />
+                <input type="text" class="fy-search-input" id="mainSearchInput" placeholder="Search users, videos..." onclick="openSearchOverlay()" readonly />
               </div>
               <div class="fy-tabs" id="fyTabs">
                 <button class="fy-tab active" data-fy-tab="videos">Videos</button>
@@ -513,14 +581,40 @@
             </div>
           </div>
 
-          <!-- POSTS FEED -->
-          <div id="postsFeedContainer"></div>
+          <div class="search-results-overlay" id="searchOverlay">
+            <div class="search-results-header">
+              <span class="material-icons back-icon" id="closeSearchOverlay">arrow_back</span>
+              <input type="text" id="searchOverlayInput" placeholder="Search..." autofocus />
+            </div>
+            <div class="search-results-list" id="searchResultsList">
+              <div class="empty-search"><span class="material-icons">search</span><p>Search for users or videos</p></div>
+            </div>
+          </div>
+
+          <div id="videoFeedContainer" style="display:block; padding:4px 0 12px 0;">
+            <div class="video-post-card"><div class="video-thumbnail"><span class="play-icon material-icons">play_circle_outline</span><span class="duration-badge">3:42</span></div><div class="post-content"><div class="post-header"><div class="post-avatar"></div><div class="post-username"></div></div><div class="post-caption"></div><div class="post-caption post-caption-short"></div><div class="post-hashtags"></div><div class="post-meta"><div class="post-stats"><span class="stat-item"></span><span class="stat-item"></span></div><div class="post-actions"><span class="action-btn-placeholder material-icons">favorite</span><span class="action-btn-placeholder outline material-icons">bookmark</span><span class="action-btn-placeholder outline material-icons">share</span></div></div></div></div>
+            <div class="video-post-card"><div class="video-thumbnail"><span class="play-icon material-icons">play_circle_outline</span><span class="duration-badge">1:28</span></div><div class="post-content"><div class="post-header"><div class="post-avatar"></div><div class="post-username"></div></div><div class="post-caption"></div><div class="post-caption post-caption-short"></div><div class="post-hashtags"></div><div class="post-meta"><div class="post-stats"><span class="stat-item"></span><span class="stat-item"></span></div><div class="post-actions"><span class="action-btn-placeholder material-icons">favorite</span><span class="action-btn-placeholder outline material-icons">bookmark</span><span class="action-btn-placeholder outline material-icons">share</span></div></div></div></div>
+            <div class="video-post-card"><div class="video-thumbnail"><span class="play-icon material-icons">play_circle_outline</span><span class="duration-badge">5:10</span></div><div class="post-content"><div class="post-header"><div class="post-avatar"></div><div class="post-username"></div></div><div class="post-caption"></div><div class="post-caption post-caption-short"></div><div class="post-hashtags"></div><div class="post-meta"><div class="post-stats"><span class="stat-item"></span><span class="stat-item"></span></div><div class="post-actions"><span class="action-btn-placeholder material-icons">favorite</span><span class="action-btn-placeholder outline material-icons">bookmark</span><span class="action-btn-placeholder outline material-icons">share</span></div></div></div></div>
+          </div>
 
           <div class="streams-container" id="streamsContainer">
+            <div class="streams-header">
+              <div class="streams-search-wrap"><input type="text" id="streamsSearchInput" placeholder="Search sports..." /></div>
+              <button class="channels-btn" id="channelsBtn"><span class="material-icons">grid_view</span></button>
+            </div>
             <div class="live-section">
               <div class="section-title"><span class="live-dot"></span> Live Now</div>
               <div class="live-horizontal-scroll" id="liveScroll"></div>
             </div>
+            <div class="sports-list-section">
+              <div class="section-title"><span class="material-icons" style="color:var(--crimson);">trending_up</span> Trending</div>
+              <div id="sportsListContainer"></div>
+            </div>
+          </div>
+
+          <div class="channels-overlay" id="channelsOverlay">
+            <div class="channels-header"><span class="material-icons back-icon" id="closeChannelsOverlay">arrow_back</span><span>Channels</span></div>
+            <div class="channels-list" id="channelsList"></div>
           </div>
 
           <div class="reels-full-container" id="reelsFullContainer">
@@ -534,11 +628,12 @@
       <div class="page active" id="page-messages">
         <header class="messages-header"><span class="page-title" style="font-size:20px;">Messages</span></header>
         <div class="messages-layout" id="messagesLayout">
-          <div class="chat-search-bar"><input type="text" class="chat-search-input" id="chatSearchInput" placeholder="Search chats..." /></div>
+          <div class="chat-search-bar"><input type="text" class="chat-search-input" id="chatSearchInput" placeholder="Search chats..."></div>
           <div class="stories-tray" id="storiesTray"></div>
           <div class="filter-buttons" id="filterButtons">
             <button class="filter-btn active" data-filter="all">All</button>
             <button class="filter-btn" data-filter="friends">Friends</button>
+            <button class="filter-btn" data-filter="groups">Groups</button>
           </div>
           <div class="thread-list-container" id="threadContainer">
             <div class="thread-list" id="threadList"></div>
@@ -554,39 +649,49 @@
                 <button class="icon-btn more-btn" id="moreMenuBtn"><span class="material-icons">more_vert</span></button>
               </div>
             </div>
+            <div class="dropdown-menu" id="dropdownMenu">
+              <button class="menu-item" data-action="view-contact"><span class="material-icons">person</span> View Profile</button>
+              <button class="menu-item" data-action="media"><span class="material-icons">photo_library</span> Media</button>
+              <button class="menu-item danger" data-action="block"><span class="material-icons">block</span> Block User</button>
+            </div>
             <div class="chat-messages" id="chatMessages"></div>
-            <div class="chat-input-real">
-              <input type="text" id="messageInput" placeholder="Type a message..." />
-              <button class="input-btn" id="cameraBtn"><span class="material-icons">camera_alt</span></button>
-              <button class="input-btn" id="fileBtn"><span class="material-icons">attach_file</span></button>
+            <div class="chat-input-real" id="chatInputBar">
+              <input type="text" id="messageInput" placeholder="Type a message..." autocomplete="off" />
+              <button class="input-btn camera-btn" id="cameraBtn"><span class="material-icons">camera_alt</span></button>
+              <button class="input-btn location-btn" id="locationBtn"><span class="material-icons">location_on</span></button>
+              <button class="input-btn file-btn" id="fileBtn"><span class="material-icons">attach_file</span></button>
+              <button class="input-btn voice-btn" id="voiceBtn" style="color: var(--crimson);"><span class="material-icons">mic</span></button>
               <button class="send-btn" id="sendBtn"><span class="material-icons">send</span></button>
             </div>
+            <div class="recording-indicator" id="recordingIndicator"><span class="dot"></span><span id="recordingStatusText">Recording...</span><span style="margin-left:auto; cursor:pointer; font-size:18px;" id="stopRecordingBtn">✕</span></div>
           </div>
         </div>
       </div>
 
       <!-- PROFILE PAGE -->
       <div class="profile-page" id="profilePage">
-        <div class="profile-header">
-          <span class="material-icons back-icon" id="profileBack">arrow_back</span>
-          <span style="font-weight:600; font-size:18px;">Profile</span>
-        </div>
+        <div class="profile-header"><span class="material-icons back-icon" id="profileBack" style="cursor:pointer; color:var(--text-primary);">arrow_back</span><span style="font-weight:600; font-size:18px;">Profile</span></div>
         <div class="profile-content">
           <div class="profile-avatar-large" id="profileAvatarLarge"></div>
           <div class="profile-name"><span id="profileDisplayName">Username</span></div>
           <div class="profile-bio" id="profileBio">Your bio here</div>
           <button class="edit-profile-btn" id="editProfileBtn">Edit Profile</button>
           <div class="profile-stats-row">
-            <div><span class="stat-number" id="followersCount">0</span><div class="stat-label">Followers</div></div>
-            <div><span class="stat-number" id="followingCount">0</span><div class="stat-label">Following</div></div>
-            <div><span class="stat-number" id="postsCount">0</span><div class="stat-label">Posts</div></div>
+            <div class="stat-item-clickable"><span class="stat-number" id="followersCount">0</span><span class="stat-label">Followers</span></div>
+            <div class="stat-item-clickable"><span class="stat-number" id="followingCount">0</span><span class="stat-label">Following</span></div>
           </div>
-          <button class="btn-secondary" id="createPostBtn" style="margin-top:12px;">
-            <span class="material-icons">add</span> Create Post
+          <button class="btn-secondary" id="logoutBtn" style="margin-top:20px;">
+            <span class="material-icons">logout</span>
+            Sign Out
           </button>
-          <button class="btn-secondary" id="logoutBtn" style="margin-top:12px;">
-            <span class="material-icons">logout</span> Sign Out
-          </button>
+        </div>
+      </div>
+
+      <!-- CONTACTS OVERLAY -->
+      <div class="contacts-overlay" id="contactsOverlay">
+        <div class="profile-header"><span class="material-icons back-icon" id="contactsBack" style="cursor:pointer;">arrow_back</span><span style="font-weight:600; font-size:18px;">Contacts</span></div>
+        <div class="contact-list" id="contactListContainer">
+          <div class="empty-state"><span class="material-icons">people_outline</span><p>No contacts yet</p></div>
         </div>
       </div>
     </div>
@@ -596,14 +701,16 @@
       <button class="nav-item active" data-page="messages"><span class="material-icons">chat</span><span class="label">Chat</span></button>
       <button class="nav-item" data-page="feed"><span class="material-icons">explore</span><span class="label">For You</span></button>
       <button class="nav-item add-btn" data-page="add"><div class="icon-wrap"><span class="plus-icon">+</span></div><span class="label">Create</span></button>
+      <button class="nav-item" data-page="call-log"><span class="material-icons">call</span><span class="label">Calls</span></button>
       <button class="nav-item" data-page="profile"><span class="material-icons">person</span><span class="label">Profile</span></button>
     </nav>
   </div>
+
 </div>
 
 <script>
   // ================================================================
-  // FIREBASE CONFIG
+  // FIREBASE CONFIG - YOUR EXISTING CONFIG
   // ================================================================
   const firebaseConfig = {
     apiKey: "AIzaSyAqtKoK3dJtpVQrndcuYL8urHGOj5dAK68",
@@ -614,129 +721,320 @@
     appId: "1:913957400692:web:b5653cdef3c4bb46cd2121"
   };
 
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
   const storage = firebase.storage();
 
   console.log("🔥 Firebase Connected!");
+  console.log("📧 Auth ready, 📁 Firestore ready, 📦 Storage ready");
 
   // ================================================================
-  // HELPERS
+  // TOAST SYSTEM
   // ================================================================
-  const $ = id => document.getElementById(id);
-  let currentUser = null;
-  let signupData = {};
-  let selectedInterests = [];
-  let chatListener = null;
-
-  function showToast(msg) {
-    const t = $('toast');
-    t.textContent = msg;
-    t.className = 'toast show';
-    clearTimeout(t._hide);
-    t._hide = setTimeout(() => t.classList.remove('show'), 3000);
+  function showToast(msg, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = 'toast show';
+    clearTimeout(toast._hideTimeout);
+    toast._hideTimeout = setTimeout(() => toast.classList.remove('show'), 4000);
   }
 
-  function setLoading(btn, loading, text) {
-    if (loading) { btn.innerHTML = '<span class="spinner"></span> ' + (text || 'Loading...'); btn.disabled = true; }
-    else { btn.innerHTML = text || 'Sign In'; btn.disabled = false; }
+  // ================================================================
+  // DOM REFS
+  // ================================================================
+  function $(id) { return document.getElementById(id); }
+
+  // Pages
+  const loginPage = $('loginPage');
+  const forgotPage = $('forgotPasswordPage');
+  const socialApp = $('socialApp');
+  const authPages = document.querySelectorAll('.auth-page');
+
+  // Login
+  const loginEmail = $('loginEmail');
+  const loginPass = $('loginPassword');
+  const loginBtn = $('loginBtn');
+  const loginErr = $('loginError');
+
+  // Forgot
+  const resetEmail = $('resetEmail');
+  const resetBtn = $('resetPasswordBtn');
+  const resetSuccess = $('resetSuccess');
+  const resetError = $('resetError');
+
+  // Signup
+  const suUsername = $('signupUsername');
+  const suEmail = $('signupEmail');
+  const suPassword = $('signupPassword');
+  const suCountry = $('signupCountry');
+  const suAge = $('signupAge');
+  const suLocation = $('signupLocation');
+  const suName = $('signupDisplayName');
+  const suBio = $('signupBio');
+  const picInput = $('profilePicInput');
+  const avatarCircle = $('avatarCircle');
+  const avatarImage = $('avatarImage');
+  const avatarInitial = $('avatarInitial');
+
+  // Signup errors
+  const signup1Error = $('signup1Error');
+  const signup3Error = $('signup3Error');
+  const signup4Error = $('signup4Error');
+  const signup5Error = $('signup5Error');
+  const verifyErr = $('verifyError');
+  const verifyOk = $('verifySuccess');
+  const verifyMsg = $('verifyMessage');
+
+  let signupData = {};
+  let selectedInterests = [];
+  let currentUser = null;
+
+  // ================================================================
+  // INTERESTS
+  // ================================================================
+  const INTERESTS_LIST = [
+    'Gaming', 'Music', 'Sports', 'Art', 'Science',
+    'Books', 'Movies', 'Coding', 'Robotics', 'Nature',
+    'Animals', 'Space', 'History', 'Dance', 'Photography',
+    'Business', 'Finance', 'Travel', 'Food', 'Fashion'
+  ];
+
+  function setupInterests() {
+    const grid = $('interestsGrid');
+    grid.innerHTML = '';
+    selectedInterests = [];
+    INTERESTS_LIST.forEach(interest => {
+      const tag = document.createElement('div');
+      tag.className = 'interest-tag';
+      tag.textContent = interest;
+      tag.dataset.value = interest;
+      tag.addEventListener('click', function() {
+        this.classList.toggle('selected');
+        const val = this.dataset.value;
+        if (this.classList.contains('selected')) {
+          if (!selectedInterests.includes(val)) selectedInterests.push(val);
+        } else {
+          selectedInterests = selectedInterests.filter(i => i !== val);
+        }
+      });
+      grid.appendChild(tag);
+    });
+  }
+
+  // ================================================================
+  // NAVIGATION
+  // ================================================================
+  function showLogin() {
+    authPages.forEach(p => p.classList.remove('active'));
+    loginPage.classList.add('active');
+    loginErr.textContent = '';
+    loginBtn.innerHTML = '<span class="material-icons">login</span> Sign In';
+    loginBtn.disabled = false;
+  }
+
+  function showForgot() {
+    authPages.forEach(p => p.classList.remove('active'));
+    forgotPage.classList.add('active');
+    resetError.textContent = '';
+    resetSuccess.textContent = '';
+    resetBtn.innerHTML = '<span class="material-icons">send</span> Send Reset Link';
+    resetBtn.disabled = false;
+  }
+
+  function showSignup(step) {
+    authPages.forEach(p => p.classList.remove('active'));
+    const page = $('signup' + step);
+    if (page) page.classList.add('active');
+    if (step === 3) setupInterests();
+  }
+
+  function showSocialApp() {
+    authPages.forEach(p => p.classList.remove('active'));
+    socialApp.classList.add('active');
+    document.getElementById('page-messages').classList.add('active');
+    loadUserProfile();
+    renderThreads();
+    renderStories();
+    renderSuggestions();
+    renderReels();
+    renderLiveCards();
+    renderSportsList();
   }
 
   function goFeed() {
-    document.querySelectorAll('.auth-page').forEach(p => p.classList.remove('active'));
-    $('socialApp').classList.add('active');
-    loadPosts();
-    loadThreads();
-    loadSuggestions();
-    loadReels();
-    loadUserProfile();
+    showSocialApp();
+  }
+
+  function setLoading(btn, loading, text) {
+    if (loading) {
+      btn.innerHTML = '<span class="spinner"></span> ' + (text || 'Loading...');
+      btn.disabled = true;
+    } else {
+      btn.innerHTML = text || 'Sign In';
+      btn.disabled = false;
+    }
   }
 
   // ================================================================
-  // AUTH
+  // AUTH FUNCTIONS (REAL FIREBASE)
   // ================================================================
-  auth.onAuthStateChanged(user => {
-    if (user) { currentUser = user; goFeed(); }
-    else { document.querySelectorAll('.auth-page').forEach(p => p.classList.remove('active')); $('loginPage').classList.add('active'); }
+
+  // --- LOGIN ---
+  loginBtn.addEventListener('click', function() {
+    const email = loginEmail.value.trim();
+    const password = loginPass.value;
+    if (!email || !password) {
+      loginErr.textContent = 'Enter email and password';
+      return;
+    }
+    loginErr.textContent = '';
+    setLoading(loginBtn, true, 'Signing In...');
+
+    auth.signInWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        currentUser = userCredential.user;
+        showToast('Welcome back!');
+        goFeed();
+        setLoading(loginBtn, false);
+      })
+      .catch(error => {
+        loginErr.textContent = error.message;
+        setLoading(loginBtn, false);
+      });
   });
 
-  // Login
-  $('loginBtn').addEventListener('click', () => {
-    const email = $('loginEmail').value.trim();
-    const pass = $('loginPassword').value;
-    if (!email || !pass) { $('loginError').textContent = 'Enter email and password'; return; }
-    $('loginError').textContent = '';
-    setLoading($('loginBtn'), true, 'Signing In...');
-    auth.signInWithEmailAndPassword(email, pass)
-      .then(() => { showToast('Welcome back!'); setLoading($('loginBtn'), false); })
-      .catch(err => { $('loginError').textContent = err.message; setLoading($('loginBtn'), false); });
-  });
+  loginPass.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); });
 
-  // Google
-  $('googleSignIn').addEventListener('click', () => {
+  // --- GOOGLE SIGN-IN ---
+  $('googleSignIn').addEventListener('click', function() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider)
-      .then(() => showToast('Signed in with Google!'))
-      .catch(err => showToast(err.message));
+      .then(result => {
+        currentUser = result.user;
+        showToast('Welcome! Signed in with Google.');
+        goFeed();
+      })
+      .catch(error => {
+        showToast(error.message, true);
+      });
   });
 
-  // Forgot
-  $('resetPasswordBtn').addEventListener('click', () => {
-    const email = $('resetEmail').value.trim();
-    if (!email) { $('resetError').textContent = 'Enter your email'; return; }
-    $('resetError').textContent = '';
-    setLoading($('resetPasswordBtn'), true, 'Sending...');
+  // --- FORGOT PASSWORD ---
+  resetBtn.addEventListener('click', function() {
+    const email = resetEmail.value.trim();
+    if (!email) { resetError.textContent = 'Enter your email'; return; }
+    resetError.textContent = '';
+    setLoading(resetBtn, true, 'Sending...');
+
     auth.sendPasswordResetEmail(email)
-      .then(() => { $('resetSuccess').textContent = 'Reset link sent!'; setLoading($('resetPasswordBtn'), false); })
-      .catch(err => { $('resetError').textContent = err.message; setLoading($('resetPasswordBtn'), false); });
+      .then(() => {
+        resetSuccess.textContent = 'Reset link sent! Check your email.';
+        showToast('Reset link sent to ' + email);
+        setLoading(resetBtn, false);
+      })
+      .catch(error => {
+        resetError.textContent = error.message;
+        setLoading(resetBtn, false);
+      });
   });
 
-  // Signup Step 1
-  $('signup1Next').addEventListener('click', () => {
-    const username = $('signupUsername').value.trim();
-    const email = $('signupEmail').value.trim();
-    const pass = $('signupPassword').value;
-    if (!username || username.length < 3) { $('signup1Error').textContent = 'Username min 3 chars'; return; }
-    if (!email.includes('@')) { $('signup1Error').textContent = 'Valid email required'; return; }
-    if (pass.length < 16) { $('signup1Error').textContent = 'Password min 16 chars'; return; }
-    $('signup1Error').textContent = '';
-    signupData = { username, email, password: pass };
+  // --- SIGNUP ---
+  $('signup1Next').addEventListener('click', function() {
+    const username = suUsername.value.trim();
+    const email = suEmail.value.trim();
+    const password = suPassword.value;
+
+    if (!username || username.length < 3) {
+      signup1Error.textContent = 'Username must be at least 3 characters.';
+      return;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      signup1Error.textContent = 'Username can only contain letters, numbers, underscores.';
+      return;
+    }
+    if (!email || !email.includes('@')) {
+      signup1Error.textContent = 'Enter a valid email address.';
+      return;
+    }
+    if (password.length < 16) {
+      signup1Error.textContent = 'Password must be at least 16 characters.';
+      return;
+    }
+
+    signup1Error.textContent = '';
+    signupData.username = username;
+    signupData.email = email;
+    signupData.password = password;
+
     setLoading($('signup1Next'), true, 'Creating...');
-    auth.createUserWithEmailAndPassword(email, pass)
-      .then(cred => { currentUser = cred.user; return currentUser.sendEmailVerification(); })
-      .then(() => { $('verifyMessage').textContent = 'Verification sent to ' + email; showSignup(2); setLoading($('signup1Next'), false); })
-      .catch(err => { $('signup1Error').textContent = err.message; setLoading($('signup1Next'), false); });
+
+    auth.createUserWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        currentUser = userCredential.user;
+        // Send verification email
+        return currentUser.sendEmailVerification();
+      })
+      .then(() => {
+        signupData.uid = currentUser.uid;
+        verifyMsg.textContent = 'Verification sent to ' + email + '. Check spam.';
+        showSignup(2);
+        showToast('Verification email sent!');
+        setLoading($('signup1Next'), false);
+      })
+      .catch(error => {
+        signup1Error.textContent = error.message;
+        setLoading($('signup1Next'), false);
+      });
   });
 
-  // Verify
-  $('verifyCheckBtn').addEventListener('click', () => {
-    setLoading($('verifyCheckBtn'), true, 'Checking...');
-    currentUser.reload().then(() => {
-      if (currentUser.emailVerified) {
-        $('verifySuccess').textContent = 'Email verified!';
-        showSignup(3);
-      } else {
-        $('verifyError').textContent = 'Not verified yet. Check spam.';
-      }
-      setLoading($('verifyCheckBtn'), false);
-    });
+  // --- VERIFY EMAIL ---
+  $('verifyCheckBtn').addEventListener('click', function() {
+    const btn = $('verifyCheckBtn');
+    setLoading(btn, true, 'Checking...');
+
+    auth.currentUser.reload()
+      .then(() => {
+        if (auth.currentUser.emailVerified) {
+          verifyOk.textContent = 'Email verified!';
+          verifyErr.textContent = '';
+          showToast('Email verified!');
+          showSignup(3);
+        } else {
+          verifyErr.textContent = 'Email not verified yet. Check your inbox or resend.';
+        }
+        setLoading(btn, false);
+      })
+      .catch(error => {
+        verifyErr.textContent = error.message;
+        setLoading(btn, false);
+      });
   });
 
-  $('resendVerifyEmail').addEventListener('click', () => {
-    currentUser.sendEmailVerification()
-      .then(() => showToast('Verification resent!'));
+  $('resendVerifyEmail').addEventListener('click', function() {
+    auth.currentUser.sendEmailVerification()
+      .then(() => {
+        verifyOk.textContent = 'New verification email sent! Check spam.';
+        showToast('Verification email resent!');
+      })
+      .catch(error => {
+        verifyErr.textContent = error.message;
+      });
   });
 
-  // Signup Step 3
-  $('signup3Next').addEventListener('click', () => {
-    const country = $('signupCountry').value;
-    const age = parseInt($('signupAge').value);
-    const location = $('signupLocation').value.trim();
-    if (!country) { $('signup3Error').textContent = 'Select country'; return; }
-    if (!age || age < 13) { $('signup3Error').textContent = 'Must be 13+'; return; }
-    if (selectedInterests.length === 0) { $('signup3Error').textContent = 'Select an interest'; return; }
-    $('signup3Error').textContent = '';
+  // --- SIGNUP STEP 3 ---
+  $('signup3Next').addEventListener('click', function() {
+    const country = suCountry.value;
+    const age = parseInt(suAge.value);
+    const location = suLocation.value.trim();
+
+    if (!country) { signup3Error.textContent = 'Select your country.'; return; }
+    if (!age || age < 13) { signup3Error.textContent = 'You must be at least 13.'; return; }
+    if (age > 120) { signup3Error.textContent = 'Enter a valid age.'; return; }
+    if (selectedInterests.length === 0) { signup3Error.textContent = 'Select at least one interest.'; return; }
+
+    signup3Error.textContent = '';
     signupData.country = country;
     signupData.age = age;
     signupData.location = location || '';
@@ -744,37 +1042,43 @@
     showSignup(4);
   });
 
-  // Signup Step 4
-  $('signup4Next').addEventListener('click', () => {
-    const name = $('signupDisplayName').value.trim();
-    if (!name) { $('signup4Error').textContent = 'Enter your name'; return; }
-    $('signup4Error').textContent = '';
+  // --- SIGNUP STEP 4 ---
+  $('signup4Next').addEventListener('click', function() {
+    const name = suName.value.trim();
+    if (!name) { signup4Error.textContent = 'Enter your full name.'; return; }
+    signup4Error.textContent = '';
     signupData.displayName = name;
-    signupData.bio = $('signupBio').value.trim() || '';
+    signupData.bio = suBio.value.trim() || '';
     showSignup(5);
   });
 
-  // Profile pic
-  $('profilePicInput').addEventListener('change', function(e) {
+  // --- PROFILE PICTURE UPLOAD ---
+  picInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = ev => {
-        $('avatarInitial').style.display = 'none';
-        $('avatarImage').style.display = 'block';
-        $('avatarImage').src = ev.target.result;
+      reader.onload = function(ev) {
+        avatarInitial.style.display = 'none';
+        avatarImage.style.display = 'block';
+        avatarImage.src = ev.target.result;
+        avatarCircle.classList.add('has-image');
         signupData.profilePicFile = file;
       };
       reader.readAsDataURL(file);
     }
   });
 
-  // Complete Signup
-  $('signupCompleteBtn').addEventListener('click', () => {
-    if (!$('termsCheck').checked) { $('signup5Error').textContent = 'Accept terms'; return; }
-    $('signup5Error').textContent = '';
-    setLoading($('signupCompleteBtn'), true, 'Creating Profile...');
+  // --- SIGNUP COMPLETE ---
+  $('signupCompleteBtn').addEventListener('click', function() {
+    const btn = $('signupCompleteBtn');
+    if (!$('termsCheck').checked) {
+      signup5Error.textContent = 'You must agree to the Terms.';
+      return;
+    }
+    signup5Error.textContent = '';
+    setLoading(btn, true, 'Creating Profile...');
 
+    // Save user data to Firestore
     const userData = {
       username: signupData.username,
       displayName: signupData.displayName,
@@ -784,60 +1088,52 @@
       city: signupData.location,
       interests: signupData.interests,
       bio: signupData.bio,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       followers: [],
       following: [],
-      posts: [],
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      photoURL: null
     };
 
-    const saveProfile = (photoURL) => {
-      if (photoURL) userData.photoURL = photoURL;
-      return db.collection('users').doc(currentUser.uid).set(userData);
-    };
-
-    let savePromise = Promise.resolve();
+    // If there's a profile picture, upload it
     if (signupData.profilePicFile) {
-      const ref = storage.ref('profile_pics/' + currentUser.uid);
-      savePromise = ref.put(signupData.profilePicFile)
-        .then(snap => snap.ref.getDownloadURL())
-        .then(url => saveProfile(url));
+      const ref = storage.ref('profile_pictures/' + currentUser.uid);
+      ref.put(signupData.profilePicFile)
+        .then(snapshot => snapshot.ref.getDownloadURL())
+        .then(url => {
+          userData.photoURL = url;
+          return db.collection('users').doc(currentUser.uid).set(userData);
+        })
+        .then(() => {
+          showToast('Account created! Welcome to Tether!');
+          setLoading(btn, false);
+          goFeed();
+        })
+        .catch(error => {
+          signup5Error.textContent = error.message;
+          setLoading(btn, false);
+        });
     } else {
-      savePromise = saveProfile(null);
+      // No profile picture
+      db.collection('users').doc(currentUser.uid).set(userData)
+        .then(() => {
+          showToast('Account created! Welcome to Tether!');
+          setLoading(btn, false);
+          goFeed();
+        })
+        .catch(error => {
+          signup5Error.textContent = error.message;
+          setLoading(btn, false);
+        });
     }
-
-    savePromise.then(() => {
-      showToast('Account created! Welcome!');
-      setLoading($('signupCompleteBtn'), false);
-      goFeed();
-    }).catch(err => {
-      $('signup5Error').textContent = err.message;
-      setLoading($('signupCompleteBtn'), false);
-    });
   });
 
-  // Navigation
-  function showSignup(step) {
-    document.querySelectorAll('.auth-page').forEach(p => p.classList.remove('active'));
-    $('signup' + step).classList.add('active');
-    if (step === 3) setupInterests();
-  }
-
-  function showLogin() {
-    document.querySelectorAll('.auth-page').forEach(p => p.classList.remove('active'));
-    $('loginPage').classList.add('active');
-  }
-
-  function showForgot() {
-    document.querySelectorAll('.auth-page').forEach(p => p.classList.remove('active'));
-    $('forgotPasswordPage').classList.add('active');
-  }
-
+  // --- NAVIGATION LINKS ---
   $('signupToLoginLink').addEventListener('click', showLogin);
   $('forgotPasswordLink').addEventListener('click', showForgot);
   $('backToLoginLink').addEventListener('click', showLogin);
-  $('goToSignupLink').addEventListener('click', () => showSignup(1));
+  $('goToSignupLink').addEventListener('click', function() { showSignup(1); });
 
-  // Password toggles
+  // --- PASSWORD TOGGLES ---
   $('toggleLoginPassword').addEventListener('click', function() {
     const i = $('loginPassword');
     i.type = i.type === 'password' ? 'text' : 'password';
@@ -849,315 +1145,203 @@
     this.textContent = i.type === 'password' ? 'visibility' : 'visibility_off';
   });
 
-  // ================================================================
-  // INTERESTS
-  // ================================================================
-  const INTERESTS = ['Gaming', 'Music', 'Sports', 'Art', 'Science', 'Books', 'Movies', 'Coding', 'Nature', 'Animals', 'Space', 'History', 'Dance', 'Photography', 'Travel', 'Food', 'Fashion'];
-
-  function setupInterests() {
-    const grid = $('interestsGrid');
-    grid.innerHTML = '';
-    selectedInterests = [];
-    INTERESTS.forEach(interest => {
-      const tag = document.createElement('div');
-      tag.className = 'interest-tag';
-      tag.textContent = interest;
-      tag.dataset.value = interest;
-      tag.addEventListener('click', function() {
-        this.classList.toggle('selected');
-        const val = this.dataset.value;
-        if (this.classList.contains('selected')) selectedInterests.push(val);
-        else selectedInterests = selectedInterests.filter(i => i !== val);
-      });
-      grid.appendChild(tag);
-    });
-  }
+  // --- KEYBOARD SHORTCUTS ---
+  suUsername.addEventListener('keydown', e => { if (e.key === 'Enter') $('signup1Next').click(); });
+  suEmail.addEventListener('keydown', e => { if (e.key === 'Enter') $('signup1Next').click(); });
+  suPassword.addEventListener('keydown', e => { if (e.key === 'Enter') $('signup1Next').click(); });
+  suAge.addEventListener('keydown', e => { if (e.key === 'Enter') $('signup3Next').click(); });
+  suName.addEventListener('keydown', e => { if (e.key === 'Enter') $('signup4Next').click(); });
+  resetEmail.addEventListener('keydown', e => { if (e.key === 'Enter') resetBtn.click(); });
 
   // ================================================================
-  // POSTS (REAL)
+  // SOCIAL APP FEATURES
   // ================================================================
-  let postsListener = null;
 
-  function loadPosts() {
-    if (postsListener) postsListener();
-    postsListener = db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
-      const container = $('postsFeedContainer');
-      container.innerHTML = '';
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const postId = doc.id;
-        const div = document.createElement('div');
-        div.className = 'post-card';
-        div.innerHTML = `
-          <div class="post-header">
-            <div class="post-avatar-sm">${(data.userName || 'U')[0]}</div>
-            <span class="post-username">${data.userName || 'Unknown'}</span>
-            <span class="post-time">${data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : ''}</span>
-          </div>
-          <div class="post-text">${data.text || ''}</div>
-          ${data.image ? `<img class="post-image" src="${data.image}" alt="Post image" />` : ''}
-          <div class="post-actions">
-            <button class="post-action-btn ${data.likes && data.likes.includes(currentUser?.uid) ? 'liked' : ''}" onclick="toggleLike('${postId}')">
-              <span class="material-icons">${data.likes && data.likes.includes(currentUser?.uid) ? 'favorite' : 'favorite_border'}</span>
-              <span>${data.likes ? data.likes.length : 0}</span>
-            </button>
-            <button class="post-action-btn" onclick="toggleComments('${postId}')">
-              <span class="material-icons">comment</span>
-              <span>${data.comments ? data.comments.length : 0}</span>
-            </button>
-            <button class="post-action-btn" onclick="sharePost('${postId}')">
-              <span class="material-icons">share</span>
-            </button>
-          </div>
-          <div class="post-comments" id="comments-${postId}" style="display:none;">
-            ${(data.comments || []).map(c => `<div class="comment-item"><span class="comment-user">${c.userName || 'User'}:</span> <span class="comment-text">${c.text}</span></div>`).join('')}
-            <div class="comment-input-wrap">
-              <input type="text" id="comment-input-${postId}" placeholder="Write a comment..." />
-              <button class="comment-send-btn" onclick="addComment('${postId}')"><span class="material-icons" style="font-size:18px;">send</span></button>
-            </div>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    });
-  }
-
-  window.toggleLike = function(postId) {
-    if (!currentUser) return;
-    const postRef = db.collection('posts').doc(postId);
-    postRef.get().then(doc => {
-      const data = doc.data();
-      const likes = data.likes || [];
-      const idx = likes.indexOf(currentUser.uid);
-      if (idx > -1) likes.splice(idx, 1);
-      else likes.push(currentUser.uid);
-      postRef.update({ likes });
-    });
-  };
-
-  window.toggleComments = function(postId) {
-    const el = document.getElementById('comments-' + postId);
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
-  };
-
-  window.addComment = function(postId) {
-    if (!currentUser) return;
-    const input = document.getElementById('comment-input-' + postId);
-    const text = input.value.trim();
-    if (!text) return;
-    input.value = '';
-    db.collection('posts').doc(postId).update({
-      comments: firebase.firestore.FieldValue.arrayUnion({
-        userId: currentUser.uid,
-        userName: signupData.displayName || 'User',
-        text: text,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      })
-    });
-  };
-
-  window.sharePost = function(postId) {
-    navigator.clipboard?.writeText(window.location.href + '?post=' + postId);
-    showToast('Link copied!');
-  };
-
-  // Create Post
-  $('createPostBtn').addEventListener('click', function() {
-    const text = prompt('What\'s on your mind?');
-    if (!text) return;
-    const postData = {
-      userId: currentUser.uid,
-      userName: signupData.displayName || 'User',
-      text: text,
-      likes: [],
-      comments: [],
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    db.collection('posts').add(postData).then(() => {
-      showToast('Post created!');
-      // Update post count
-      db.collection('users').doc(currentUser.uid).update({
-        posts: firebase.firestore.FieldValue.arrayUnion(postData)
-      });
-    });
-  });
-
-  // ================================================================
-  // THREADS (Messages)
-  // ================================================================
-  function loadThreads() {
-    const container = $('threadList');
-    container.innerHTML = '<div class="empty-state"><span class="material-icons">chat</span><p>No messages yet</p></div>';
-    // Load real users for messaging
-    db.collection('users').get().then(snapshot => {
-      container.innerHTML = '';
-      snapshot.forEach(doc => {
-        if (doc.id === currentUser?.uid) return;
-        const data = doc.data();
-        const div = document.createElement('div');
-        div.className = 'thread-item';
-        div.innerHTML = `
-          <div class="thread-avatar">${(data.displayName || 'U')[0]}</div>
-          <div class="thread-info">
-            <div class="thread-name">${data.displayName || data.username}</div>
-            <div class="thread-last-msg">Tap to chat</div>
-          </div>
-          <div class="thread-time">Now</div>
-        `;
-        div.addEventListener('click', () => openChat(doc.id, data.displayName || data.username));
-        container.appendChild(div);
-      });
-    });
-  }
-
-  let currentChatUserId = null;
-
-  function openChat(userId, userName) {
-    if (chatListener) chatListener();
-    currentChatUserId = userId;
-    $('chatNameDisplay').textContent = userName || 'User';
-    $('chatView').classList.add('active');
-    $('bottomNav').classList.add('hidden');
-    $('chatMessages').innerHTML = '';
-
-    // Load messages
-    chatListener = db.collection('messages')
-      .where('participants', 'array-contains', currentUser.uid)
-      .orderBy('timestamp', 'asc')
-      .onSnapshot(snapshot => {
-        const messages = [];
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          if ((data.senderId === currentUser.uid && data.receiverId === userId) ||
-              (data.senderId === userId && data.receiverId === currentUser.uid)) {
-            messages.push(data);
-          }
-        });
-        $('chatMessages').innerHTML = '';
-        messages.forEach(msg => {
-          const isSent = msg.senderId === currentUser.uid;
-          const div = document.createElement('div');
-          div.className = 'chat-message' + (isSent ? ' sent' : '');
-          const time = msg.timestamp ? new Date(msg.timestamp.seconds * 1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
-          div.innerHTML = `${msg.text}<span class="msg-time">${time}</span>`;
-          $('chatMessages').appendChild(div);
-        });
-        $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
-      });
-  }
-
-  // Send Message
-  $('sendBtn').addEventListener('click', () => {
-    const input = $('messageInput');
-    const text = input.value.trim();
-    if (!text || !currentChatUserId) return;
-    input.value = '';
-    const msg = {
-      senderId: currentUser.uid,
-      receiverId: currentChatUserId,
-      text: text,
-      participants: [currentUser.uid, currentChatUserId],
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    db.collection('messages').add(msg);
-  });
-
-  $('messageInput').addEventListener('keypress', e => {
-    if (e.key === 'Enter') $('sendBtn').click();
-  });
-
-  $('chatBack').addEventListener('click', () => {
-    $('chatView').classList.remove('active');
-    $('bottomNav').classList.remove('hidden');
-    if (chatListener) { chatListener(); chatListener = null; }
-  });
-
-  // ================================================================
-  // USER PROFILE
-  // ================================================================
   function loadUserProfile() {
-    if (!currentUser) return;
-    db.collection('users').doc(currentUser.uid).onSnapshot(doc => {
-      if (doc.exists) {
-        const data = doc.data();
-        signupData.displayName = data.displayName || 'User';
-        $('profileDisplayName').textContent = data.displayName || 'User';
-        $('profileBio').textContent = data.bio || 'No bio yet';
-        $('followersCount').textContent = data.followers ? data.followers.length : 0;
-        $('followingCount').textContent = data.following ? data.following.length : 0;
-        $('postsCount').textContent = data.posts ? data.posts.length : 0;
-        if (data.photoURL) {
-          $('profileAvatarLarge').style.backgroundImage = `url(${data.photoURL})`;
-          $('profileAvatarLarge').style.backgroundSize = 'cover';
-          $('profileAvatarLarge').textContent = '';
+    if (!auth.currentUser) return;
+    const uid = auth.currentUser.uid;
+    db.collection('users').doc(uid).get()
+      .then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          document.getElementById('profileDisplayName').textContent = data.displayName || 'User';
+          document.getElementById('profileBio').textContent = data.bio || 'No bio yet';
+          document.getElementById('followersCount').textContent = (data.followers?.length || 0);
+          document.getElementById('followingCount').textContent = (data.following?.length || 0);
         }
-      }
-    });
+      })
+      .catch(err => console.error('Error loading profile:', err));
   }
 
-  // ================================================================
-  // SUGGESTIONS
-  // ================================================================
-  function loadSuggestions() {
-    const container = $('suggestionsTray');
-    db.collection('users').limit(6).get().then(snapshot => {
-      container.innerHTML = '';
-      snapshot.forEach(doc => {
-        if (doc.id === currentUser?.uid) return;
-        const data = doc.data();
-        const div = document.createElement('div');
-        div.className = 'suggestion-card';
-        div.innerHTML = `
-          <div class="avatar-ring"><div class="avatar-img">${(data.displayName || 'U')[0]}</div></div>
-          <div class="user-name">${data.displayName || data.username}</div>
-          <button class="suggestion-btn" onclick="followUser('${doc.id}')">Follow</button>
-        `;
-        container.appendChild(div);
-      });
-    });
+  function renderThreads() {
+    const container = document.getElementById('threadList');
+    let html = '';
+    for (let i = 0; i < 8; i++) {
+      html += `<div class="thread-skeleton" onclick="openChat('User ${i+1}', false)">
+        <div class="avatar-wrap"><div class="avatar-status"></div></div>
+        <div class="thread-info"><div class="name-line"></div><div class="snippet-line"></div></div>
+        <div class="timestamp-line"></div>
+      </div>`;
+    }
+    container.innerHTML = html;
   }
 
-  window.followUser = function(userId) {
-    if (!currentUser) return;
-    db.collection('users').doc(currentUser.uid).update({
-      following: firebase.firestore.FieldValue.arrayUnion(userId)
-    });
-    db.collection('users').doc(userId).update({
-      followers: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
-    });
-    showToast('Followed!');
-  };
+  function renderStories() {
+    const container = document.getElementById('storiesTray');
+    let html = `<div class="story-skeleton"><div class="ring" style="background:#ddd; padding:0; border:2px dashed #ccc;"><div class="avatar-placeholder" style="border:none; background:#f0f0f0; display:flex; align-items:center; justify-content:center;"><span class="material-icons" style="color:#ccc;">add</span></div></div><div class="username-placeholder" style="width:30px;"></div></div>`;
+    for (let i = 0; i < 8; i++) {
+      html += `<div class="story-skeleton"><div class="ring"><div class="avatar-placeholder"></div></div><div class="username-placeholder"></div></div>`;
+    }
+    container.innerHTML = html;
+  }
 
-  // ================================================================
-  // REELS
-  // ================================================================
-  function loadReels() {
-    const container = $('reelsScroll');
+  function renderSuggestions() {
+    // Mock suggestions - will be replaced with real users from Firebase later
+    const container = document.getElementById('suggestionsTray');
+    container.innerHTML = '<div style="padding:0 16px; color:#999; font-size:12px;">Connect with friends!</div>';
+  }
+
+  function renderReels() {
+    const container = document.getElementById('reelsScroll');
     const mockReels = [
-      { username: "alex_rivera", caption: "New features! 📸", likes: "12K", comments: "450" },
-      { username: "travel_diaries", caption: "Sunset in Bali 🌅", likes: "8.5K", comments: "120" },
-      { username: "foodie_chef", caption: "Perfect pasta 🍝", likes: "3.2K", comments: "89" },
+      { username: "alex_rivera", caption: "Trying out new features! 📸", music: "Original Audio", likes: "12K", comments: "450" },
+      { username: "travel_diaries", caption: "Sunset in Bali 🌅", music: "Tropical House Mix", likes: "8.5K", comments: "120" },
+      { username: "foodie_chef", caption: "Perfect pasta recipe 🍝", music: "Italian Vibes", likes: "3.2K", comments: "89" },
     ];
-    container.innerHTML = '';
-    mockReels.forEach(reel => {
-      const div = document.createElement('div');
-      div.className = 'reel-card';
-      div.innerHTML = `
-        <div class="reel-video-placeholder"></div>
-        <div class="reel-ui-right">
-          <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">favorite_border</span></div><span class="label">${reel.likes}</span></div>
-          <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">comment</span></div><span class="label">${reel.comments}</span></div>
-          <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">share</span></div><span class="label">Share</span></div>
-        </div>
-        <div class="reel-info-bottom">
-          <div class="reel-user"><div class="reel-user-avatar"></div><span class="reel-username">${reel.username}</span><button class="reel-follow-btn">Follow</button></div>
-          <div class="reel-caption">${reel.caption}</div>
-          <div class="reel-music"><span class="material-icons">music_note</span><span>Original Audio</span></div>
+    let html = '';
+    mockReels.forEach((reel, index) => {
+      html += `
+        <div class="reel-card">
+          <div class="reel-video-placeholder"></div>
+          <div class="reel-ui-right">
+            <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">${index === 0 ? 'favorite' : 'favorite_border'}</span></div><span class="label">${reel.likes}</span></div>
+            <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">comment</span></div><span class="label">${reel.comments}</span></div>
+            <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">share</span></div><span class="label">Share</span></div>
+          </div>
+          <div class="reel-info-bottom">
+            <div class="reel-user"><div class="reel-user-avatar"></div><span class="reel-username">${reel.username}</span><button class="reel-follow-btn">Follow</button></div>
+            <div class="reel-caption">${reel.caption}</div>
+            <div class="reel-music"><span class="material-icons">music_note</span><span>${reel.music}</span></div>
+          </div>
         </div>
       `;
-      container.appendChild(div);
     });
+    container.innerHTML = html;
   }
+
+  function renderLiveCards() {
+    const container = document.getElementById('liveScroll');
+    const items = [
+      { title: 'Champions League Final', views: '12.4K' },
+      { title: 'NBA Playoffs Game 7', views: '8.7K' },
+      { title: 'Wimbledon Final', views: '5.2K' },
+    ];
+    let html = '';
+    items.forEach(item => {
+      html += `<div class="live-card"><span class="live-badge">● LIVE</span><div class="live-title"></div><div class="live-sub"></div><span class="live-views">${item.views} watching</span></div>`;
+    });
+    container.innerHTML = html;
+  }
+
+  function renderSportsList() {
+    const container = document.getElementById('sportsListContainer');
+    const sports = [
+      { name: 'Football', desc: 'Premier League Highlights' },
+      { name: 'Basketball', desc: 'NBA Top 10 Plays' },
+      { name: 'Tennis', desc: 'US Open Updates' },
+    ];
+    let html = '';
+    sports.forEach(s => {
+      html += `<div class="sport-list-item"><div class="sport-icon-placeholder material-icons">sports_${s.name.toLowerCase()}</div><div class="sport-info"><div class="sport-name-line"></div><div class="sport-desc-line"></div></div><span class="sport-badge-placeholder">Watch</span></div>`;
+    });
+    container.innerHTML = html;
+  }
+
+  // ================================================================
+  // CHAT FUNCTIONS
+  // ================================================================
+  window.openChat = function(userName, showInitial = true) {
+    document.getElementById('chatNameDisplay').textContent = userName;
+    document.getElementById('chatView').classList.add('active');
+    document.getElementById('bottomNav').classList.add('hidden');
+    document.getElementById('chatMessages').innerHTML = '';
+    if (showInitial) {
+      setTimeout(() => { addMessage("Hey there! 👋", false); }, 100);
+      setTimeout(() => { addMessage("Hi! How are you?", true); }, 500);
+    }
+  };
+
+  function addMessage(text, isSent) {
+    const div = document.createElement('div');
+    div.className = 'chat-message' + (isSent ? ' sent' : '');
+    const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    div.innerHTML = `${text}<span class="msg-time">${time}</span>`;
+    document.getElementById('chatMessages').appendChild(div);
+    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+  }
+
+  document.getElementById('chatBack').addEventListener('click', function() {
+    document.getElementById('chatView').classList.remove('active');
+    document.getElementById('bottomNav').classList.remove('hidden');
+  });
+
+  document.getElementById('sendBtn').addEventListener('click', function() {
+    const input = document.getElementById('messageInput');
+    const text = input.value.trim();
+    if (!text) return;
+    addMessage(text, true);
+    input.value = '';
+    setTimeout(() => {
+      const replies = ["That's cool!", "I agree!", "Nice!", "Haha 😂", "Got it!", "Sounds good!"];
+      addMessage(replies[Math.floor(Math.random() * replies.length)], false);
+    }, 800 + Math.random() * 1200);
+  });
+
+  document.getElementById('messageInput').addEventListener('keypress', e => {
+    if (e.key === 'Enter') document.getElementById('sendBtn').click();
+  });
+
+  // ================================================================
+  // VOICE RECORDING
+  // ================================================================
+  let isRecording = false;
+  let recordingTimer = null;
+  let recordingSeconds = 0;
+  const voiceBtn = document.getElementById('voiceBtn');
+  const recordingIndicator = document.getElementById('recordingIndicator');
+  const recordingStatusText = document.getElementById('recordingStatusText');
+
+  function startRecording() {
+    if (isRecording) return;
+    isRecording = true;
+    recordingSeconds = 0;
+    recordingIndicator.classList.add('active');
+    voiceBtn.querySelector('.material-icons').textContent = 'stop';
+    recordingStatusText.textContent = 'Recording... 0:00';
+    recordingTimer = setInterval(() => {
+      recordingSeconds++;
+      const mins = Math.floor(recordingSeconds / 60);
+      const secs = recordingSeconds % 60;
+      recordingStatusText.textContent = `Recording... ${mins}:${secs.toString().padStart(2, '0')}`;
+    }, 1000);
+  }
+
+  function stopRecording() {
+    if (!isRecording) return;
+    isRecording = false;
+    recordingIndicator.classList.remove('active');
+    voiceBtn.querySelector('.material-icons').textContent = 'mic';
+    if (recordingTimer) { clearInterval(recordingTimer); recordingTimer = null; }
+    const duration = Math.floor(Math.random() * 15) + 3;
+    addMessage(`🎤 Voice message (${duration}s)`, true);
+    setTimeout(() => addMessage("Got your voice note!", false), 1000 + Math.random() * 800);
+    recordingStatusText.textContent = 'Recording...';
+  }
+
+  voiceBtn.addEventListener('click', function() {
+    if (isRecording) { stopRecording(); } else { startRecording(); }
+  });
+  document.getElementById('stopRecordingBtn').addEventListener('click', stopRecording);
 
   // ================================================================
   // NAVIGATION
@@ -1165,146 +1349,125 @@
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', function() {
       const page = this.dataset.page;
-      if (page === 'add') {
-        $('createPostBtn').click();
-        return;
-      }
+      if (page === 'add') { showToast('Create Post'); return; }
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       this.classList.add('active');
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      const target = $('page-' + page);
+      const target = document.getElementById('page-' + page);
       if (target) target.classList.add('active');
-      if (page === 'profile') loadUserProfile();
     });
+  });
+
+  // ================================================================
+  // PROFILE
+  // ================================================================
+  document.getElementById('profileBack').addEventListener('click', function() {
+    document.getElementById('profilePage').classList.remove('active');
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', function() {
+    auth.signOut().then(() => {
+      socialApp.classList.remove('active');
+      showLogin();
+      showToast('Signed out');
+    });
+  });
+
+  document.getElementById('editProfileBtn').addEventListener('click', function() {
+    showToast('Edit profile coming soon!');
   });
 
   // ================================================================
   // SEARCH
   // ================================================================
   function openSearchOverlay() {
-    $('searchOverlay').classList.add('active');
-    $('searchOverlayInput').value = '';
-    $('searchResultsList').innerHTML = '<div class="empty-search"><span class="material-icons">search</span><p>Search for users</p></div>';
-    setTimeout(() => $('searchOverlayInput').focus(), 100);
+    document.getElementById('searchOverlay').classList.add('active');
+    document.getElementById('searchOverlayInput').value = '';
+    document.getElementById('searchResultsList').innerHTML = '<div class="empty-search"><span class="material-icons">search</span><p>Search for users or videos</p></div>';
+    setTimeout(() => document.getElementById('searchOverlayInput').focus(), 100);
   }
 
-  $('mainSearchInput').addEventListener('click', openSearchOverlay);
-  $('closeSearchOverlay').addEventListener('click', () => $('searchOverlay').classList.remove('active'));
-
-  $('searchOverlayInput').addEventListener('input', function() {
-    const q = this.value.trim().toLowerCase();
-    const container = $('searchResultsList');
-    if (!q) { container.innerHTML = '<div class="empty-search"><span class="material-icons">search</span><p>Search for users</p></div>'; return; }
-    db.collection('users').get().then(snapshot => {
-      container.innerHTML = '';
-      let found = false;
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        if (doc.id === currentUser?.uid) return;
-        if (data.displayName?.toLowerCase().includes(q) || data.username?.toLowerCase().includes(q)) {
-          found = true;
-          const div = document.createElement('div');
-          div.className = 'search-result-item';
-          div.innerHTML = `
-            <div class="result-avatar">${(data.displayName || 'U')[0]}</div>
-            <div class="result-info">
-              <div class="result-name">${data.displayName || data.username}</div>
-              <div class="result-sub">${data.username || ''}</div>
-            </div>
-            <span class="result-badge">User</span>
-          `;
-          div.addEventListener('click', () => {
-            $('searchOverlay').classList.remove('active');
-            openChat(doc.id, data.displayName || data.username);
-          });
-          container.appendChild(div);
-        }
-      });
-      if (!found) container.innerHTML = '<div class="empty-search"><span class="material-icons">search_off</span><p>No users found</p></div>';
-    });
+  document.getElementById('mainSearchInput').addEventListener('click', openSearchOverlay);
+  document.getElementById('closeSearchOverlay').addEventListener('click', function() {
+    document.getElementById('searchOverlay').classList.remove('active');
   });
 
   // ================================================================
-  // REELS TAB
+  // REELS
   // ================================================================
   document.querySelectorAll('.fy-tab').forEach(tab => {
     tab.addEventListener('click', function() {
       document.querySelectorAll('.fy-tab').forEach(t => t.classList.remove('active'));
       this.classList.add('active');
       const tabName = this.dataset.fyTab;
-      $('postsFeedContainer').style.display = 'none';
-      $('streamsContainer').classList.remove('active');
-      $('reelsFullContainer').classList.remove('active');
-      if (tabName === 'videos') $('postsFeedContainer').style.display = 'block';
-      else if (tabName === 'streams') $('streamsContainer').classList.add('active');
-      else if (tabName === 'reels') $('reelsFullContainer').classList.add('active');
+      document.getElementById('videoFeedContainer').style.display = 'none';
+      document.getElementById('streamsContainer').classList.remove('active');
+      document.getElementById('reelsFullContainer').classList.remove('active');
+      if (tabName === 'videos') document.getElementById('videoFeedContainer').style.display = 'block';
+      else if (tabName === 'streams') document.getElementById('streamsContainer').classList.add('active');
+      else if (tabName === 'reels') document.getElementById('reelsFullContainer').classList.add('active');
     });
   });
 
-  $('closeReelsBtn').addEventListener('click', function() {
-    $('reelsFullContainer').classList.remove('active');
+  document.getElementById('closeReelsBtn').addEventListener('click', function() {
+    document.getElementById('reelsFullContainer').classList.remove('active');
     document.querySelectorAll('.fy-tab').forEach(t => t.classList.remove('active'));
     document.querySelector('[data-fy-tab="videos"]').classList.add('active');
-    $('postsFeedContainer').style.display = 'block';
+    document.getElementById('videoFeedContainer').style.display = 'block';
   });
 
   // ================================================================
-  // LIVE STREAMS
+  // CHANNELS
   // ================================================================
-  (function loadLiveCards() {
-    const container = $('liveScroll');
-    const items = [
-      { title: 'Champions League Final', views: '12.4K' },
-      { title: 'NBA Playoffs Game 7', views: '8.7K' },
-      { title: 'Wimbledon Final', views: '5.2K' },
-    ];
-    container.innerHTML = '';
-    items.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'live-card';
-      div.innerHTML = `
-        <span class="live-badge">● LIVE</span>
-        <div style="position:relative;z-index:2;color:#fff;font-weight:600;font-size:14px;">${item.title}</div>
-        <span class="live-views">${item.views} watching</span>
-      `;
-      container.appendChild(div);
-    });
-  })();
+  document.getElementById('channelsBtn').addEventListener('click', function() {
+    document.getElementById('channelsOverlay').classList.add('active');
+  });
+  document.getElementById('closeChannelsOverlay').addEventListener('click', function() {
+    document.getElementById('channelsOverlay').classList.remove('active');
+  });
 
   // ================================================================
-  // LOGOUT
+  // CONTACTS
   // ================================================================
-  $('logoutBtn').addEventListener('click', () => {
-    auth.signOut().then(() => {
-      $('socialApp').classList.remove('active');
+  document.getElementById('fabCreate').addEventListener('click', function() {
+    document.getElementById('contactsOverlay').classList.add('active');
+  });
+  document.getElementById('contactsBack').addEventListener('click', function() {
+    document.getElementById('contactsOverlay').classList.remove('active');
+  });
+
+  // ================================================================
+  // MISCELLANEOUS
+  // ================================================================
+  document.getElementById('fileBtn').addEventListener('click', function() {
+    showToast('Share via...');
+  });
+  document.getElementById('cameraBtn').addEventListener('click', function() {
+    showToast('📷 Camera access requested');
+  });
+  document.getElementById('locationBtn').addEventListener('click', function() {
+    showToast('📍 Sharing location');
+  });
+
+  // ================================================================
+  // INIT
+  // ================================================================
+  console.log('🚀 Tether App Initialized!');
+  console.log('📱 Login with existing account or create a new one!');
+  console.log('💡 Demo: Create an account to get started!');
+
+  // Check if user is already logged in
+  auth.onAuthStateChanged(function(user) {
+    if (user) {
+      currentUser = user;
+      showToast('Welcome back!');
+      goFeed();
+    } else {
+      // Show login
       showLogin();
-      showToast('Signed out');
-    });
+    }
   });
 
-  $('profileBack').addEventListener('click', () => {
-    $('profilePage').classList.remove('active');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelector('[data-page="messages"]').classList.add('active');
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    $('page-messages').classList.add('active');
-  });
-
-  $('editProfileBtn').addEventListener('click', () => showToast('Edit profile coming soon!'));
-
-  // ================================================================
-  // KEYBOARD SHORTCUTS
-  // ================================================================
-  $('signupUsername').addEventListener('keydown', e => { if (e.key === 'Enter') $('signup1Next').click(); });
-  $('signupEmail').addEventListener('keydown', e => { if (e.key === 'Enter') $('signup1Next').click(); });
-  $('signupPassword').addEventListener('keydown', e => { if (e.key === 'Enter') $('signup1Next').click(); });
-  $('signupAge').addEventListener('keydown', e => { if (e.key === 'Enter') $('signup3Next').click(); });
-  $('signupDisplayName').addEventListener('keydown', e => { if (e.key === 'Enter') $('signup4Next').click(); });
-  $('loginPassword').addEventListener('keydown', e => { if (e.key === 'Enter') $('loginBtn').click(); });
-  $('resetEmail').addEventListener('keydown', e => { if (e.key === 'Enter') $('resetPasswordBtn').click(); });
-
-  console.log('🚀 Tether App with ALL Features Ready!');
-  console.log('✅ Authentication, ✅ Posts, ✅ Messages, ✅ Follows, ✅ Likes, ✅ Comments');
 </script>
 </body>
 </html>
