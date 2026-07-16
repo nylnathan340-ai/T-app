@@ -3,36 +3,174 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Social · Reels & streams</title>
+  <title>Tether · Social</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  
+  <!-- ===== FIREBASE SDK ===== -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
   <style>
+    /* ============================================================
+       ALL STYLES - COMBINED
+       ============================================================ */
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { font-family: 'Inter', -apple-system, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #1e1e2a; }
+    
+    /* APP CONTAINER */
     .app-container { width: 100%; max-width: 430px; background: #fff; height: 100vh; max-height: 932px; display: flex; flex-direction: column; position: relative; margin: 0 auto; overflow: hidden; box-shadow: 0 0 60px rgba(0,0,0,0.1); }
     ::-webkit-scrollbar { width: 0px; background: transparent; display: none; }
     * { -ms-overflow-style: none; scrollbar-width: none; }
     :root { --crimson: #DC143C; --crimson-dark: #b01030; --crimson-light: #e84a6a; --crimson-glow: rgba(220,20,60,0.25); --success: #2e7d32; --success-bg: #e8f5e9; --gray-bg: #f1f1f4; --text-primary: #1e1e2a; --text-secondary: #8e8e93; }
     
+    /* ===== ANIMATIONS ===== */
     @keyframes pulse-skeleton { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     @keyframes storyPop { 0% { opacity: 0; transform: scale(0.7); } 100% { opacity: 1; transform: scale(1); } }
     @keyframes fadeSlide { 0% { opacity: 0; transform: translateY(-10px); } 100% { opacity: 1; transform: translateY(0); } }
     @keyframes dropDown { 0% { opacity: 0; transform: translateY(-10px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
     @keyframes pulse-recording { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    @keyframes cardPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    @keyframes slideInRight { 0% { transform: translateX(100%); } 100% { transform: translateX(0); } }
+    @keyframes slideUp { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     
-    /* Shimmer Animation for White Placeholders */
-    @keyframes shimmer { 
-      0% { background-position: -200% 0; } 
-      100% { background-position: 200% 0; } 
+    /* ============================================================
+       AUTH PAGES (TETHER LOGIN)
+       ============================================================ */
+    .auth-page { display: none; flex-direction: column; gap: 16px; padding: 28px 24px 24px; justify-content: center; height: 100%; background: transparent; overflow-y: auto; position: relative; z-index: 1; animation: fadeSlide 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    .auth-page.active { display: flex; }
+    .auth-page h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.04em; color: var(--text-primary); line-height: 1.1; }
+    .auth-page h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); margin-top: 4px; }
+    .auth-page p { color: var(--text-secondary); font-size: 15px; font-weight: 400; line-height: 1.5; }
+    .auth-page .sub-text { color: var(--text-muted); font-size: 13px; font-weight: 400; margin-top: -6px; }
+    
+    /* ===== INPUTS ===== */
+    .input-group { position: relative; width: 100%; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .input-group:focus-within { transform: scale(1.01); }
+    .input-group .input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 20px; transition: all 0.3s ease; pointer-events: none; display: flex; align-items: center; justify-content: center; }
+    .input-group:focus-within .input-icon { color: var(--crimson); }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%; padding: 15px 16px 15px 48px; border-radius: 16px; border: 1.5px solid rgba(0,0,0,0.08);
+      background: #fff; color: var(--text-primary); font-size: 15px; font-weight: 450;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); outline: none;
+      font-family: 'Inter', sans-serif;
     }
-
+    .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+      border-color: var(--crimson); box-shadow: 0 0 0 8px rgba(220,20,60,0.06);
+    }
+    .input-group .toggle-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-secondary); padding: 4px; border-radius: 50%; font-size: 20px; }
+    .input-group .dropdown-arrow { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none; font-size: 18px; }
+    
+    /* ===== BUTTONS ===== */
+    .btn-primary {
+      padding: 15px 20px; border-radius: 16px; border: none; background: var(--crimson); color: #fff;
+      font-weight: 600; font-size: 15px; cursor: pointer; width: 100%;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 16px rgba(220,20,60,0.15);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(220,20,60,0.25); background: var(--crimson-dark); }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+    .btn-primary .spinner { width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,0.2); border-top: 2.5px solid #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+    
+    .btn-secondary {
+      padding: 14px 20px; border-radius: 16px; border: 1.5px solid rgba(0,0,0,0.08); background: #fff;
+      color: var(--text-primary); font-weight: 600; font-size: 14px; cursor: pointer; width: 100%;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-secondary:hover { background: rgba(0,0,0,0.04); transform: translateY(-2px); }
+    
+    .google-btn {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      background: #fff; border: 1.5px solid rgba(0,0,0,0.08); border-radius: 16px;
+      padding: 14px 16px; cursor: pointer; font-weight: 500; font-size: 15px; color: var(--text-primary); width: 100%;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .google-btn:hover { background: rgba(0,0,0,0.04); transform: translateY(-2px); }
+    
+    .divider { display: flex; align-items: center; gap: 16px; color: var(--text-secondary); font-size: 11px; font-weight: 500; text-transform: uppercase; margin: 2px 0; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(0,0,0,0.08); }
+    
+    .switch { color: var(--text-secondary); text-align: center; cursor: pointer; font-size: 14px; font-weight: 500; padding: 4px 0; transition: all 0.3s ease; display: inline-block; width: fit-content; margin: 0 auto; }
+    .switch:hover { opacity: 1; color: var(--text-primary); text-decoration: underline; }
+    
+    .error { color: var(--crimson); font-size: 13px; font-weight: 450; text-align: center; min-height: 20px; }
+    .success { color: #1a7a3a; font-size: 13px; font-weight: 450; text-align: center; min-height: 20px; }
+    
+    .progress-bar { display: flex; gap: 8px; justify-content: center; margin-bottom: 4px; flex-wrap: wrap; padding: 4px 0; }
+    .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,0,0,0.08); transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); transform: scale(0.85); }
+    .progress-dot.active { background: var(--crimson); transform: scale(1); box-shadow: 0 0 0 4px rgba(220,20,60,0.12); }
+    .progress-dot.done { background: var(--crimson); transform: scale(0.85); opacity: 0.3; }
+    
+    .interests-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .interest-tag {
+      padding: 10px 12px; border-radius: 12px; border: 1.5px solid rgba(0,0,0,0.08); background: #fff;
+      text-align: center; font-size: 13px; font-weight: 450; color: var(--text-secondary); cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); user-select: none;
+    }
+    .interest-tag:hover { transform: translateY(-2px); background: #f8f8fa; }
+    .interest-tag.selected { background: var(--crimson); color: #fff; border-color: var(--crimson); }
+    
+    .file-input-wrapper {
+      border: 2px dashed rgba(0,0,0,0.08); border-radius: 20px; padding: 20px; text-align: center;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; background: #fff;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .file-input-wrapper:hover { border-color: var(--crimson); transform: translateY(-2px); }
+    .file-input-wrapper .profile-preview .avatar-circle {
+      width: 80px; height: 80px; border-radius: 50%; background: #f0f2f5;
+      display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 600;
+      color: var(--text-secondary); border: 3px solid var(--crimson); overflow: hidden;
+    }
+    .file-input-wrapper .profile-preview .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+    .file-input-wrapper .material-icons { font-size: 36px; color: var(--text-secondary); display: block; margin: 4px auto 2px; }
+    .file-input-wrapper .upload-hint { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+    .file-input-wrapper input[type="file"] { display: none; }
+    
+    .checkbox-wrapper { display: flex; align-items: flex-start; gap: 10px; width: 100%; font-size: 13px; color: var(--text-secondary); }
+    .checkbox-wrapper input[type="checkbox"] { margin-top: 2px; width: 18px; height: 18px; accent-color: var(--crimson); flex-shrink: 0; cursor: pointer; }
+    .checkbox-wrapper label { cursor: pointer; line-height: 1.4; }
+    .checkbox-wrapper label a { color: var(--crimson); font-weight: 600; }
+    
+    .toast {
+      position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-12px);
+      padding: 14px 28px; border-radius: 18px; color: #1e1e2a; font-weight: 500; font-size: 14px;
+      z-index: 9999; max-width: 90%; text-align: center; opacity: 0;
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(16px);
+      border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    }
+    .toast.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+    
+    .terms-box {
+      width: 100%; max-height: 100px; overflow-y: auto; background: #fff;
+      border: 1px solid rgba(0,0,0,0.08); border-radius: 14px; padding: 12px 16px;
+      font-size: 12px; line-height: 1.6; color: var(--text-secondary);
+    }
+    .terms-box strong { display: block; margin-bottom: 4px; color: var(--text-primary); font-weight: 600; }
+    .terms-box ul { list-style: disc; padding-left: 18px; margin: 0; }
+    .terms-box ul li { margin-bottom: 2px; }
+    
+    /* ============================================================
+       SOCIAL APP STYLES (After Login)
+       ============================================================ */
+    #socialApp { display: none; flex-direction: column; height: 100%; width: 100%; background: #f8f8fa; }
+    #socialApp.active { display: flex; }
+    
     .scroll-content { flex: 1; overflow-y: auto; overflow-x: hidden; background: #fff; position: relative; }
     .page { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; flex-direction: column; background: #fff; }
     .page.active { display: flex; }
+    
     .messages-header { flex-shrink: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0,0,0,0.06); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; z-index: 10; position: sticky; top: 0; }
-    .feed-scroll { flex: 1; overflow-y: scroll; height: 100%; background: #f8f8fa; transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1), opacity 0.3s ease; will-change: transform, opacity; }
+    .feed-scroll { flex: 1; overflow-y: scroll; height: 100%; background: #f8f8fa; }
     .feed-intro { background: #fff; position: relative; z-index: 10; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
     .feed-header-section { background: #fff; }
     .feed-top-bar { padding: max(12px, env(safe-area-inset-top)) 16px 12px 16px; display: flex; align-items: center; justify-content: space-between; }
@@ -43,93 +181,62 @@
     .avatar-ring { width: 64px; height: 64px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, var(--crimson), var(--crimson-dark), var(--crimson-light)); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--crimson-glow); }
     .avatar-ring .avatar-img { width: 100%; height: 100%; border-radius: 50%; background: #e5e7eb; border: 3px solid #fff; }
     .user-name { font-size: 11px; font-weight: 500; color: #333; text-align: center; }
+    .suggestion-btn { padding: 4px 12px; border-radius: 12px; background: var(--crimson); color: #fff; font-size: 10px; font-weight: 600; border: none; cursor: pointer; }
     .fy-search-bar { padding: 0 16px 16px 16px; background: #fff; }
     .fy-search-input { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e5e7eb; background: #f5f5f7; font-size: 14px; outline: none; transition: all 0.2s; font-family: 'Inter', sans-serif; }
     .fy-search-input:focus { background: #fff; border-color: var(--crimson); }
     .fy-tabs { display: flex; gap: 0; padding: 0 16px; border-bottom: 1px solid rgba(0,0,0,0.06); background: #fff; flex-shrink: 0; overflow-x: auto; }
-    .fy-tab { padding: 14px 16px; font-size: 14px; font-weight: 600; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; background: transparent; border-top: none; border-left: none; border-right: none; font-family: inherit; white-space: nowrap; }
+    .fy-tab { padding: 14px 16px; font-size: 14px; font-weight: 600; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; background: transparent; border: none; font-family: inherit; white-space: nowrap; }
     .fy-tab.active { color: var(--crimson); border-bottom-color: var(--crimson); }
     
-    /* REELS CONTAINER – takes full feed, hides everything else */
     .reels-full-container { display: none; flex-direction: column; height: 100%; width: 100%; background: #000; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 20; }
     .reels-full-container.active { display: flex; }
     .reels-scroll { flex: 1; overflow-y: scroll; scroll-snap-type: y mandatory; background: #000; }
     .reel-card { width: 100%; height: 100vh; max-height: 932px; flex-shrink: 0; scroll-snap-align: start; position: relative; background: #1a1a1a; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    
-    /* UPDATED: White Placeholder Animation */
-    .reel-video-placeholder { 
-      width: 100%; 
-      height: 100%; 
-      /* Light gray base */
-      background-color: #f0f0f2; 
-      /* Shimmer effect */
-      background-image: linear-gradient(90deg, #f0f0f2 0%, #e0e0e4 50%, #f0f0f2 100%);
-      background-size: 200% 100%;
-      animation: shimmer 2s infinite linear;
-      position: relative; 
-    }
-    
+    .reel-video-placeholder { width: 100%; height: 100%; background-color: #f0f0f2; background-image: linear-gradient(90deg, #f0f0f2 0%, #e0e0e4 50%, #f0f0f2 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; position: relative; }
     .reel-ui-right { position: absolute; right: 12px; bottom: 100px; display: flex; flex-direction: column; align-items: center; gap: 20px; z-index: 5; }
     .reel-action-btn { display: flex; flex-direction: column; align-items: center; color: #fff; cursor: pointer; }
-    .reel-action-btn .icon-circle { width: 44px; height: 44px; background: rgba(255,255,255,0.15); backdrop-filter: blur(4px); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; transition: background 0.2s; }
-    .reel-action-btn:active .icon-circle { background: rgba(255,255,255,0.3); }
+    .reel-action-btn .icon-circle { width: 44px; height: 44px; background: rgba(255,255,255,0.15); backdrop-filter: blur(4px); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
     .reel-action-btn span.label { font-size: 11px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
     .reel-info-bottom { position: absolute; bottom: 20px; left: 16px; right: 80px; z-index: 5; color: #fff; }
     .reel-user { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
     .reel-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #e5e7eb; border: 2px solid #fff; }
     .reel-username { font-weight: 700; font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-    .reel-follow-btn { background: transparent; border: 1px solid rgba(255,255,255,0.6); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .reel-follow-btn { background: transparent; border: 1px solid rgba(255,255,255,0.6); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; }
     .reel-caption { font-size: 13px; line-height: 1.4; margin-bottom: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); opacity: 0.9; }
     .reel-music { display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: 0.8; }
-    .reel-music .material-icons { font-size: 14px; }
-    
-    /* close reels button */
     .close-reels-btn { position: absolute; top: 20px; left: 16px; z-index: 30; background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); color: #fff; border: none; border-radius: 30px; padding: 6px 14px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer; }
-    .close-reels-btn .material-icons { font-size: 20px; }
     
-    /* streams etc */
     .streams-container { display: none; flex-direction: column; padding: 12px 16px 20px 16px; background: #fff; flex: 1; overflow-y: auto; gap: 20px; }
     .streams-container.active { display: flex; }
-    .streams-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-    .streams-header .streams-search-wrap { flex: 1; position: relative; }
-    .streams-header .streams-search-wrap input { width: 100%; padding: 10px 16px; border-radius: 12px; border: 1px solid #e5e7eb; background: #f5f5f7; font-size: 14px; outline: none; transition: all 0.2s; font-family: 'Inter', sans-serif; }
-    .streams-header .streams-search-wrap input:focus { background: #fff; border-color: var(--crimson); }
-    .streams-header .channels-btn { flex-shrink: 0; width: 42px; height: 42px; border-radius: 12px; background: var(--crimson); color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px var(--crimson-glow); transition: transform 0.15s; }
-    .streams-header .channels-btn:active { transform: scale(0.92); }
     .live-section { display: flex; flex-direction: column; gap: 10px; }
     .live-section .section-title { font-size: 16px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
     .live-section .section-title .live-dot { display: inline-block; width: 8px; height: 8px; background: var(--crimson); border-radius: 50%; animation: pulse-recording 1s infinite; }
     .live-horizontal-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; }
     .live-horizontal-scroll .live-card { min-width: 220px; height: 140px; border-radius: 16px; background: #1a1a2e; position: relative; overflow: hidden; flex-shrink: 0; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: flex-end; padding: 14px; background-image: linear-gradient(135deg, #1a1a2e, #2d1b3d); }
     .live-horizontal-scroll .live-card .live-badge { position: absolute; top: 10px; left: 10px; background: var(--crimson); color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; z-index: 2; }
-    .live-horizontal-scroll .live-card .live-title { position: relative; z-index: 2; color: #fff; font-weight: 600; font-size: 14px; background: rgba(255,255,255,0.15); height: 16px; width: 70%; border-radius: 4px; margin-bottom: 6px; animation: shimmer 1.8s infinite; background-image: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.1) 75%); background-size: 200% 100%; }
-    .live-horizontal-scroll .live-card .live-sub { position: relative; z-index: 2; color: rgba(255,255,255,0.7); font-size: 12px; background: rgba(255,255,255,0.08); height: 12px; width: 40%; border-radius: 4px; animation: shimmer 1.8s infinite; background-image: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; }
     .live-horizontal-scroll .live-card .live-views { position: absolute; bottom: 14px; right: 14px; z-index: 2; color: rgba(255,255,255,0.6); font-size: 11px; background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 10px; }
+    
     .sports-list-section { display: flex; flex-direction: column; gap: 12px; }
     .sports-list-section .section-title { font-size: 16px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
     .sport-list-item { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: #f8f8fa; border-radius: 14px; border: 1px solid #f0f0f2; animation: cardPulse 2s infinite; }
     .sport-list-item .sport-icon-placeholder { width: 44px; height: 44px; border-radius: 12px; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #b0b0b8; flex-shrink: 0; background-image: linear-gradient(90deg, #e5e7eb 0%, #d5d7db 50%, #e5e7eb 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; }
     .sport-list-item .sport-info { flex: 1; }
-    .sport-list-item .sport-info .sport-name-line { height: 14px; width: 60%; background: #e5e7eb; border-radius: 4px; margin-bottom: 6px; background-image: linear-gradient(90deg, #e5e7eb 0%, #d5d7db 50%, #e5e7eb 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; }
-    .sport-list-item .sport-info .sport-desc-line { height: 12px; width: 40%; background: #f0f0f2; border-radius: 4px; background-image: linear-gradient(90deg, #f0f0f2 0%, #e0e0e4 50%, #f0f0f2 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; }
     .sport-list-item .sport-badge-placeholder { padding: 4px 14px; border-radius: 20px; background: var(--crimson); color: #fff; font-size: 10px; font-weight: 600; opacity: 0.6; animation: pulse-skeleton 1.5s infinite; }
+    
     .video-post-card { background: #ffffff; border-radius: 16px; margin: 12px 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden; border: 1px solid #f0f0f2; }
     .video-post-card .video-thumbnail { width: 100%; aspect-ratio: 16/9; background: #f5f5f7; position: relative; display: flex; align-items: center; justify-content: center; background-image: linear-gradient(90deg, #ffffff 0%, #f0f0f2 20%, #ffffff 40%, #f0f0f2 60%, #ffffff 80%, #f0f0f2 100%); background-size: 200% 100%; animation: shimmer 2.2s infinite linear; }
     .video-post-card .video-thumbnail .play-icon { font-size: 48px; color: #d0d0d5; background: rgba(255,255,255,0.7); border-radius: 50%; padding: 8px; backdrop-filter: blur(4px); }
     .video-post-card .video-thumbnail .duration-badge { position: absolute; bottom: 10px; right: 12px; background: rgba(0,0,0,0.6); color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; backdrop-filter: blur(4px); }
     .video-post-card .post-content { padding: 14px 16px 12px 16px; }
     .video-post-card .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-    .video-post-card .post-avatar { width: 36px; height: 36px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; background-image: linear-gradient(90deg, #e5e7eb 0%, #d5d7db 50%, #e5e7eb 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; }
-    .video-post-card .post-username { font-weight: 600; font-size: 14px; color: var(--text-primary); background: #f0f0f2; width: 80px; height: 14px; border-radius: 4px; background-image: linear-gradient(90deg, #f0f0f2 0%, #e0e0e4 50%, #f0f0f2 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; }
-    .video-post-card .post-caption { font-size: 14px; color: var(--text-primary); margin-bottom: 6px; line-height: 1.4; background: #f5f5f7; height: 16px; width: 100%; border-radius: 4px; background-image: linear-gradient(90deg, #f5f5f7 0%, #e8e8ec 50%, #f5f5f7 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; }
-    .video-post-card .post-caption-short { width: 60%; height: 14px; margin-top: 4px; }
-    .video-post-card .post-hashtags { font-size: 13px; color: var(--crimson); margin-top: 2px; background: #f5f5f7; height: 14px; width: 40%; border-radius: 4px; background-image: linear-gradient(90deg, #f5f5f7 0%, #e8e8ec 50%, #f5f5f7 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; }
+    .video-post-card .post-avatar { width: 36px; height: 36px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; }
     .video-post-card .post-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid #f0f0f2; }
     .video-post-card .post-stats { display: flex; gap: 16px; font-size: 13px; color: var(--text-secondary); }
-    .video-post-card .post-stats .stat-item { display: flex; align-items: center; gap: 4px; background: #f5f5f7; height: 18px; width: 50px; border-radius: 4px; background-image: linear-gradient(90deg, #f5f5f7 0%, #e8e8ec 50%, #f5f5f7 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; }
     .video-post-card .post-actions { display: flex; gap: 12px; }
     .video-post-card .post-actions .action-btn-placeholder { width: 28px; height: 28px; border-radius: 50%; background: var(--crimson); opacity: 0.7; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; animation: pulse-skeleton 1.5s infinite; }
     .video-post-card .post-actions .action-btn-placeholder.outline { background: transparent; border: 1.5px solid var(--crimson); color: var(--crimson); opacity: 0.5; }
+    
     .bottom-nav { flex-shrink: 0; background: #fff; border-top: 1px solid rgba(0,0,0,0.06); padding: 8px 0 20px 0; display: flex; justify-content: space-around; align-items: center; width: 100%; position: relative; z-index: 100; transition: transform 0.3s ease; }
     .bottom-nav.hidden { transform: translateY(100%); }
     .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 12px; background: transparent; border: none; color: var(--text-secondary); transition: transform 0.1s, color 0.2s; font-family: inherit; }
@@ -137,22 +244,19 @@
     .nav-item .material-icons { font-size: 26px; }
     .nav-item .label { font-size: 10px; font-weight: 500; }
     .nav-item.active { color: var(--crimson); }
-    .nav-item.add-btn .icon-wrap { background: var(--crimson); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px var(--crimson-glow); margin-bottom: 4px; transition: transform 0.15s; }
-    .nav-item.add-btn:active .icon-wrap { transform: scale(0.92); }
+    .nav-item.add-btn .icon-wrap { background: var(--crimson); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px var(--crimson-glow); margin-bottom: 4px; }
+    
     .fab { position: absolute; bottom: 90px; right: 20px; width: 56px; height: 56px; background: var(--crimson); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px var(--crimson-glow); cursor: pointer; z-index: 20; transition: transform 0.2s ease, opacity 0.25s ease; border: none; }
     .fab:active { transform: scale(0.90); }
     .fab.hidden { opacity: 0; pointer-events: none; transform: scale(0.8); }
-    /* quick override for reels */
-    .reels-full-container .bottom-nav { display: none; }
+    
     .search-results-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 30; flex-direction: column; animation: fadeSlide 0.2s ease-out; }
     .search-results-overlay.active { display: flex; }
     .search-results-header { display: flex; align-items: center; padding: 12px 16px; gap: 12px; border-bottom: 1px solid #f0f0f0; background: #fff; }
     .search-results-header .back-icon { cursor: pointer; color: var(--text-primary); font-size: 24px; }
     .search-results-header input { flex: 1; padding: 10px 14px; border-radius: 20px; border: 1px solid #e5e7eb; background: #f5f5f7; font-size: 14px; outline: none; font-family: 'Inter', sans-serif; }
-    .search-results-header input:focus { border-color: var(--crimson); background: #fff; }
     .search-results-list { flex: 1; overflow-y: auto; padding: 8px 0; }
-    .search-result-item { display: flex; align-items: center; padding: 12px 16px; gap: 14px; border-bottom: 1px solid #f5f5f5; cursor: pointer; transition: background 0.15s; }
-    .search-result-item:hover { background: #f8f8fa; }
+    .search-result-item { display: flex; align-items: center; padding: 12px 16px; gap: 14px; border-bottom: 1px solid #f5f5f5; cursor: pointer; }
     .search-result-item .result-avatar { width: 44px; height: 44px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; }
     .search-result-item .result-info { flex: 1; }
     .search-result-item .result-name { font-weight: 600; font-size: 15px; color: var(--text-primary); }
@@ -160,847 +264,454 @@
     .search-result-item .result-badge { background: var(--crimson); color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; }
     .empty-search { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); padding: 40px; text-align: center; }
     .empty-search .material-icons { font-size: 48px; opacity: 0.2; margin-bottom: 12px; }
-    /* messages leftovers */
+    
     .messages-layout { position: relative; display: flex; flex-direction: column; height: 100%; }
     .chat-search-bar { padding: 8px 16px; background: #fff; border-bottom: 1px solid rgba(0,0,0,0.04); }
     .chat-search-input { width: 100%; padding: 10px 16px; border-radius: 20px; border: 1px solid #e5e7eb; background: #f5f5f7; font-size: 14px; outline: none; transition: all 0.2s; font-family: 'Inter', sans-serif; }
-    .chat-search-input:focus { background: #fff; border-color: var(--crimson); }
     .stories-tray { padding: 16px 0 16px 16px; border-bottom: 1px solid rgba(0,0,0,0.04); overflow-x: auto; display: flex; gap: 16px; flex-shrink: 0; background: #fff; }
     .story-skeleton { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; animation: storyPop 0.5s ease-out both; cursor: pointer; min-width: 70px; }
     .story-skeleton .ring { width: 64px; height: 64px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, var(--crimson), var(--crimson-dark), var(--crimson-light)); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--crimson-glow); }
     .story-skeleton .ring .avatar-placeholder { width: 100%; height: 100%; border-radius: 50%; background: #e5e7eb; border: 3px solid #fff; }
-    .story-skeleton .username-placeholder { width: 50px; height: 10px; border-radius: 6px; background: #e5e7eb; }
     .filter-buttons { display: flex; gap: 10px; padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.04); background: #fff; overflow-x: auto; flex-shrink: 0; }
     .filter-btn { padding: 6px 16px; border-radius: 20px; border: 1px solid #e5e7eb; background: transparent; font-size: 13px; font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; white-space: nowrap; }
     .filter-btn.active { background: var(--crimson); color: #fff; border-color: var(--crimson); box-shadow: 0 2px 8px var(--crimson-glow); }
     .thread-list-container { flex: 1; overflow-y: auto; background: #fff; }
-    .thread-skeleton { display: flex; align-items: center; padding: 14px 16px; gap: 14px; border-bottom: 1px solid rgba(0,0,0,0.04); background: #fff; cursor: pointer; transition: background 0.15s; }
-    .thread-skeleton:hover { background: #f8f8fa; }
+    .thread-skeleton { display: flex; align-items: center; padding: 14px 16px; gap: 14px; border-bottom: 1px solid rgba(0,0,0,0.04); background: #fff; cursor: pointer; }
     .thread-skeleton .avatar-wrap { width: 50px; height: 50px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; position: relative; }
     .thread-skeleton .avatar-status { position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background-color: #2e7d32; border: 2px solid #fff; border-radius: 50%; z-index: 2; }
     .thread-skeleton .thread-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
     .thread-skeleton .name-line { height: 14px; width: 100px; border-radius: 6px; background: #e5e7eb; }
     .thread-skeleton .snippet-line { height: 12px; width: 100%; border-radius: 6px; background: #f0f0f0; }
     .thread-skeleton .timestamp-line { width: 40px; height: 10px; background: #e5e7eb; border-radius: 4px; }
+    
     .chat-view { display: none; flex-direction: column; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 50; height: 100%; width: 100%; }
     .chat-view.active { display: flex; animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-    @keyframes slideInRight { 0% { transform: translateX(100%); } 100% { transform: translateX(0); } }
     .chat-header { display: flex; align-items: center; padding: 10px 16px; gap: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); background: #fff; flex-shrink: 0; }
-    .chat-header .back-icon { cursor: pointer; color: var(--text-primary); font-size: 24px; padding: 4px; border-radius: 50%; transition: background 0.2s; }
-    .chat-header .back-icon:hover { background: #f0f0f0; }
+    .chat-header .back-icon { cursor: pointer; color: var(--text-primary); font-size: 24px; padding: 4px; }
     .chat-header .chat-avatar { width: 36px; height: 36px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; }
     .chat-header .chat-name { flex: 1; font-weight: 600; font-size: 16px; color: var(--text-primary); }
     .chat-header .header-actions { display: flex; gap: 12px; align-items: center; margin-left: auto; }
     .chat-header .header-actions .icon-btn { color: var(--crimson); cursor: pointer; padding: 4px; border-radius: 50%; transition: background 0.2s, transform 0.15s; display: flex; align-items: center; justify-content: center; background: transparent; border: none; font-size: 22px; }
-    .chat-header .header-actions .icon-btn:active { transform: scale(0.88); }
     .chat-messages { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: #f8f8fa; }
     .chat-message { max-width: 80%; padding: 12px 16px; border-radius: 24px; font-size: 14px; line-height: 1.4; background: #fff; color: var(--text-primary); align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,0.05); animation: fadeSlide 0.25s ease-out; border-bottom-left-radius: 6px; }
     .chat-message.sent { background: var(--crimson); color: #fff; align-self: flex-end; border-bottom-right-radius: 6px; border-bottom-left-radius: 24px; }
     .chat-message .msg-time { font-size: 10px; opacity: 0.6; margin-top: 4px; display: block; text-align: right; }
     .chat-input-real { flex-shrink: 0; padding: 8px 12px 12px 12px; border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 6px; background: #fff; align-items: center; padding-bottom: max(12px, env(safe-area-inset-bottom)); position: relative; }
     .chat-input-real .input-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #8e8e93; transition: background 0.15s, transform 0.15s, color 0.2s; background: transparent; border: none; font-size: 22px; flex-shrink: 0; }
-    .chat-input-real .input-btn:active { transform: scale(0.88); background: rgba(0,0,0,0.05); }
     .chat-input-real input { flex: 1; height: 38px; border-radius: 20px; border: 1px solid #e5e7eb; padding: 0 14px; font-size: 14px; outline: none; background: #f5f5f7; transition: all 0.2s; min-width: 0; }
-    .chat-input-real input:focus { background: #fff; border-color: var(--crimson); }
     .send-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--crimson); color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px var(--crimson-glow); transition: transform 0.15s, background 0.2s; flex-shrink: 0; }
-    .send-btn:active { transform: scale(0.88); }
     .profile-page { display: none; flex-direction: column; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 55; height: 100%; width: 100%; }
     .profile-page.active { display: flex; animation: slideUp 0.3s ease-out; }
-    @keyframes slideUp { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
-    .profile-header { display: flex; align-items: center; padding: 12px 16px; gap: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); background: #fff; flex-shrink: 0; z-index: 10; }
     .profile-content { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; align-items: center; }
-    .profile-avatar-large { width: 100px; height: 100px; border-radius: 50%; background: #e5e7eb; margin-bottom: 12px; border: 4px solid #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.1); cursor: pointer; position: relative; }
-    .profile-avatar-large::after { content: 'person'; font-family: 'Material Icons'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 50px; color: #d1d5db; }
+    .profile-avatar-large { width: 100px; height: 100px; border-radius: 50%; background: #e5e7eb; margin-bottom: 12px; border: 4px solid #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.1); cursor: pointer; position: relative; display: flex; align-items: center; justify-content: center; }
+    .profile-avatar-large::after { content: 'person'; font-family: 'Material Icons'; position: absolute; font-size: 50px; color: #d1d5db; }
     .profile-name { font-size: 22px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px; }
     .profile-bio { font-size: 14px; color: var(--text-secondary); text-align: center; margin: 8px 0 16px; max-width: 80%; line-height: 1.4; }
     .profile-stats-row { display: flex; gap: 30px; padding: 16px 0; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; width: 100%; justify-content: center; margin-bottom: 20px; }
-    .stat-item-clickable { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
     .stat-number { font-size: 18px; font-weight: 700; color: var(--text-primary); }
     .stat-label { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
-    .edit-profile-btn { background: var(--crimson); color: #fff; border: none; padding: 10px 32px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; margin-top: 4px; box-shadow: 0 2px 12px var(--crimson-glow); transition: transform 0.15s, box-shadow 0.2s; }
-    .edit-profile-btn:active { transform: scale(0.96); }
-    .contacts-overlay, .settings-page, .call-log-page { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 60; flex-direction: column; animation: slideUp 0.3s ease-out; }
-    .contacts-overlay.active, .settings-page.active, .call-log-page.active { display: flex; }
-    .dropdown-menu { display: none; position: absolute; top: 55px; right: 16px; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 8px 0; min-width: 180px; z-index: 70; overflow: hidden; animation: dropDown 0.2s ease-out; border: 1px solid rgba(0,0,0,0.05); }
-    .dropdown-menu.active { display: block; }
-    .menu-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; font-size: 14px; color: var(--text-primary); cursor: pointer; width: 100%; background: transparent; border: none; text-align: left; font-family: inherit; transition: background 0.15s; }
-    .menu-item:hover { background: #f5f5f7; }
-    .menu-item.danger { color: var(--crimson); }
-    .link-popup-overlay { display: none; position: absolute; bottom: 0; left: 0; right: 0; top: 0; background: rgba(0,0,0,0.4); z-index: 80; justify-content: flex-end; align-items: flex-end; }
-    .link-popup-overlay.active { display: flex; animation: fadeSlide 0.2s; }
-    .link-popup-sheet { background: #fff; border-radius: 24px 24px 0 0; padding: 24px; width: 100%; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); }
-    .share-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
-    .share-item { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px; border-radius: 16px; background: #f8f8fa; border: none; cursor: pointer; font-family: inherit; transition: background 0.15s; }
-    .share-item:active { background: #eee; }
-    .share-icon { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; }
-    .sheet-cancel { width: 100%; padding: 12px; border: none; background: #f0f0f0; border-radius: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.15s; }
-    .sheet-cancel:active { background: #ddd; }
-    .edit-modal { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 90; justify-content: center; align-items: center; }
-    .edit-modal.active { display: flex; }
-    .modal-card { background: #fff; border-radius: 20px; padding: 24px; width: 90%; max-width: 340px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
-    .field-group { margin-bottom: 16px; }
-    .field-group input, .field-group textarea { width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 12px; font-family: inherit; font-size: 14px; background: #f9f9f9; }
-    .field-group input:focus, .field-group textarea:focus { border-color: var(--crimson); background: #fff; outline: none; }
-    .avatar-fullscreen-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 200; justify-content: center; align-items: center; flex-direction: column; }
-    .avatar-fullscreen-overlay.active { display: flex; animation: fadeSlide 0.2s; }
-    .full-image { width: 250px; height: 250px; border-radius: 50%; background: #e5e7eb; border: 4px solid #fff; display: flex; align-items: center; justify-content: center; }
-    .full-image .material-icons { font-size: 100px; color: #d1d5db; }
-    .close-full { position: absolute; top: 40px; right: 20px; color: #fff; font-size: 32px; cursor: pointer; }
-    .contacts-tabs { display: flex; border-bottom: 1px solid #eee; background: #fff; flex-shrink: 0; }
-    .contacts-tab { flex: 1; text-align: center; padding: 14px 0; font-size: 14px; font-weight: 600; color: var(--text-secondary); cursor: pointer; position: relative; transition: color 0.2s; background: transparent; border: none; font-family: inherit; }
-    .contacts-tab.active { color: var(--crimson); }
-    .contacts-tab.active::after { content: ''; position: absolute; bottom: 0; left: 20%; right: 20%; height: 3px; background: var(--crimson); border-radius: 3px 3px 0 0; }
-    .request-sub-tabs { display: none; padding: 10px 16px; background: #f9f9f9; gap: 10px; }
-    .request-sub-tabs.active { display: flex; }
-    .sub-tab { flex: 1; padding: 8px; border-radius: 20px; border: 1px solid #ddd; background: #fff; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; text-align: center; font-family: inherit; transition: all 0.2s; }
-    .sub-tab.active { background: var(--crimson); color: #fff; border-color: var(--crimson); box-shadow: 0 2px 8px var(--crimson-glow); }
-    .contact-list { flex: 1; overflow-y: auto; background: #fff; }
-    .contact-item { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f5f5f5; gap: 12px; }
-    .contact-avatar { width: 48px; height: 48px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; }
-    .contact-info { flex: 1; min-width: 0; }
-    .contact-name { font-weight: 600; font-size: 15px; color: var(--text-primary); margin-bottom: 2px; }
-    .contact-status { font-size: 12px; color: var(--text-secondary); }
-    .contact-actions { display: flex; gap: 8px; }
-    .btn-action { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; transition: transform 0.1s, box-shadow 0.2s; font-family: inherit; }
-    .btn-action:active { transform: scale(0.95); }
-    .btn-accept { background: var(--crimson); color: #fff; box-shadow: 0 2px 8px var(--crimson-glow); }
-    .btn-decline { background: #f0f0f0; color: #666; }
-    .btn-add { background: var(--crimson); color: #fff; box-shadow: 0 2px 8px var(--crimson-glow); }
-    .btn-unblock { background: #666; color: #fff; }
-    .btn-clear { background: transparent; border: 1px solid #ccc; color: #666; }
-    .channels-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 35; flex-direction: column; animation: fadeSlide 0.2s ease-out; }
-    .channels-overlay.active { display: flex; }
-    .channels-overlay .channels-header { display: flex; align-items: center; padding: 12px 16px; gap: 12px; border-bottom: 1px solid #f0f0f0; }
-    .channels-overlay .channels-header .back-icon { cursor: pointer; color: var(--text-primary); font-size: 24px; }
-    .channels-overlay .channels-header span { font-weight: 600; font-size: 18px; }
-    .channels-list { flex: 1; overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 12px; }
-    .channel-item { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: #f8f8fa; border-radius: 14px; border: 1px solid #f0f0f2; }
-    .channel-item .channel-avatar { width: 44px; height: 44px; border-radius: 50%; background: #e5e7eb; flex-shrink: 0; background-image: linear-gradient(90deg, #e5e7eb 0%, #d5d7db 50%, #e5e7eb 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; }
-    .channel-item .channel-info { flex: 1; }
-    .channel-item .channel-info .channel-name { height: 14px; width: 50%; background: #e5e7eb; border-radius: 4px; margin-bottom: 6px; background-image: linear-gradient(90deg, #e5e7eb 0%, #d5d7db 50%, #e5e7eb 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; }
-    .channel-item .channel-info .channel-desc { height: 12px; width: 30%; background: #f0f0f2; border-radius: 4px; background-image: linear-gradient(90deg, #f0f0f2 0%, #e0e0e4 50%, #f0f0f2 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; }
-    .channel-item .channel-badge { padding: 4px 14px; border-radius: 20px; background: var(--crimson); color: #fff; font-size: 10px; font-weight: 600; opacity: 0.6; animation: pulse-skeleton 1.5s infinite; }
+    .edit-profile-btn { background: var(--crimson); color: #fff; border: none; padding: 10px 32px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; margin-top: 4px; box-shadow: 0 2px 12px var(--crimson-glow); }
+    .contacts-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 60; flex-direction: column; animation: slideUp 0.3s ease-out; }
+    .contacts-overlay.active { display: flex; }
     .recording-indicator { display: none; padding: 8px 16px; background: var(--crimson); color: #fff; font-size: 14px; font-weight: 500; align-items: center; gap: 10px; flex-shrink: 0; }
     .recording-indicator.active { display: flex; }
     .recording-indicator .dot { width: 12px; height: 12px; background: #fff; border-radius: 50%; animation: pulse-recording 0.8s infinite; }
+    
+    .dropdown-menu { display: none; position: absolute; top: 55px; right: 16px; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 8px 0; min-width: 180px; z-index: 70; overflow: hidden; animation: dropDown 0.2s ease-out; border: 1px solid rgba(0,0,0,0.05); }
+    .dropdown-menu.active { display: block; }
+    .menu-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; font-size: 14px; color: var(--text-primary); cursor: pointer; width: 100%; background: transparent; border: none; text-align: left; font-family: inherit; }
+    .menu-item.danger { color: var(--crimson); }
+    
+    .empty-state { padding: 40px; text-align: center; color: #999; }
+    .empty-state .material-icons { font-size: 48px; opacity: 0.3; }
+    
+    @media (max-width: 480px) {
+      .auth-page { padding: 20px 18px 18px; }
+      .auth-page h1 { font-size: 24px; }
+      .input-group input, .input-group select, .input-group textarea { padding: 13px 14px 13px 44px; font-size: 14px; }
+      .btn-primary, .btn-secondary, .google-btn { padding: 13px 16px; font-size: 14px; }
+      .interests-grid { grid-template-columns: 1fr 1fr; }
+    }
   </style>
 </head>
 <body>
-<div class="app-container">
-  <div class="scroll-content">
-    <!-- FOR YOU PAGE -->
-    <div class="page" id="page-feed">
-      <div class="feed-scroll" id="feedScroll">
-        <div class="feed-intro">
-          <div class="feed-header-section">
-            <div class="feed-top-bar feed-header">
-              <span class="page-title">For <span>You</span></span>
-              <span class="material-icons" style="font-size:24px;">cast</span>
-            </div>
-            <div class="suggestions-tray" id="suggestionsTray"></div>
-            <div class="fy-search-bar">
-              <input type="text" class="fy-search-input" id="mainSearchInput" placeholder="Search users, videos..." onclick="openSearchOverlay()" readonly />
-            </div>
-            <div class="fy-tabs" id="fyTabs">
-              <button class="fy-tab active" data-fy-tab="videos">Videos</button>
-              <button class="fy-tab" data-fy-tab="reels">Reels</button>
-              <button class="fy-tab" data-fy-tab="streams">Streams</button>
-            </div>
-          </div>
-        </div>
 
-        <!-- search overlay -->
-        <div class="search-results-overlay" id="searchOverlay">
-          <div class="search-results-header">
-            <span class="material-icons back-icon" id="closeSearchOverlay">arrow_back</span>
-            <input type="text" id="searchOverlayInput" placeholder="Search users or videos..." autofocus />
-          </div>
-          <div class="search-results-list" id="searchResultsList">
-            <div class="empty-search"><span class="material-icons">search</span><p>Search for users or videos</p></div>
-          </div>
-        </div>
+<div class="app-container" id="app">
 
-        <!-- video feed (visible by default) -->
-        <div id="videoFeedContainer" style="display:block; padding:4px 0 12px 0;">
-          <div class="video-post-card"><div class="video-thumbnail"><span class="play-icon material-icons">play_circle_outline</span><span class="duration-badge">3:42</span></div><div class="post-content"><div class="post-header"><div class="post-avatar"></div><div class="post-username"></div></div><div class="post-caption"></div><div class="post-caption post-caption-short"></div><div class="post-hashtags"></div><div class="post-meta"><div class="post-stats"><span class="stat-item"></span><span class="stat-item"></span></div><div class="post-actions"><span class="action-btn-placeholder material-icons">favorite</span><span class="action-btn-placeholder outline material-icons">bookmark</span><span class="action-btn-placeholder outline material-icons">share</span></div></div></div></div>
-          <div class="video-post-card"><div class="video-thumbnail"><span class="play-icon material-icons">play_circle_outline</span><span class="duration-badge">1:28</span></div><div class="post-content"><div class="post-header"><div class="post-avatar"></div><div class="post-username"></div></div><div class="post-caption"></div><div class="post-caption post-caption-short"></div><div class="post-hashtags"></div><div class="post-meta"><div class="post-stats"><span class="stat-item"></span><span class="stat-item"></span></div><div class="post-actions"><span class="action-btn-placeholder material-icons">favorite</span><span class="action-btn-placeholder outline material-icons">bookmark</span><span class="action-btn-placeholder outline material-icons">share</span></div></div></div></div>
-          <div class="video-post-card"><div class="video-thumbnail"><span class="play-icon material-icons">play_circle_outline</span><span class="duration-badge">5:10</span></div><div class="post-content"><div class="post-header"><div class="post-avatar"></div><div class="post-username"></div></div><div class="post-caption"></div><div class="post-caption post-caption-short"></div><div class="post-hashtags"></div><div class="post-meta"><div class="post-stats"><span class="stat-item"></span><span class="stat-item"></span></div><div class="post-actions"><span class="action-btn-placeholder material-icons">favorite</span><span class="action-btn-placeholder outline material-icons">bookmark</span><span class="action-btn-placeholder outline material-icons">share</span></div></div></div></div>
-        </div>
+  <!-- ============================================================
+       TOAST
+       ============================================================ -->
+  <div class="toast" id="toast"></div>
 
-        <!-- streams -->
-        <div class="streams-container" id="streamsContainer">
-          <div class="streams-header">
-            <div class="streams-search-wrap"><input type="text" id="streamsSearchInput" placeholder="Search sports, teams..." /></div>
-            <button class="channels-btn" id="channelsBtn"><span class="material-icons">grid_view</span></button>
-          </div>
-          <div class="live-section">
-            <div class="section-title"><span class="live-dot"></span> Live Now</div>
-            <div class="live-horizontal-scroll" id="liveScroll"></div>
-          </div>
-          <div class="sports-list-section">
-            <div class="section-title"><span class="material-icons" style="color:var(--crimson);">trending_up</span> Trending</div>
-            <div id="sportsListContainer"></div>
-          </div>
-        </div>
+  <!-- ============================================================
+       AUTH PAGES (Tether Login)
+       ============================================================ -->
 
-        <!-- channels overlay -->
-        <div class="channels-overlay" id="channelsOverlay">
-          <div class="channels-header"><span class="material-icons back-icon" id="closeChannelsOverlay">arrow_back</span><span>Channels</span></div>
-          <div class="channels-list" id="channelsList"></div>
-        </div>
+  <!-- LOGIN -->
+  <div class="auth-page active" id="loginPage">
+    <h1>Welcome Back</h1>
+    <p>Sign in to your Tether account</p>
 
-        <!-- REELS FULL PAGE (overlay over feed) - CONTENT REMOVED FOR DYNAMIC LOADING -->
-        <div class="reels-full-container" id="reelsFullContainer">
-          <button class="close-reels-btn" id="closeReelsBtn"><span class="material-icons">arrow_back</span> Back</button>
-          <div class="reels-scroll" id="reelsScroll">
-            <!-- Dynamic Content Will Be Injected Here -->
-          </div>
-        </div>
-
-      </div> <!-- /feed-scroll -->
-    </div> <!-- /page-feed -->
-
-    <!-- MESSAGES PAGE (same as before) -->
-    <div class="page active" id="page-messages">
-      <header class="messages-header"><span class="page-title" style="font-size:20px;">Messages</span></header>
-      <div class="messages-layout" id="messagesLayout">
-        <div class="chat-search-bar"><input type="text" class="chat-search-input" id="chatSearchInput" placeholder="Search chats..."></div>
-        <div class="stories-tray" id="storiesTray"></div>
-        <div class="filter-buttons" id="filterButtons">
-          <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="friends">Friends</button>
-          <button class="filter-btn" data-filter="groups">Groups</button>
-        </div>
-        <div class="thread-list-container" id="threadContainer">
-          <div class="thread-list" id="threadList"></div>
-        </div>
-        <div class="chat-view" id="chatView">
-          <div class="chat-header">
-            <span class="material-icons back-icon" id="chatBack">arrow_back</span>
-            <div class="chat-avatar" id="chatAvatar"></div>
-            <div class="chat-name" id="chatNameDisplay">User</div>
-            <div class="header-actions">
-              <button class="icon-btn" id="voiceCallBtn"><span class="material-icons">call</span></button>
-              <button class="icon-btn" id="videoCallBtn"><span class="material-icons">videocam</span></button>
-              <button class="icon-btn more-btn" id="moreMenuBtn"><span class="material-icons">more_vert</span></button>
-            </div>
-          </div>
-          <div class="dropdown-menu" id="dropdownMenu">
-            <button class="menu-item" data-action="view-contact"><span class="material-icons">person</span> View Profile</button>
-            <button class="menu-item" data-action="media"><span class="material-icons">photo_library</span> Media</button>
-            <button class="menu-item danger" data-action="block"><span class="material-icons">block</span> Block User</button>
-          </div>
-          <div class="chat-messages" id="chatMessages"></div>
-          <div class="chat-input-real" id="chatInputBar">
-            <input type="text" id="messageInput" placeholder="Type a message..." autocomplete="off" />
-            <button class="input-btn camera-btn" id="cameraBtn"><span class="material-icons">camera_alt</span></button>
-            <button class="input-btn location-btn" id="locationBtn"><span class="material-icons">location_on</span></button>
-            <button class="input-btn file-btn" id="fileBtn"><span class="material-icons">attach_file</span></button>
-            <button class="input-btn voice-btn" id="voiceBtn" style="color: var(--crimson);"><span class="material-icons">mic</span></button>
-            <button class="send-btn" id="sendBtn"><span class="material-icons">send</span></button>
-          </div>
-          <div class="recording-indicator" id="recordingIndicator"><span class="dot"></span><span>Recording...</span><span style="margin-left:auto; cursor:pointer; font-size:18px;" id="stopRecordingBtn">✕</span></div>
-        </div>
-        <div class="profile-page" id="profilePage">
-          <div class="profile-header"><span class="material-icons back-icon" id="profileBack" style="cursor:pointer; color:var(--text-primary);">arrow_back</span><span style="font-weight:600; font-size:18px;">Profile</span><span class="material-icons settings-gear" id="settingsGear" style="margin-left:auto; cursor:pointer; color:var(--text-secondary);">settings</span></div>
-          <div class="profile-content"><div class="profile-avatar-large" id="profileAvatarLarge"></div><div class="profile-name"><span id="profileDisplayName">Username</span><span class="material-icons" style="color:#1da1f2; font-size:18px;">verified</span></div><div class="profile-bio" id="profileBio">Digital creator &amp; developer. Building things.</div><button class="edit-profile-btn" id="editProfileBtn">Edit Profile</button><div class="profile-stats-row"><div class="stat-item-clickable"><span class="stat-number" id="followersCount">1,234</span><span class="stat-label">Followers</span></div><div class="stat-item-clickable"><span class="stat-number" id="followingCount">567</span><span class="stat-label">Following</span></div></div><div style="width:100%; display:grid; grid-template-columns:repeat(3,1fr); gap:4px;"><div style="aspect-ratio:1; background:#f0f0f0; border-radius:4px;"></div><div style="aspect-ratio:1; background:#f0f0f0; border-radius:4px;"></div><div style="aspect-ratio:1; background:#f0f0f0; border-radius:4px;"></div><div style="aspect-ratio:1; background:#f0f0f0; border-radius:4px;"></div><div style="aspect-ratio:1; background:#f0f0f0; border-radius:4px;"></div><div style="aspect-ratio:1; background:#f0f0f0; border-radius:4px;"></div></div></div>
-        </div>
-        <div class="avatar-fullscreen-overlay" id="avatarFullscreen"><span class="close-full material-icons" id="closeFullscreen">close</span><div class="full-image" id="fullscreenImage"><span class="material-icons">person</span></div></div>
-        <div class="settings-page" id="settingsPage"><div class="profile-header"><span class="material-icons back-icon" id="settingsBack" style="cursor:pointer;">arrow_back</span><span style="font-weight:600; font-size:18px;">Settings</span></div><div style="padding:20px; color:var(--text-secondary); text-align:center;"><p>Settings Content Placeholder</p><br><button class="settings-close-btn" onclick="document.getElementById('settingsPage').classList.remove('active')">Close Settings</button></div></div>
-        <div class="call-log-page" id="callLogPage"><div class="profile-header"><span class="material-icons back-icon" id="callLogBack" style="cursor:pointer;">arrow_back</span><span style="font-weight:600; font-size:18px;">Recent Calls</span></div><div style="padding:20px;"><div style="display:flex; align-items:center; gap:12px; padding:12px; background:#f9f9f9; border-radius:12px; margin-bottom:10px;"><div style="width:40px; height:40px; background:#e5e7eb; border-radius:50%;"></div><div><div style="font-weight:600;">Sarah J.</div><div style="font-size:12px; color:var(--text-secondary);">Incoming • 2m ago</div></div><span class="material-icons" style="margin-left:auto; color:var(--success);">call_received</span></div><div style="display:flex; align-items:center; gap:12px; padding:12px; background:#f9f9f9; border-radius:12px;"><div style="width:40px; height:40px; background:#e5e7eb; border-radius:50%;"></div><div><div style="font-weight:600;">Mike T.</div><div style="font-size:12px; color:var(--text-secondary);">Missed • Yesterday</div></div><span class="material-icons" style="margin-left:auto; color:var(--crimson);">call_missed</span></div></div></div>
-        <div class="contacts-overlay" id="contactsOverlay"><div class="profile-header"><span class="material-icons back-icon" id="contactsBack" style="cursor:pointer;">arrow_back</span><span style="font-weight:600; font-size:18px;">Contacts</span></div><div class="contacts-tabs"><button class="contacts-tab active" onclick="switchContactTab('contacts')">Contacts</button><button class="contacts-tab" onclick="switchContactTab('requests')">Requests</button><button class="contacts-tab" onclick="switchContactTab('blocked')">Blocked</button></div><div class="request-sub-tabs" id="requestSubTabs"><button class="sub-tab active" onclick="switchRequestSubTab('received')">Received</button><button class="sub-tab" onclick="switchRequestSubTab('sent')">Sent</button></div><div style="padding:12px 16px; border-bottom:1px solid #eee; background:#fff;" id="searchContainer"><input type="text" placeholder="Search contacts..." style="width:100%; padding:10px 16px; border-radius:20px; border:1px solid #ddd; background:#f5f5f5; font-size:14px;"></div><div class="contact-list" id="contactListContainer"></div></div>
-        <div class="link-popup-overlay" id="linkPopupOverlay"><div class="link-popup-sheet"><div style="width:40px; height:4px; background:#ddd; border-radius:2px; margin:0 auto 20px;"></div><h3 style="text-align:center; margin-bottom:10px;">Share via</h3><div class="share-grid"><button class="share-item"><div class="share-icon" style="background:#00c853;"><span class="material-icons">image</span></div><span>Gallery</span></button><button class="share-item"><div class="share-icon" style="background:#7c4dff;"><span class="material-icons">audiotrack</span></div><span>Audio</span></button><button class="share-item"><div class="share-icon" style="background:#ff6d00;"><span class="material-icons">camera_alt</span></div><span>Camera</span></button><button class="share-item"><div class="share-icon" style="background:#607d8b;"><span class="material-icons">description</span></div><span>Documents</span></button><button class="share-item"><div class="share-icon" style="background:#e91e63;"><span class="material-icons">event</span></div><span>Events</span></button><button class="share-item"><div class="share-icon" style="background:#9c27b0;"><span class="material-icons">poll</span></div><span>Poll</span></button><button class="share-item"><div class="share-icon" style="background:#2196f3;"><span class="material-icons">location_on</span></div><span>Location</span></button></div><button class="sheet-cancel" id="linkPopupCancel">Cancel</button></div></div>
-        <button class="fab" id="fabCreate"><span class="material-icons">group_add</span></button>
-      </div>
+    <div class="google-btn" id="googleSignIn">
+      <span class="material-icons">login</span>
+      Continue with Google
     </div>
+
+    <div class="divider">or</div>
+
+    <div class="input-group">
+      <span class="input-icon material-icons">email</span>
+      <input id="loginEmail" placeholder="Email" type="email" autocomplete="email" />
+    </div>
+
+    <div class="input-group">
+      <span class="input-icon material-icons">lock</span>
+      <input id="loginPassword" placeholder="Password" type="password" autocomplete="current-password" />
+      <span class="toggle-icon material-icons" id="toggleLoginPassword">visibility</span>
+    </div>
+
+    <button class="btn-primary" id="loginBtn">
+      <span class="material-icons">login</span>
+      Sign In
+    </button>
+
+    <span class="switch" id="forgotPasswordLink">Forgot Password?</span>
+    <span class="switch" id="goToSignupLink">Don't have an account? Create one</span>
+
+    <div class="error" id="loginError"></div>
   </div>
 
-  <!-- bottom nav -->
-  <nav class="bottom-nav" id="bottomNav">
-    <button class="nav-item active" data-page="messages"><span class="material-icons">chat</span><span class="label">Chat</span></button>
-    <button class="nav-item" data-page="feed"><span class="material-icons">explore</span><span class="label">For You</span></button>
-    <button class="nav-item add-btn" data-page="add"><div class="icon-wrap"><span class="plus-icon">+</span></div><span class="label">Create</span></button>
-    <button class="nav-item" data-page="call-log"><span class="material-icons">call</span><span class="label">Calls</span></button>
-    <button class="nav-item" data-page="profile"><span class="material-icons">person</span><span class="label">Profile</span></button>
-  </nav>
+  <!-- FORGOT PASSWORD -->
+  <div class="auth-page" id="forgotPasswordPage">
+    <h1>Reset Password</h1>
+    <p>Enter your email to receive a reset link</p>
+    <div class="input-group">
+      <span class="input-icon material-icons">email</span>
+      <input id="resetEmail" placeholder="Email" type="email" autocomplete="email" />
+    </div>
+    <button class="btn-primary" id="resetPasswordBtn">
+      <span class="material-icons">send</span>
+      Send Reset Link
+    </button>
+    <span class="switch" id="backToLoginLink">Back to Sign In</span>
+    <div class="success" id="resetSuccess"></div>
+    <div class="error" id="resetError"></div>
+  </div>
 
-  <!-- edit modal -->
-  <div class="edit-modal" id="editModal"><div class="modal-card"><h3 style="margin-bottom:16px; text-align:center;">Edit Profile</h3><div class="field-group"><label style="display:block; margin-bottom:6px; font-size:12px; font-weight:600; color:#666;">Display Name</label><input type="text" id="editUsername" value="Username" /></div><div class="field-group"><label style="display:block; margin-bottom:6px; font-size:12px; font-weight:600; color:#666;">Bio</label><textarea id="editBio" rows="3">Digital creator &amp; developer.</textarea></div><div style="display:flex; gap:10px; margin-top:20px;"><button id="editCancel" style="flex:1; padding:12px; border:none; background:#f0f0f0; border-radius:12px; font-weight:600; cursor:pointer; font-family:inherit;">Cancel</button><button id="editSave" style="flex:1; padding:12px; border:none; background:var(--crimson); color:#fff; border-radius:12px; font-weight:600; cursor:pointer; font-family:inherit; box-shadow:0 2px 8px var(--crimson-glow);">Save</button></div></div></div>
+  <!-- SIGNUP STEP 1 -->
+  <div class="auth-page" id="signup1">
+    <div class="progress-bar">
+      <span class="progress-dot active"></span><span class="progress-dot"></span>
+      <span class="progress-dot"></span><span class="progress-dot"></span>
+      <span class="progress-dot"></span>
+    </div>
+    <h1>Create Account</h1>
+    <p>Choose a username, email, and password</p>
+    <div class="input-group">
+      <span class="input-icon material-icons">person</span>
+      <input id="signupUsername" placeholder="Username" autocomplete="username" />
+    </div>
+    <div class="input-group">
+      <span class="input-icon material-icons">email</span>
+      <input id="signupEmail" placeholder="Email" type="email" autocomplete="email" />
+    </div>
+    <div class="input-group">
+      <span class="input-icon material-icons">lock</span>
+      <input id="signupPassword" placeholder="Password (16+ chars)" type="password" autocomplete="new-password" />
+      <span class="toggle-icon material-icons" id="toggleSignupPassword">visibility</span>
+    </div>
+    <button class="btn-primary" id="signup1Next">
+      <span class="material-icons">arrow_forward</span>
+      Continue
+    </button>
+    <span class="switch" id="signupToLoginLink">Already have an account? Sign In</span>
+    <div class="error" id="signup1Error"></div>
+  </div>
+
+  <!-- SIGNUP STEP 2: Verify Email -->
+  <div class="auth-page" id="signup2">
+    <div class="progress-bar">
+      <span class="progress-dot done"></span><span class="progress-dot active"></span>
+      <span class="progress-dot"></span><span class="progress-dot"></span>
+      <span class="progress-dot"></span>
+    </div>
+    <h2>Verify Your Email</h2>
+    <p id="verifyMessage">We sent a verification link to your email. Check spam.</p>
+    <button class="btn-primary" id="verifyCheckBtn">
+      <span class="material-icons">verified</span>
+      I Verified My Email
+    </button>
+    <span class="switch" id="resendVerifyEmail">Resend verification email</span>
+    <div class="error" id="verifyError"></div>
+    <div class="success" id="verifySuccess"></div>
+  </div>
+
+  <!-- SIGNUP STEP 3: Profile Info -->
+  <div class="auth-page" id="signup3">
+    <div class="progress-bar">
+      <span class="progress-dot done"></span><span class="progress-dot done"></span>
+      <span class="progress-dot active"></span><span class="progress-dot"></span>
+      <span class="progress-dot"></span>
+    </div>
+    <h2>Tell Us About You</h2>
+    <p class="sub-text">Country, age, city, and interests</p>
+    <div class="input-group">
+      <span class="input-icon material-icons">flag</span>
+      <select id="signupCountry">
+        <option value="">Select your country</option>
+        <option value="ZA" selected>🇿🇦 South Africa</option>
+        <option value="US">🇺🇸 United States</option>
+        <option value="UK">🇬🇧 United Kingdom</option>
+        <option value="CA">🇨🇦 Canada</option>
+        <option value="AU">🇦🇺 Australia</option>
+        <option value="DE">🇩🇪 Germany</option>
+        <option value="FR">🇫🇷 France</option>
+        <option value="IN">🇮🇳 India</option>
+        <option value="BR">🇧🇷 Brazil</option>
+        <option value="JP">🇯🇵 Japan</option>
+      </select>
+      <span class="dropdown-arrow material-icons">expand_more</span>
+    </div>
+    <div class="input-group">
+      <span class="input-icon material-icons">calendar_today</span>
+      <input id="signupAge" placeholder="Your Age (Minimum 13)" type="number" min="13" max="120" />
+    </div>
+    <div class="input-group">
+      <span class="input-icon material-icons">location_on</span>
+      <input id="signupLocation" placeholder="Your City" type="text" />
+    </div>
+    <p class="sub-text">Select topics you're interested in</p>
+    <div class="interests-grid" id="interestsGrid"></div>
+    <button class="btn-primary" id="signup3Next">
+      <span class="material-icons">arrow_forward</span>
+      Continue
+    </button>
+    <div class="error" id="signup3Error"></div>
+  </div>
+
+  <!-- SIGNUP STEP 4: Profile Name + Picture -->
+  <div class="auth-page" id="signup4">
+    <div class="progress-bar">
+      <span class="progress-dot done"></span><span class="progress-dot done"></span>
+      <span class="progress-dot done"></span><span class="progress-dot active"></span>
+      <span class="progress-dot"></span>
+    </div>
+    <h2>Your Profile</h2>
+    <p class="sub-text">Full name and optional photo</p>
+    <div class="input-group">
+      <span class="input-icon material-icons">badge</span>
+      <input id="signupDisplayName" placeholder="Full Name" autocomplete="name" />
+    </div>
+    <div class="input-group">
+      <span class="input-icon material-icons">description</span>
+      <textarea id="signupBio" placeholder="Bio (optional)"></textarea>
+    </div>
+    <div class="file-input-wrapper" onclick="document.getElementById('profilePicInput').click()">
+      <div class="profile-preview">
+        <div class="avatar-circle" id="avatarCircle">
+          <span id="avatarInitial" class="material-icons" style="font-size:36px;">person</span>
+          <img id="avatarImage" style="display:none;" alt="Profile" />
+        </div>
+      </div>
+      <span class="material-icons">photo_camera</span>
+      <span class="upload-hint">Tap to upload a photo (optional)</span>
+      <input type="file" id="profilePicInput" accept="image/*" />
+    </div>
+    <button class="btn-primary" id="signup4Next">
+      <span class="material-icons">arrow_forward</span>
+      Continue
+    </button>
+    <div class="error" id="signup4Error"></div>
+  </div>
+
+  <!-- SIGNUP STEP 5: Final -->
+  <div class="auth-page" id="signup5">
+    <div class="progress-bar">
+      <span class="progress-dot done"></span><span class="progress-dot done"></span>
+      <span class="progress-dot done"></span><span class="progress-dot done"></span>
+      <span class="progress-dot active"></span>
+    </div>
+    <h2>Almost There!</h2>
+    <p class="sub-text">Agree to our terms and enter</p>
+    <div class="terms-box">
+      <strong>Community Guidelines</strong>
+      <ul>
+        <li>Be respectful to all members</li>
+        <li>No hate speech or harassment</li>
+        <li>No sharing of harmful content</li>
+        <li>No spamming or impersonation</li>
+      </ul>
+    </div>
+    <div class="checkbox-wrapper">
+      <input type="checkbox" id="termsCheck" />
+      <label for="termsCheck">
+        I agree to the <a href="#">Terms &amp; Conditions</a>
+      </label>
+    </div>
+    <button class="btn-primary" id="signupCompleteBtn">
+      <span class="material-icons">check_circle</span>
+      Enter Tether
+    </button>
+    <div class="error" id="signup5Error"></div>
+  </div>
+
+  <!-- ============================================================
+       SOCIAL APP (After Login)
+       ============================================================ -->
+  <div id="socialApp">
+    <div class="scroll-content">
+      <!-- FOR YOU PAGE -->
+      <div class="page" id="page-feed">
+        <div class="feed-scroll" id="feedScroll">
+          <div class="feed-intro">
+            <div class="feed-header-section">
+              <div class="feed-top-bar feed-header">
+                <span class="page-title">For <span>You</span></span>
+                <span class="material-icons" style="font-size:24px;">cast</span>
+              </div>
+              <div class="suggestions-tray" id="suggestionsTray"></div>
+              <div class="fy-search-bar">
+                <input type="text" class="fy-search-input" id="mainSearchInput" placeholder="Search users, videos..." onclick="openSearchOverlay()" readonly />
+              </div>
+              <div class="fy-tabs" id="fyTabs">
+                <button class="fy-tab active" data-fy-tab="videos">Videos</button>
+                <button class="fy-tab" data-fy-tab="reels">Reels</button>
+                <button class="fy-tab" data-fy-tab="streams">Streams</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="search-results-overlay" id="searchOverlay">
+            <div class="search-results-header">
+              <span class="material-icons back-icon" id="closeSearchOverlay">arrow_back</span>
+              <input type="text" id="searchOverlayInput" placeholder="Search..." autofocus />
+            </div>
+            <div class="search-results-list" id="searchResultsList">
+              <div class="empty-search"><span class="material-icons">search</span><p>Search for users or videos</p></div>
+            </div>
+          </div>
+
+          <div id="videoFeedContainer" style="display:block; padding:4px 0 12px 0;">
+            <div class="video-post-card"><div class="video-thumbnail"><span class="play-icon material-icons">play_circle_outline</span><span class="duration-badge">3:42</span></div><div class="post-content"><div class="post-header"><div class="post-avatar"></div><div class="post-username"></div></div><div class="post-caption"></div><div class="post-caption post-caption-short"></div><div class="post-hashtags"></div><div class="post-meta"><div class="post-stats"><span class="stat-item"></span><span class="stat-item"></span></div><div class="post-actions"><span class="action-btn-placeholder material-icons">favorite</span><span class="action-btn-placeholder outline material-icons">bookmark</span><span class="action-btn-placeholder outline material-icons">share</span></div></div></div></div>
+            <div class="video-post-card"><div class="video-thumbnail"><span class="play-icon material-icons">play_circle_outline</span><span class="duration-badge">1:28</span></div><div class="post-content"><div class="post-header"><div class="post-avatar"></div><div class="post-username"></div></div><div class="post-caption"></div><div class="post-caption post-caption-short"></div><div class="post-hashtags"></div><div class="post-meta"><div class="post-stats"><span class="stat-item"></span><span class="stat-item"></span></div><div class="post-actions"><span class="action-btn-placeholder material-icons">favorite</span><span class="action-btn-placeholder outline material-icons">bookmark</span><span class="action-btn-placeholder outline material-icons">share</span></div></div></div></div>
+            <div class="video-post-card"><div class="video-thumbnail"><span class="play-icon material-icons">play_circle_outline</span><span class="duration-badge">5:10</span></div><div class="post-content"><div class="post-header"><div class="post-avatar"></div><div class="post-username"></div></div><div class="post-caption"></div><div class="post-caption post-caption-short"></div><div class="post-hashtags"></div><div class="post-meta"><div class="post-stats"><span class="stat-item"></span><span class="stat-item"></span></div><div class="post-actions"><span class="action-btn-placeholder material-icons">favorite</span><span class="action-btn-placeholder outline material-icons">bookmark</span><span class="action-btn-placeholder outline material-icons">share</span></div></div></div></div>
+          </div>
+
+          <div class="streams-container" id="streamsContainer">
+            <div class="streams-header">
+              <div class="streams-search-wrap"><input type="text" id="streamsSearchInput" placeholder="Search sports..." /></div>
+              <button class="channels-btn" id="channelsBtn"><span class="material-icons">grid_view</span></button>
+            </div>
+            <div class="live-section">
+              <div class="section-title"><span class="live-dot"></span> Live Now</div>
+              <div class="live-horizontal-scroll" id="liveScroll"></div>
+            </div>
+            <div class="sports-list-section">
+              <div class="section-title"><span class="material-icons" style="color:var(--crimson);">trending_up</span> Trending</div>
+              <div id="sportsListContainer"></div>
+            </div>
+          </div>
+
+          <div class="channels-overlay" id="channelsOverlay">
+            <div class="channels-header"><span class="material-icons back-icon" id="closeChannelsOverlay">arrow_back</span><span>Channels</span></div>
+            <div class="channels-list" id="channelsList"></div>
+          </div>
+
+          <div class="reels-full-container" id="reelsFullContainer">
+            <button class="close-reels-btn" id="closeReelsBtn"><span class="material-icons">arrow_back</span> Back</button>
+            <div class="reels-scroll" id="reelsScroll"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MESSAGES PAGE -->
+      <div class="page active" id="page-messages">
+        <header class="messages-header"><span class="page-title" style="font-size:20px;">Messages</span></header>
+        <div class="messages-layout" id="messagesLayout">
+          <div class="chat-search-bar"><input type="text" class="chat-search-input" id="chatSearchInput" placeholder="Search chats..."></div>
+          <div class="stories-tray" id="storiesTray"></div>
+          <div class="filter-buttons" id="filterButtons">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="friends">Friends</button>
+            <button class="filter-btn" data-filter="groups">Groups</button>
+          </div>
+          <div class="thread-list-container" id="threadContainer">
+            <div class="thread-list" id="threadList"></div>
+          </div>
+          <div class="chat-view" id="chatView">
+            <div class="chat-header">
+              <span class="material-icons back-icon" id="chatBack">arrow_back</span>
+              <div class="chat-avatar" id="chatAvatar"></div>
+              <div class="chat-name" id="chatNameDisplay">User</div>
+              <div class="header-actions">
+                <button class="icon-btn" id="voiceCallBtn"><span class="material-icons">call</span></button>
+                <button class="icon-btn" id="videoCallBtn"><span class="material-icons">videocam</span></button>
+                <button class="icon-btn more-btn" id="moreMenuBtn"><span class="material-icons">more_vert</span></button>
+              </div>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenu">
+              <button class="menu-item" data-action="view-contact"><span class="material-icons">person</span> View Profile</button>
+              <button class="menu-item" data-action="media"><span class="material-icons">photo_library</span> Media</button>
+              <button class="menu-item danger" data-action="block"><span class="material-icons">block</span> Block User</button>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-real" id="chatInputBar">
+              <input type="text" id="messageInput" placeholder="Type a message..." autocomplete="off" />
+              <button class="input-btn camera-btn" id="cameraBtn"><span class="material-icons">camera_alt</span></button>
+              <button class="input-btn location-btn" id="locationBtn"><span class="material-icons">location_on</span></button>
+              <button class="input-btn file-btn" id="fileBtn"><span class="material-icons">attach_file</span></button>
+              <button class="input-btn voice-btn" id="voiceBtn" style="color: var(--crimson);"><span class="material-icons">mic</span></button>
+              <button class="send-btn" id="sendBtn"><span class="material-icons">send</span></button>
+            </div>
+            <div class="recording-indicator" id="recordingIndicator"><span class="dot"></span><span id="recordingStatusText">Recording...</span><span style="margin-left:auto; cursor:pointer; font-size:18px;" id="stopRecordingBtn">✕</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE PAGE -->
+      <div class="profile-page" id="profilePage">
+        <div class="profile-header"><span class="material-icons back-icon" id="profileBack" style="cursor:pointer; color:var(--text-primary);">arrow_back</span><span style="font-weight:600; font-size:18px;">Profile</span></div>
+        <div class="profile-content">
+          <div class="profile-avatar-large" id="profileAvatarLarge"></div>
+          <div class="profile-name"><span id="profileDisplayName">Username</span></div>
+          <div class="profile-bio" id="profileBio">Your bio here</div>
+          <button class="edit-profile-btn" id="editProfileBtn">Edit Profile</button>
+          <div class="profile-stats-row">
+            <div class="stat-item-clickable"><span class="stat-number" id="followersCount">0</span><span class="stat-label">Followers</span></div>
+            <div class="stat-item-clickable"><span class="stat-number" id="followingCount">0</span><span class="stat-label">Following</span></div>
+          </div>
+          <button class="btn-secondary" id="logoutBtn" style="margin-top:20px;">
+            <span class="material-icons">logout</span>
+            Sign Out
+          </button>
+        </div>
+      </div>
+
+      <!-- CONTACTS OVERLAY -->
+      <div class="contacts-overlay" id="contactsOverlay">
+        <div class="profile-header"><span class="material-icons back-icon" id="contactsBack" style="cursor:pointer;">arrow_back</span><span style="font-weight:600; font-size:18px;">Contacts</span></div>
+        <div class="contact-list" id="contactListContainer">
+          <div class="empty-state"><span class="material-icons">people_outline</span><p>No contacts yet</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav" id="bottomNav">
+      <button class="nav-item active" data-page="messages"><span class="material-icons">chat</span><span class="label">Chat</span></button>
+      <button class="nav-item" data-page="feed"><span class="material-icons">explore</span><span class="label">For You</span></button>
+      <button class="nav-item add-btn" data-page="add"><div class="icon-wrap"><span class="plus-icon">+</span></div><span class="label">Create</span></button>
+      <button class="nav-item" data-page="call-log"><span class="material-icons">call</span><span class="label">Calls</span></button>
+      <button class="nav-item" data-page="profile"><span class="material-icons">person</span><span class="label">Profile</span></button>
+    </nav>
+  </div>
+
 </div>
 
 <script>
-  (function() {
-    // ----- STATE MANAGEMENT -----
-    const appState = {
-      currentUser: { id: 'me', name: 'You' },
-      suggestions: [
-        { id: 'u1', name: 'Alex Rivera', handle: '@alexr' },
-        { id: 'u2', name: 'Taylor Swift', handle: '@taylorswift' },
-        { id: 'u3', name: 'Chris Evans', handle: '@chrisevans' },
-        { id: 'u4', name: 'Zara Khan', handle: '@zarak' },
-        { id: 'u5', name: 'Mike Johnson', handle: '@mikej' },
-        { id: 'u6', name: 'Sarah Chen', handle: '@sarahc' }
-      ],
-      contacts: [], // Accepted friends
-      sentRequests: [], // IDs of users I requested
-      receivedRequests: [], // IDs of users who requested me
-      blocked: [] // IDs of blocked users
-    };
-
-    const STORY_COUNT = 8, THREAD_COUNT = 8;
-    const mockVideos = [
-      { title: "Unboxing the new gadget! #tech", views: "8.5K", comments: "120" },
-      { title: "Tech Beats Vol. 2 · DJ Mix", views: "12K", comments: "340" },
-      { title: "Travel vlog: Bali edition", views: "5.2K", comments: "89" }
-    ];
-
-    // NEW: Mock Data for Reels
-    const mockReels = [
-      { username: "alex_rivera", caption: "Trying out the new camera features! 📸 #tech #review", music: "Original Audio - Alex Rivera", likes: "12K", comments: "450", bg: "" },
-      { username: "travel_diaries", caption: "Sunset in Bali 🌅 absolutely breathtaking.", music: "Tropical House Mix - DJ Sun", likes: "8.5K", comments: "120", bg: "linear-gradient(45deg,#1a2a3a,#0d1117)" },
-      { username: "foodie_chef", caption: "Perfect pasta recipe 🍝 #cooking #food", music: "Italian Vibes - Chef", likes: "3.2K", comments: "89", bg: "linear-gradient(45deg,#2d1b3d,#1a1a2e)" },
-      { username: "fitness_pro", caption: "Morning routine 💪 Stay consistent!", music: "Workout Mix 2026", likes: "15K", comments: "600", bg: "" },
-      { username: "art_daily", caption: "Sketching session 🎨", music: "Lo-Fi Beats", likes: "2.1K", comments: "45", bg: "linear-gradient(45deg,#3a1a1a,#1a1a1a)" }
-    ];
-
-    function renderSuggestions() {
-      const container = document.getElementById('suggestionsTray');
-      let html = '';
-      // Filter out people already in contacts, sent requests, or blocked
-      const available = appState.suggestions.filter(u => 
-        !appState.contacts.find(c => c.id === u.id) &&
-        !appState.sentRequests.includes(u.id) &&
-        !appState.blocked.includes(u.id)
-      );
-
-      if(available.length === 0) {
-         container.innerHTML = '<div style="padding:0 16px; color:#999; font-size:12px;">No new suggestions</div>';
-         return;
-      }
-
-      available.forEach(u => {
-        html += `<div class="suggestion-card">
-          <div class="avatar-ring"><div class="avatar-img"></div></div>
-          <div class="user-name">${u.name.split(' ')[0]}</div>
-          <button class="suggestion-btn" onclick="handleFollowRequest('${u.id}')" style="padding:4px 12px; border-radius:12px; background:var(--crimson); color:#fff; font-size:10px; font-weight:600; border:none; cursor:pointer;">Follow</button>
-        </div>`;
-      });
-      container.innerHTML = html;
-    }
-
-    // LOGIC: Handle Follow Request
-    window.handleFollowRequest = function(userId) {
-      const user = appState.suggestions.find(u => u.id === userId);
-      if (!user) return;
-
-      // Add to Sent Requests
-      appState.sentRequests.push(userId);
-      
-      // Simulate: Add to Target's Received Requests (for demo purposes, we just add to our local received array to show the flow if we were the other person, 
-      // BUT strictly speaking, if I follow them, THEY receive it. 
-      // To demonstrate the UI, let's assume some random users also followed us back into 'received')
-      
-      // For this demo: Let's move the user from Suggestions -> Sent List visually
-      renderSuggestions();
-      renderContacts(); // Update lists if open
-      
-      alert(`Request sent to ${user.name}. Check your 'Sent' list.`);
-    };
-
-    function renderStories() {
-      const container = document.getElementById('storiesTray');
-      let html = `<div class="story-skeleton"><div class="ring" style="background:#ddd; padding:0; border:2px dashed #ccc;"><div class="avatar-placeholder" style="border:none; background:#f0f0f0; display:flex; align-items:center; justify-content:center;"><span class="material-icons" style="color:#ccc;">add</span></div></div><div class="username-placeholder" style="width:30px;"></div></div>`;
-      for (let i=0; i<STORY_COUNT; i++) html += `<div class="story-skeleton"><div class="ring"><div class="avatar-placeholder"></div></div><div class="username-placeholder"></div></div>`;
-      container.innerHTML = html;
-    }
-
-    function renderThreads() {
-      const container = document.getElementById('threadList');
-      let html = '';
-      for (let i=0; i<THREAD_COUNT; i++) {
-        html += `<div class="thread-skeleton" onclick="openChat('User ${i+1}', false)"><div class="avatar-wrap"><div class="avatar-status"></div></div><div class="thread-info"><div class="name-line"></div><div class="snippet-line"></div></div><div class="timestamp-line"></div></div>`;
-      }
-      container.innerHTML = html;
-    }
-
-    function renderLiveCards() {
-      const container = document.getElementById('liveScroll');
-      const items = [
-        { title: 'Champions League Final', sub: 'Real Madrid vs Liverpool', views: '12.4K' },
-        { title: 'NBA Playoffs Game 7', sub: 'Lakers vs Warriors', views: '8.7K' },
-        { title: 'Wimbledon Final', sub: 'Djokovic vs Alcaraz', views: '5.2K' },
-        { title: 'F1 Grand Prix', sub: 'Monaco Circuit', views: '3.8K' }
-      ];
-      let html = '';
-      items.forEach(item => {
-        html += `<div class="live-card"><span class="live-badge">● LIVE</span><span class="sport-icon-placeholder material-icons">sports_soccer</span><div class="live-title"></div><div class="live-sub"></div><span class="live-views">${item.views} watching</span></div>`;
-      });
-      container.innerHTML = html;
-    }
-
-    function renderSportsList() {
-      const container = document.getElementById('sportsListContainer');
-      const sports = [
-        { name: 'Football', desc: 'Premier League Highlights' },
-        { name: 'Basketball', desc: 'NBA Top 10 Plays' },
-        { name: 'Tennis', desc: 'US Open Updates' },
-        { name: 'Cricket', desc: 'IPL 2026 Season' },
-        { name: 'Baseball', desc: 'MLB World Series' }
-      ];
-      let html = '';
-      sports.forEach(s => {
-        html += `<div class="sport-list-item"><div class="sport-icon-placeholder material-icons">sports_${s.name.toLowerCase()}</div><div class="sport-info"><div class="sport-name-line"></div><div class="sport-desc-line"></div></div><span class="sport-badge-placeholder">Watch</span></div>`;
-      });
-      container.innerHTML = html;
-    }
-
-    function renderChannels() {
-      const container = document.getElementById('channelsList');
-      const channels = [
-        { name: 'ESPN', desc: 'Sports News & Highlights' },
-        { name: 'Sky Sports', desc: 'Live Football & F1' },
-        { name: 'BT Sport', desc: 'Champions League' },
-        { name: 'DAZN', desc: 'Boxing & MMA' }
-      ];
-      let html = '';
-      channels.forEach(ch => {
-        html += `<div class="channel-item"><div class="channel-avatar"></div><div class="channel-info"><div class="channel-name"></div><div class="channel-desc"></div></div><span class="channel-badge">Follow</span></div>`;
-      });
-      container.innerHTML = html;
-    }
-
-    // NEW: Render Reels dynamically
-    function renderReels() {
-      const container = document.getElementById('reelsScroll');
-      let html = '';
-      
-      mockReels.forEach((reel, index) => {
-        // Determine background style (white shimmer if no specific gradient provided)
-        const bgStyle = reel.bg ? `background:${reel.bg};` : '';
-        
-        html += `
-          <div class="reel-card">
-            <div class="reel-video-placeholder" style="${bgStyle}"></div>
-            <div class="reel-ui-right">
-              <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">${index === 0 ? 'favorite' : 'favorite_border'}</span></div><span class="label">${reel.likes}</span></div>
-              <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">comment</span></div><span class="label">${reel.comments}</span></div>
-              <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">share</span></div><span class="label">Share</span></div>
-              <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">more_vert</span></div></div>
-            </div>
-            <div class="reel-info-bottom">
-              <div class="reel-user"><div class="reel-user-avatar"></div><span class="reel-username">${reel.username}</span><button class="reel-follow-btn">Follow</button></div>
-              <div class="reel-caption">${reel.caption}</div>
-              <div class="reel-music"><span class="material-icons">music_note</span><span>${reel.music}</span></div>
-            </div>
-          </div>
-        `;
-      });
-      
-      container.innerHTML = html;
-    }
-
-    // ----- search overlay -----
-    const searchOverlay = document.getElementById('searchOverlay');
-    const searchOverlayInput = document.getElementById('searchOverlayInput');
-    const searchResultsList = document.getElementById('searchResultsList');
-    window.openSearchOverlay = function() {
-      searchOverlay.classList.add('active');
-      searchOverlayInput.value = '';
-      searchResultsList.innerHTML = `<div class="empty-search"><span class="material-icons">search</span><p>Search for users or videos</p></div>`;
-      setTimeout(() => searchOverlayInput.focus(), 100);
-    };
-    document.getElementById('closeSearchOverlay').addEventListener('click', () => searchOverlay.classList.remove('active'));
-    searchOverlayInput.addEventListener('input', function() {
-      const query = this.value.trim().toLowerCase();
-      const results = [];
-      
-      // BLOCKING LOGIC: If current user has blocked someone, they shouldn't appear in search
-      if (query.length > 0) {
-        appState.suggestions.forEach(u => { 
-          // Check if blocked
-          if (!appState.blocked.includes(u.id)) {
-             if (u.name.toLowerCase().includes(query) || u.handle.toLowerCase().includes(query)) {
-               results.push({ type: 'user', data: u }); 
-             }
-          }
-        });
-        mockVideos.forEach(v => { if (v.title.toLowerCase().includes(query)) results.push({ type: 'video', data: v }); });
-      }
-      
-      if (results.length === 0 && query.length > 0) {
-        searchResultsList.innerHTML = `<div class="empty-search"><span class="material-icons">search_off</span><p>No results for "${query}"</p></div>`;
-        return;
-      }
-      let html = '';
-      results.forEach(r => {
-        if (r.type === 'user') {
-          html += `<div class="search-result-item" onclick="alert('View profile: ${r.data.name}')"><div class="result-avatar"></div><div class="result-info"><div class="result-name">${r.data.name}</div><div class="result-sub">${r.data.handle}</div></div><span class="result-badge">User</span></div>`;
-        } else {
-          html += `<div class="search-result-item" onclick="alert('Play video: ${r.data.title}')"><div class="result-avatar" style="border-radius:8px; background:#f0f0f2; display:flex; align-items:center; justify-content:center;"><span class="material-icons" style="color:#ccc; font-size:24px;">play_circle_outline</span></div><div class="result-info"><div class="result-name">${r.data.title}</div><div class="result-sub">${r.data.views} views · ${r.data.comments} comments</div></div><span class="result-badge" style="background:#666;">Video</span></div>`;
-        }
-      });
-      searchResultsList.innerHTML = html;
-    });
-
-    // ----- channels overlay -----
-    document.getElementById('channelsBtn').addEventListener('click', () => document.getElementById('channelsOverlay').classList.add('active'));
-    document.getElementById('closeChannelsOverlay').addEventListener('click', () => document.getElementById('channelsOverlay').classList.remove('active'));
-
-    // ----- REELS: show fullscreen reels, hide feed intro/tabs -----
-    const reelsFullContainer = document.getElementById('reelsFullContainer');
-    const closeReelsBtn = document.getElementById('closeReelsBtn');
-    const feedIntro = document.querySelector('.feed-intro');
-    const videoFeed = document.getElementById('videoFeedContainer');
-    const streamsContainer = document.getElementById('streamsContainer');
-
-    // override fy-tab click for reels
-    document.querySelectorAll('.fy-tab').forEach(tab => {
-      tab.addEventListener('click', function() {
-        document.querySelectorAll('.fy-tab').forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-        const tabName = this.dataset.fyTab;
-
-        // hide all feed content first
-        videoFeed.style.display = 'none';
-        streamsContainer.classList.remove('active');
-        reelsFullContainer.classList.remove('active');
-        // re-enable feed intro (it might be hidden)
-        feedIntro.style.display = 'block';
-
-        if (tabName === 'videos') {
-          videoFeed.style.display = 'block';
-        } else if (tabName === 'streams') {
-          streamsContainer.classList.add('active');
-        } else if (tabName === 'reels') {
-          // show reels full page, hide the intro and any other content inside feed
-          feedIntro.style.display = 'none';
-          videoFeed.style.display = 'none';
-          streamsContainer.classList.remove('active');
-          reelsFullContainer.classList.add('active');
-        }
-      });
-    });
-
-    // close reels (back button)
-    closeReelsBtn.addEventListener('click', function() {
-      reelsFullContainer.classList.remove('active');
-      feedIntro.style.display = 'block';
-      // restore videos tab by default
-      document.querySelectorAll('.fy-tab').forEach(t => t.classList.remove('active'));
-      document.querySelector('[data-fy-tab="videos"]').classList.add('active');
-      videoFeed.style.display = 'block';
-      streamsContainer.classList.remove('active');
-    });
-
-    // ----- navigation (pages) -----
-    const navItems = document.querySelectorAll('.nav-item');
-    const fab = document.getElementById('fabCreate');
-    const bottomNav = document.getElementById('bottomNav');
-    const feedScroll = document.getElementById('feedScroll');
-
-    function switchPage(pageId) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById('chatView').classList.remove('active');
-      document.getElementById('profilePage').classList.remove('active');
-      document.getElementById('settingsPage').classList.remove('active');
-      document.getElementById('callLogPage').classList.remove('active');
-      document.getElementById('contactsOverlay').classList.remove('active');
-      searchOverlay.classList.remove('active');
-      document.getElementById('channelsOverlay').classList.remove('active');
-      // close reels if open
-      reelsFullContainer.classList.remove('active');
-      feedIntro.style.display = 'block';
-      videoFeed.style.display = 'block';
-      streamsContainer.classList.remove('active');
-      document.querySelectorAll('.fy-tab').forEach(t => t.classList.remove('active'));
-      document.querySelector('[data-fy-tab="videos"]').classList.add('active');
-
-      if (pageId === 'add') { alert("Create Post Action"); return; }
-      const targetPage = document.getElementById('page-' + pageId);
-      if (targetPage) targetPage.classList.add('active');
-      if (pageId === 'feed' && feedScroll) feedScroll.scrollTop = 0;
-      navItems.forEach(item => { item.classList.remove('active'); if (item.dataset.page === pageId) item.classList.add('active'); });
-      if (pageId === 'feed' || pageId === 'messages') fab.classList.remove('hidden');
-      else fab.classList.add('hidden');
-      bottomNav.classList.remove('hidden');
-    }
-    navItems.forEach(item => item.addEventListener('click', () => switchPage(item.dataset.page)));
-
-    // ----- chat functions (stubs) -----
-    window.openChat = function(userName, showInitialMessages = true) {
-      document.getElementById('chatNameDisplay').textContent = userName;
-      document.getElementById('chatView').classList.add('active');
-      bottomNav.classList.add('hidden');
-      document.getElementById('chatMessages').innerHTML = '';
-      if (showInitialMessages) {
-        setTimeout(() => { addMessage("Hey there! 👋", false); setTimeout(() => addMessage("Hi! How are you?", true), 500); }, 100);
-      }
-    };
-    function addMessage(text, isSent) {
-      const div = document.createElement('div');
-      div.className = 'chat-message' + (isSent ? ' sent' : '');
-      const now = new Date();
-      const timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-      div.innerHTML = `${text}<span class="msg-time">${timeStr}</span>`;
-      document.getElementById('chatMessages').appendChild(div);
-      document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-    }
-    document.getElementById('chatBack').addEventListener('click', () => { document.getElementById('chatView').classList.remove('active'); bottomNav.classList.remove('hidden'); });
-    document.getElementById('sendBtn').addEventListener('click', function() {
-      const input = document.getElementById('messageInput');
-      const text = input.value.trim();
-      if (!text) return;
-      addMessage(text, true);
-      input.value = '';
-      setTimeout(() => { const replies = ["That's cool! ", "I agree!", "Nice!", "Haha 😂", "Got it!", "Sounds good!", "Sure thing!", "Awesome! 👏"]; addMessage(replies[Math.floor(Math.random()*replies.length)], false); }, 800+Math.random()*1200);
-    });
-    document.getElementById('messageInput').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('sendBtn').click(); });
-
-    // voice recording stub
-    let isRecording = false, recordingTimer = null;
-    document.getElementById('voiceBtn').addEventListener('click', function() {
-      if (isRecording) { stopRecording(); } else { startRecording(); }
-    });
-    function startRecording() {
-      isRecording = true;
-      document.getElementById('recordingIndicator').classList.add('active');
-      this.querySelector('.material-icons').textContent = 'stop';
-      let seconds = 0;
-      recordingTimer = setInterval(() => { seconds++; const mins=Math.floor(seconds/60); const secs=seconds%60; document.querySelector('#recordingIndicator span:not(.dot):not(#stopRecordingBtn)').textContent = `Recording... ${mins}:${secs.toString().padStart(2,'0')}`; }, 1000);
-    }
-    function stopRecording() {
-      isRecording = false;
-      document.getElementById('recordingIndicator').classList.remove('active');
-      document.getElementById('voiceBtn').querySelector('.material-icons').textContent = 'mic';
-      if (recordingTimer) clearInterval(recordingTimer);
-      addMessage(`🎤 Voice message (${Math.floor(Math.random()*15)+3}s)`, true);
-      setTimeout(() => addMessage("Got your voice note!", false), 1000+Math.random()*800);
-    }
-    document.getElementById('stopRecordingBtn').addEventListener('click', stopRecording);
-
-    // file / link popup
-    document.getElementById('fileBtn').addEventListener('click', () => document.getElementById('linkPopupOverlay').classList.add('active'));
-    document.getElementById('linkPopupCancel').addEventListener('click', () => document.getElementById('linkPopupOverlay').classList.remove('active'));
-    document.getElementById('linkPopupOverlay').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
-
-    // dropdown
-    document.getElementById('moreMenuBtn').addEventListener('click', function(e) { e.stopPropagation(); document.getElementById('dropdownMenu').classList.toggle('active'); });
-    document.addEventListener('click', () => document.getElementById('dropdownMenu').classList.remove('active'));
-    document.querySelectorAll('.menu-item').forEach(item => {
-      item.addEventListener('click', function() {
-        const action = this.dataset.action;
-        const chatName = document.getElementById('chatNameDisplay').textContent;
-        
-        if (action === 'view-contact') { 
-          document.getElementById('profilePage').classList.add('active'); 
-          document.getElementById('editProfileBtn').style.display = 'none'; 
-        }
-        else if (action === 'block') { 
-          if (confirm(`Block ${chatName}? They will disappear from search and contacts.`)) {
-             // Find ID logic would go here, for demo we just alert
-             alert(`${chatName} has been blocked.`);
-             document.getElementById('chatView').classList.remove('active'); 
-             bottomNav.classList.remove('hidden'); 
-          } 
-        }
-        else if (action === 'media') alert("Media gallery would open here");
-        document.getElementById('dropdownMenu').classList.remove('active');
-      });
-    });
-
-    // calls
-    document.getElementById('voiceCallBtn').addEventListener('click', function() { alert(` Voice call to ${document.getElementById('chatNameDisplay').textContent}...`); });
-    document.getElementById('videoCallBtn').addEventListener('click', function() { alert(` Video call to ${document.getElementById('chatNameDisplay').textContent}...`); });
-
-    // profile, settings, etc
-    document.getElementById('profileBack').addEventListener('click', () => { document.getElementById('profilePage').classList.remove('active'); bottomNav.classList.remove('hidden'); });
-    document.getElementById('settingsGear').addEventListener('click', () => { document.getElementById('settingsPage').classList.add('active'); document.getElementById('editProfileBtn').style.display = 'block'; });
-    document.getElementById('settingsBack').addEventListener('click', () => document.getElementById('settingsPage').classList.remove('active'));
-    document.getElementById('callLogBack').addEventListener('click', () => document.getElementById('callLogPage').classList.remove('active'));
-    document.getElementById('contactsBack').addEventListener('click', () => document.getElementById('contactsOverlay').classList.remove('active'));
-    document.getElementById('fabCreate').addEventListener('click', () => { document.getElementById('contactsOverlay').classList.add('active'); switchContactTab('contacts'); });
-
-    // edit profile
-    document.getElementById('editProfileBtn').addEventListener('click', () => document.getElementById('editModal').classList.add('active'));
-    document.getElementById('editCancel').addEventListener('click', () => document.getElementById('editModal').classList.remove('active'));
-    document.getElementById('editSave').addEventListener('click', () => {
-      document.getElementById('profileDisplayName').textContent = document.getElementById('editUsername').value;
-      document.getElementById('profileBio').textContent = document.getElementById('editBio').value;
-      document.getElementById('editModal').classList.remove('active');
-    });
-
-    // avatar fullscreen
-    document.getElementById('profileAvatarLarge').addEventListener('click', () => document.getElementById('avatarFullscreen').classList.add('active'));
-    document.getElementById('closeFullscreen').addEventListener('click', () => document.getElementById('avatarFullscreen').classList.remove('active'));
-    document.getElementById('avatarFullscreen').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
-
-    // contacts
-    let currentContactTab = 'contacts', currentRequestSubTab = 'received';
-    
-    // Mock data for requests/contacts simulation
-    // Pre-populating some data to show functionality
-    appState.receivedRequests = ['u1']; // Alex Rivera requested me
-    appState.sentRequests = ['u2']; // I requested Taylor Swift
-    appState.contacts = [
-       { id: 'u3', name: 'Chris Evans', status: 'Online' }
-    ];
-    appState.blocked = [];
-
-    function renderContacts() {
-      const container = document.getElementById('contactListContainer');
-      const searchContainer = document.getElementById('searchContainer');
-      container.innerHTML = '';
-      
-      if (currentContactTab === 'contacts') {
-        searchContainer.style.display = 'block';
-        if (appState.contacts.length === 0) container.innerHTML = `<div class="empty-state" style="padding:40px; text-align:center; color:#999;"><span class="material-icons" style="font-size:48px; opacity:0.3;">people_outline</span><p>No contacts yet</p></div>`;
-        else appState.contacts.forEach(c => { 
-          container.innerHTML += `<div class="contact-item"><div class="contact-avatar"></div><div class="contact-info"><div class="contact-name">${c.name}</div><div class="contact-status">${c.status || 'Active'}</div></div><div class="contact-actions"><button class="btn-action btn-add" onclick="startChatFromContacts('${c.name}')">Message</button></div></div>`; 
-        });
-      } else if (currentContactTab === 'requests') {
-        searchContainer.style.display = 'none';
-        if (currentRequestSubTab === 'received') {
-          if (appState.receivedRequests.length === 0) container.innerHTML = `<div class="empty-state" style="padding:40px; text-align:center; color:#999;"><span class="material-icons" style="font-size:48px; opacity:0.3;">inbox</span><p>No new requests</p></div>`;
-          else {
-             appState.receivedRequests.forEach(reqId => {
-                const user = appState.suggestions.find(u => u.id === reqId) || { name: 'Unknown User', handle: '' };
-                container.innerHTML += `<div class="contact-item"><div class="contact-avatar"></div><div class="contact-info"><div class="contact-name">${user.name}</div><div class="contact-status">Wants to follow you</div></div><div class="contact-actions"><button class="btn-action btn-accept" onclick="acceptRequest('${reqId}')">Accept</button><button class="btn-action btn-decline" onclick="declineRequest('${reqId}')">Decline</button></div></div>`; 
-             });
-          }
-        } else { // Sent
-          if (appState.sentRequests.length === 0) container.innerHTML = `<div class="empty-state" style="padding:40px; text-align:center; color:#999;"><span class="material-icons" style="font-size:48px; opacity:0.3;">send</span><p>No sent requests</p></div>`;
-          else {
-             appState.sentRequests.forEach(reqId => {
-                const user = appState.suggestions.find(u => u.id === reqId) || { name: 'Unknown User' };
-                container.innerHTML += `<div class="contact-item"><div class="contact-avatar"></div><div class="contact-info"><div class="contact-name">${user.name}</div><div class="contact-status" style="color:#e65100">Request Sent</div></div><div class="contact-actions"><button class="btn-action btn-decline" onclick="cancelRequest('${reqId}')">Cancel</button></div></div>`; 
-             });
-          }
-        }
-      } else if (currentContactTab === 'blocked') {
-        searchContainer.style.display = 'none';
-        if (appState.blocked.length === 0) container.innerHTML = `<div class="empty-state" style="padding:40px; text-align:center; color:#999;"><span class="material-icons" style="font-size:48px; opacity:0.3;">block</span><p>No blocked users</p></div>`;
-        else {
-           appState.blocked.forEach(blockedId => {
-              const user = appState.suggestions.find(u => u.id === blockedId) || { name: 'Unknown User' };
-              container.innerHTML += `<div class="contact-item"><div class="contact-avatar"></div><div class="contact-info"><div class="contact-name">${user.name}</div><div class="contact-status" style="color:var(--crimson)">Blocked</div></div><div class="contact-actions"><button class="btn-action btn-unblock" onclick="unblockUser('${blockedId}')">Unblock</button></div></div>`; 
-           });
-           container.innerHTML += `<div style="padding:16px; text-align:center;"><button class="btn-action btn-clear" onclick="clearBlocked()">Clear All Blocked</button></div>`;
-        }
-      }
-    }
-
-    // Request Actions
-    window.acceptRequest = function(userId) {
-       const user = appState.suggestions.find(u => u.id === userId);
-       if(user) {
-          appState.contacts.push({ id: user.id, name: user.name, status: 'Online' });
-          appState.receivedRequests = appState.receivedRequests.filter(id => id !== userId);
-          renderContacts();
-       }
-    };
-
-    window.declineRequest = function(userId) {
-       appState.receivedRequests = appState.receivedRequests.filter(id => id !== userId);
-       renderContacts();
-    };
-
-    window.cancelRequest = function(userId) {
-       appState.sentRequests = appState.sentRequests.filter(id => id !== userId);
-       renderContacts();
-       renderSuggestions(); // Make them appear in suggestions again
-    };
-
-    window.unblockUser = function(userId) {
-       appState.blocked = appState.blocked.filter(id => id !== userId);
-       renderContacts();
-    };
-
-    window.clearBlocked = function() {
-       if(confirm("Unblock everyone?")) {
-          appState.blocked = [];
-          renderContacts();
-       }
-    };
-
-    window.switchContactTab = function(tab) {
-      currentContactTab = tab;
-      document.querySelectorAll('.contacts-tab').forEach(t => t.classList.remove('active'));
-      // Find index based on text content or order
-      const tabs = document.querySelectorAll('.contacts-tab');
-      if(tab === 'contacts') tabs[0].classList.add('active');
-      if(tab === 'requests') tabs[1].classList.add('active');
-      if(tab === 'blocked') tabs[2].classList.add('active');
-
-      const subTabs = document.getElementById('requestSubTabs');
-      if (tab === 'requests') subTabs.classList.add('active'); else subTabs.classList.remove('active');
-      renderContacts();
-    };
-
-    window.switchRequestSubTab = function(subTab) {
-      currentRequestSubTab = subTab;
-      document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
-      if (subTab === 'received') document.querySelectorAll('.sub-tab')[0].classList.add('active');
-      else if (subTab === 'sent') document.querySelectorAll('.sub-tab')[1].classList.add('active');
-      renderContacts();
-    };
-    
-    window.startChatFromContacts = function(userName) { window.openChat(userName, false); };
-
-    // filter buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        const filter = this.dataset.filter;
-        document.querySelectorAll('.thread-skeleton').forEach((el, i) => {
-          if (filter === 'all') el.style.display = 'flex';
-          else if (filter === 'friends') el.style.display = (i % 2 === 0) ? 'flex' : 'none';
-          else el.style.display = (i % 2 === 1) ? 'flex' : 'none';
-        });
-      });
-    });
-
-    // camera / location
-    document.getElementById('cameraBtn').addEventListener('click', () => alert("Camera access would be requested here."));
-    document.getElementById('locationBtn').addEventListener('click', () => alert("Sharing current location..."));
-
-    // init
-    renderSuggestions();
-    renderStories();
-    renderThreads();
-    renderContacts(); // Init contacts view
-    renderLiveCards();
-    renderSportsList();
-    renderChannels();
-    renderReels(); // Initialize Reels
-
-    // ensure videos visible
-    document.getElementById('videoFeedContainer').style.display = 'block';
-    document.getElementById('streamsContainer').classList.remove('active');
-    document.getElementById('reelsFullContainer').classList.remove('active');
-
-    // chat search
-    document.getElementById('chatSearchInput').addEventListener('input', function(e) {
-      const term = e.target.value.toLowerCase();
-      document.querySelectorAll('.thread-skeleton').forEach(el => {
-        if (term === "") el.style.display = "flex";
-        else if (term.length > 2) el.style.display = "none";
-        else el.style.display = "flex";
-      });
-    });
-
-    // main search click
-    document.getElementById('mainSearchInput').addEventListener('click', window.openSearchOverlay);
-
-    console.log("Reels full page: hides feed intro & shows only reels.");
-  })();
-</script>
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-
-<script>
+  // ================================================================
+  // FIREBASE CONFIG - YOUR EXISTING CONFIG
+  // ================================================================
   const firebaseConfig = {
     apiKey: "AIzaSyAqtKoK3dJtpVQrndcuYL8urHGOj5dAK68",
     authDomain: "social-app-2ca14.firebaseapp.com",
@@ -1009,10 +720,754 @@
     messagingSenderId: "913957400692",
     appId: "1:913957400692:web:b5653cdef3c4bb46cd2121"
   };
+
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
   const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+
   console.log("🔥 Firebase Connected!");
+  console.log("📧 Auth ready, 📁 Firestore ready, 📦 Storage ready");
+
+  // ================================================================
+  // TOAST SYSTEM
+  // ================================================================
+  function showToast(msg, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = 'toast show';
+    clearTimeout(toast._hideTimeout);
+    toast._hideTimeout = setTimeout(() => toast.classList.remove('show'), 4000);
+  }
+
+  // ================================================================
+  // DOM REFS
+  // ================================================================
+  function $(id) { return document.getElementById(id); }
+
+  // Pages
+  const loginPage = $('loginPage');
+  const forgotPage = $('forgotPasswordPage');
+  const socialApp = $('socialApp');
+  const authPages = document.querySelectorAll('.auth-page');
+
+  // Login
+  const loginEmail = $('loginEmail');
+  const loginPass = $('loginPassword');
+  const loginBtn = $('loginBtn');
+  const loginErr = $('loginError');
+
+  // Forgot
+  const resetEmail = $('resetEmail');
+  const resetBtn = $('resetPasswordBtn');
+  const resetSuccess = $('resetSuccess');
+  const resetError = $('resetError');
+
+  // Signup
+  const suUsername = $('signupUsername');
+  const suEmail = $('signupEmail');
+  const suPassword = $('signupPassword');
+  const suCountry = $('signupCountry');
+  const suAge = $('signupAge');
+  const suLocation = $('signupLocation');
+  const suName = $('signupDisplayName');
+  const suBio = $('signupBio');
+  const picInput = $('profilePicInput');
+  const avatarCircle = $('avatarCircle');
+  const avatarImage = $('avatarImage');
+  const avatarInitial = $('avatarInitial');
+
+  // Signup errors
+  const signup1Error = $('signup1Error');
+  const signup3Error = $('signup3Error');
+  const signup4Error = $('signup4Error');
+  const signup5Error = $('signup5Error');
+  const verifyErr = $('verifyError');
+  const verifyOk = $('verifySuccess');
+  const verifyMsg = $('verifyMessage');
+
+  let signupData = {};
+  let selectedInterests = [];
+  let currentUser = null;
+
+  // ================================================================
+  // INTERESTS
+  // ================================================================
+  const INTERESTS_LIST = [
+    'Gaming', 'Music', 'Sports', 'Art', 'Science',
+    'Books', 'Movies', 'Coding', 'Robotics', 'Nature',
+    'Animals', 'Space', 'History', 'Dance', 'Photography',
+    'Business', 'Finance', 'Travel', 'Food', 'Fashion'
+  ];
+
+  function setupInterests() {
+    const grid = $('interestsGrid');
+    grid.innerHTML = '';
+    selectedInterests = [];
+    INTERESTS_LIST.forEach(interest => {
+      const tag = document.createElement('div');
+      tag.className = 'interest-tag';
+      tag.textContent = interest;
+      tag.dataset.value = interest;
+      tag.addEventListener('click', function() {
+        this.classList.toggle('selected');
+        const val = this.dataset.value;
+        if (this.classList.contains('selected')) {
+          if (!selectedInterests.includes(val)) selectedInterests.push(val);
+        } else {
+          selectedInterests = selectedInterests.filter(i => i !== val);
+        }
+      });
+      grid.appendChild(tag);
+    });
+  }
+
+  // ================================================================
+  // NAVIGATION
+  // ================================================================
+  function showLogin() {
+    authPages.forEach(p => p.classList.remove('active'));
+    loginPage.classList.add('active');
+    loginErr.textContent = '';
+    loginBtn.innerHTML = '<span class="material-icons">login</span> Sign In';
+    loginBtn.disabled = false;
+  }
+
+  function showForgot() {
+    authPages.forEach(p => p.classList.remove('active'));
+    forgotPage.classList.add('active');
+    resetError.textContent = '';
+    resetSuccess.textContent = '';
+    resetBtn.innerHTML = '<span class="material-icons">send</span> Send Reset Link';
+    resetBtn.disabled = false;
+  }
+
+  function showSignup(step) {
+    authPages.forEach(p => p.classList.remove('active'));
+    const page = $('signup' + step);
+    if (page) page.classList.add('active');
+    if (step === 3) setupInterests();
+  }
+
+  function showSocialApp() {
+    authPages.forEach(p => p.classList.remove('active'));
+    socialApp.classList.add('active');
+    document.getElementById('page-messages').classList.add('active');
+    loadUserProfile();
+    renderThreads();
+    renderStories();
+    renderSuggestions();
+    renderReels();
+    renderLiveCards();
+    renderSportsList();
+  }
+
+  function goFeed() {
+    showSocialApp();
+  }
+
+  function setLoading(btn, loading, text) {
+    if (loading) {
+      btn.innerHTML = '<span class="spinner"></span> ' + (text || 'Loading...');
+      btn.disabled = true;
+    } else {
+      btn.innerHTML = text || 'Sign In';
+      btn.disabled = false;
+    }
+  }
+
+  // ================================================================
+  // AUTH FUNCTIONS (REAL FIREBASE)
+  // ================================================================
+
+  // --- LOGIN ---
+  loginBtn.addEventListener('click', function() {
+    const email = loginEmail.value.trim();
+    const password = loginPass.value;
+    if (!email || !password) {
+      loginErr.textContent = 'Enter email and password';
+      return;
+    }
+    loginErr.textContent = '';
+    setLoading(loginBtn, true, 'Signing In...');
+
+    auth.signInWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        currentUser = userCredential.user;
+        showToast('Welcome back!');
+        goFeed();
+        setLoading(loginBtn, false);
+      })
+      .catch(error => {
+        loginErr.textContent = error.message;
+        setLoading(loginBtn, false);
+      });
+  });
+
+  loginPass.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); });
+
+  // --- GOOGLE SIGN-IN ---
+  $('googleSignIn').addEventListener('click', function() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+      .then(result => {
+        currentUser = result.user;
+        showToast('Welcome! Signed in with Google.');
+        goFeed();
+      })
+      .catch(error => {
+        showToast(error.message, true);
+      });
+  });
+
+  // --- FORGOT PASSWORD ---
+  resetBtn.addEventListener('click', function() {
+    const email = resetEmail.value.trim();
+    if (!email) { resetError.textContent = 'Enter your email'; return; }
+    resetError.textContent = '';
+    setLoading(resetBtn, true, 'Sending...');
+
+    auth.sendPasswordResetEmail(email)
+      .then(() => {
+        resetSuccess.textContent = 'Reset link sent! Check your email.';
+        showToast('Reset link sent to ' + email);
+        setLoading(resetBtn, false);
+      })
+      .catch(error => {
+        resetError.textContent = error.message;
+        setLoading(resetBtn, false);
+      });
+  });
+
+  // --- SIGNUP ---
+  $('signup1Next').addEventListener('click', function() {
+    const username = suUsername.value.trim();
+    const email = suEmail.value.trim();
+    const password = suPassword.value;
+
+    if (!username || username.length < 3) {
+      signup1Error.textContent = 'Username must be at least 3 characters.';
+      return;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      signup1Error.textContent = 'Username can only contain letters, numbers, underscores.';
+      return;
+    }
+    if (!email || !email.includes('@')) {
+      signup1Error.textContent = 'Enter a valid email address.';
+      return;
+    }
+    if (password.length < 16) {
+      signup1Error.textContent = 'Password must be at least 16 characters.';
+      return;
+    }
+
+    signup1Error.textContent = '';
+    signupData.username = username;
+    signupData.email = email;
+    signupData.password = password;
+
+    setLoading($('signup1Next'), true, 'Creating...');
+
+    auth.createUserWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        currentUser = userCredential.user;
+        // Send verification email
+        return currentUser.sendEmailVerification();
+      })
+      .then(() => {
+        signupData.uid = currentUser.uid;
+        verifyMsg.textContent = 'Verification sent to ' + email + '. Check spam.';
+        showSignup(2);
+        showToast('Verification email sent!');
+        setLoading($('signup1Next'), false);
+      })
+      .catch(error => {
+        signup1Error.textContent = error.message;
+        setLoading($('signup1Next'), false);
+      });
+  });
+
+  // --- VERIFY EMAIL ---
+  $('verifyCheckBtn').addEventListener('click', function() {
+    const btn = $('verifyCheckBtn');
+    setLoading(btn, true, 'Checking...');
+
+    auth.currentUser.reload()
+      .then(() => {
+        if (auth.currentUser.emailVerified) {
+          verifyOk.textContent = 'Email verified!';
+          verifyErr.textContent = '';
+          showToast('Email verified!');
+          showSignup(3);
+        } else {
+          verifyErr.textContent = 'Email not verified yet. Check your inbox or resend.';
+        }
+        setLoading(btn, false);
+      })
+      .catch(error => {
+        verifyErr.textContent = error.message;
+        setLoading(btn, false);
+      });
+  });
+
+  $('resendVerifyEmail').addEventListener('click', function() {
+    auth.currentUser.sendEmailVerification()
+      .then(() => {
+        verifyOk.textContent = 'New verification email sent! Check spam.';
+        showToast('Verification email resent!');
+      })
+      .catch(error => {
+        verifyErr.textContent = error.message;
+      });
+  });
+
+  // --- SIGNUP STEP 3 ---
+  $('signup3Next').addEventListener('click', function() {
+    const country = suCountry.value;
+    const age = parseInt(suAge.value);
+    const location = suLocation.value.trim();
+
+    if (!country) { signup3Error.textContent = 'Select your country.'; return; }
+    if (!age || age < 13) { signup3Error.textContent = 'You must be at least 13.'; return; }
+    if (age > 120) { signup3Error.textContent = 'Enter a valid age.'; return; }
+    if (selectedInterests.length === 0) { signup3Error.textContent = 'Select at least one interest.'; return; }
+
+    signup3Error.textContent = '';
+    signupData.country = country;
+    signupData.age = age;
+    signupData.location = location || '';
+    signupData.interests = selectedInterests;
+    showSignup(4);
+  });
+
+  // --- SIGNUP STEP 4 ---
+  $('signup4Next').addEventListener('click', function() {
+    const name = suName.value.trim();
+    if (!name) { signup4Error.textContent = 'Enter your full name.'; return; }
+    signup4Error.textContent = '';
+    signupData.displayName = name;
+    signupData.bio = suBio.value.trim() || '';
+    showSignup(5);
+  });
+
+  // --- PROFILE PICTURE UPLOAD ---
+  picInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        avatarInitial.style.display = 'none';
+        avatarImage.style.display = 'block';
+        avatarImage.src = ev.target.result;
+        avatarCircle.classList.add('has-image');
+        signupData.profilePicFile = file;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // --- SIGNUP COMPLETE ---
+  $('signupCompleteBtn').addEventListener('click', function() {
+    const btn = $('signupCompleteBtn');
+    if (!$('termsCheck').checked) {
+      signup5Error.textContent = 'You must agree to the Terms.';
+      return;
+    }
+    signup5Error.textContent = '';
+    setLoading(btn, true, 'Creating Profile...');
+
+    // Save user data to Firestore
+    const userData = {
+      username: signupData.username,
+      displayName: signupData.displayName,
+      email: signupData.email,
+      age: signupData.age,
+      country: signupData.country,
+      city: signupData.location,
+      interests: signupData.interests,
+      bio: signupData.bio,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      followers: [],
+      following: [],
+      photoURL: null
+    };
+
+    // If there's a profile picture, upload it
+    if (signupData.profilePicFile) {
+      const ref = storage.ref('profile_pictures/' + currentUser.uid);
+      ref.put(signupData.profilePicFile)
+        .then(snapshot => snapshot.ref.getDownloadURL())
+        .then(url => {
+          userData.photoURL = url;
+          return db.collection('users').doc(currentUser.uid).set(userData);
+        })
+        .then(() => {
+          showToast('Account created! Welcome to Tether!');
+          setLoading(btn, false);
+          goFeed();
+        })
+        .catch(error => {
+          signup5Error.textContent = error.message;
+          setLoading(btn, false);
+        });
+    } else {
+      // No profile picture
+      db.collection('users').doc(currentUser.uid).set(userData)
+        .then(() => {
+          showToast('Account created! Welcome to Tether!');
+          setLoading(btn, false);
+          goFeed();
+        })
+        .catch(error => {
+          signup5Error.textContent = error.message;
+          setLoading(btn, false);
+        });
+    }
+  });
+
+  // --- NAVIGATION LINKS ---
+  $('signupToLoginLink').addEventListener('click', showLogin);
+  $('forgotPasswordLink').addEventListener('click', showForgot);
+  $('backToLoginLink').addEventListener('click', showLogin);
+  $('goToSignupLink').addEventListener('click', function() { showSignup(1); });
+
+  // --- PASSWORD TOGGLES ---
+  $('toggleLoginPassword').addEventListener('click', function() {
+    const i = $('loginPassword');
+    i.type = i.type === 'password' ? 'text' : 'password';
+    this.textContent = i.type === 'password' ? 'visibility' : 'visibility_off';
+  });
+  $('toggleSignupPassword').addEventListener('click', function() {
+    const i = $('signupPassword');
+    i.type = i.type === 'password' ? 'text' : 'password';
+    this.textContent = i.type === 'password' ? 'visibility' : 'visibility_off';
+  });
+
+  // --- KEYBOARD SHORTCUTS ---
+  suUsername.addEventListener('keydown', e => { if (e.key === 'Enter') $('signup1Next').click(); });
+  suEmail.addEventListener('keydown', e => { if (e.key === 'Enter') $('signup1Next').click(); });
+  suPassword.addEventListener('keydown', e => { if (e.key === 'Enter') $('signup1Next').click(); });
+  suAge.addEventListener('keydown', e => { if (e.key === 'Enter') $('signup3Next').click(); });
+  suName.addEventListener('keydown', e => { if (e.key === 'Enter') $('signup4Next').click(); });
+  resetEmail.addEventListener('keydown', e => { if (e.key === 'Enter') resetBtn.click(); });
+
+  // ================================================================
+  // SOCIAL APP FEATURES
+  // ================================================================
+
+  function loadUserProfile() {
+    if (!auth.currentUser) return;
+    const uid = auth.currentUser.uid;
+    db.collection('users').doc(uid).get()
+      .then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          document.getElementById('profileDisplayName').textContent = data.displayName || 'User';
+          document.getElementById('profileBio').textContent = data.bio || 'No bio yet';
+          document.getElementById('followersCount').textContent = (data.followers?.length || 0);
+          document.getElementById('followingCount').textContent = (data.following?.length || 0);
+        }
+      })
+      .catch(err => console.error('Error loading profile:', err));
+  }
+
+  function renderThreads() {
+    const container = document.getElementById('threadList');
+    let html = '';
+    for (let i = 0; i < 8; i++) {
+      html += `<div class="thread-skeleton" onclick="openChat('User ${i+1}', false)">
+        <div class="avatar-wrap"><div class="avatar-status"></div></div>
+        <div class="thread-info"><div class="name-line"></div><div class="snippet-line"></div></div>
+        <div class="timestamp-line"></div>
+      </div>`;
+    }
+    container.innerHTML = html;
+  }
+
+  function renderStories() {
+    const container = document.getElementById('storiesTray');
+    let html = `<div class="story-skeleton"><div class="ring" style="background:#ddd; padding:0; border:2px dashed #ccc;"><div class="avatar-placeholder" style="border:none; background:#f0f0f0; display:flex; align-items:center; justify-content:center;"><span class="material-icons" style="color:#ccc;">add</span></div></div><div class="username-placeholder" style="width:30px;"></div></div>`;
+    for (let i = 0; i < 8; i++) {
+      html += `<div class="story-skeleton"><div class="ring"><div class="avatar-placeholder"></div></div><div class="username-placeholder"></div></div>`;
+    }
+    container.innerHTML = html;
+  }
+
+  function renderSuggestions() {
+    // Mock suggestions - will be replaced with real users from Firebase later
+    const container = document.getElementById('suggestionsTray');
+    container.innerHTML = '<div style="padding:0 16px; color:#999; font-size:12px;">Connect with friends!</div>';
+  }
+
+  function renderReels() {
+    const container = document.getElementById('reelsScroll');
+    const mockReels = [
+      { username: "alex_rivera", caption: "Trying out new features! 📸", music: "Original Audio", likes: "12K", comments: "450" },
+      { username: "travel_diaries", caption: "Sunset in Bali 🌅", music: "Tropical House Mix", likes: "8.5K", comments: "120" },
+      { username: "foodie_chef", caption: "Perfect pasta recipe 🍝", music: "Italian Vibes", likes: "3.2K", comments: "89" },
+    ];
+    let html = '';
+    mockReels.forEach((reel, index) => {
+      html += `
+        <div class="reel-card">
+          <div class="reel-video-placeholder"></div>
+          <div class="reel-ui-right">
+            <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">${index === 0 ? 'favorite' : 'favorite_border'}</span></div><span class="label">${reel.likes}</span></div>
+            <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">comment</span></div><span class="label">${reel.comments}</span></div>
+            <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">share</span></div><span class="label">Share</span></div>
+          </div>
+          <div class="reel-info-bottom">
+            <div class="reel-user"><div class="reel-user-avatar"></div><span class="reel-username">${reel.username}</span><button class="reel-follow-btn">Follow</button></div>
+            <div class="reel-caption">${reel.caption}</div>
+            <div class="reel-music"><span class="material-icons">music_note</span><span>${reel.music}</span></div>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  function renderLiveCards() {
+    const container = document.getElementById('liveScroll');
+    const items = [
+      { title: 'Champions League Final', views: '12.4K' },
+      { title: 'NBA Playoffs Game 7', views: '8.7K' },
+      { title: 'Wimbledon Final', views: '5.2K' },
+    ];
+    let html = '';
+    items.forEach(item => {
+      html += `<div class="live-card"><span class="live-badge">● LIVE</span><div class="live-title"></div><div class="live-sub"></div><span class="live-views">${item.views} watching</span></div>`;
+    });
+    container.innerHTML = html;
+  }
+
+  function renderSportsList() {
+    const container = document.getElementById('sportsListContainer');
+    const sports = [
+      { name: 'Football', desc: 'Premier League Highlights' },
+      { name: 'Basketball', desc: 'NBA Top 10 Plays' },
+      { name: 'Tennis', desc: 'US Open Updates' },
+    ];
+    let html = '';
+    sports.forEach(s => {
+      html += `<div class="sport-list-item"><div class="sport-icon-placeholder material-icons">sports_${s.name.toLowerCase()}</div><div class="sport-info"><div class="sport-name-line"></div><div class="sport-desc-line"></div></div><span class="sport-badge-placeholder">Watch</span></div>`;
+    });
+    container.innerHTML = html;
+  }
+
+  // ================================================================
+  // CHAT FUNCTIONS
+  // ================================================================
+  window.openChat = function(userName, showInitial = true) {
+    document.getElementById('chatNameDisplay').textContent = userName;
+    document.getElementById('chatView').classList.add('active');
+    document.getElementById('bottomNav').classList.add('hidden');
+    document.getElementById('chatMessages').innerHTML = '';
+    if (showInitial) {
+      setTimeout(() => { addMessage("Hey there! 👋", false); }, 100);
+      setTimeout(() => { addMessage("Hi! How are you?", true); }, 500);
+    }
+  };
+
+  function addMessage(text, isSent) {
+    const div = document.createElement('div');
+    div.className = 'chat-message' + (isSent ? ' sent' : '');
+    const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    div.innerHTML = `${text}<span class="msg-time">${time}</span>`;
+    document.getElementById('chatMessages').appendChild(div);
+    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+  }
+
+  document.getElementById('chatBack').addEventListener('click', function() {
+    document.getElementById('chatView').classList.remove('active');
+    document.getElementById('bottomNav').classList.remove('hidden');
+  });
+
+  document.getElementById('sendBtn').addEventListener('click', function() {
+    const input = document.getElementById('messageInput');
+    const text = input.value.trim();
+    if (!text) return;
+    addMessage(text, true);
+    input.value = '';
+    setTimeout(() => {
+      const replies = ["That's cool!", "I agree!", "Nice!", "Haha 😂", "Got it!", "Sounds good!"];
+      addMessage(replies[Math.floor(Math.random() * replies.length)], false);
+    }, 800 + Math.random() * 1200);
+  });
+
+  document.getElementById('messageInput').addEventListener('keypress', e => {
+    if (e.key === 'Enter') document.getElementById('sendBtn').click();
+  });
+
+  // ================================================================
+  // VOICE RECORDING
+  // ================================================================
+  let isRecording = false;
+  let recordingTimer = null;
+  let recordingSeconds = 0;
+  const voiceBtn = document.getElementById('voiceBtn');
+  const recordingIndicator = document.getElementById('recordingIndicator');
+  const recordingStatusText = document.getElementById('recordingStatusText');
+
+  function startRecording() {
+    if (isRecording) return;
+    isRecording = true;
+    recordingSeconds = 0;
+    recordingIndicator.classList.add('active');
+    voiceBtn.querySelector('.material-icons').textContent = 'stop';
+    recordingStatusText.textContent = 'Recording... 0:00';
+    recordingTimer = setInterval(() => {
+      recordingSeconds++;
+      const mins = Math.floor(recordingSeconds / 60);
+      const secs = recordingSeconds % 60;
+      recordingStatusText.textContent = `Recording... ${mins}:${secs.toString().padStart(2, '0')}`;
+    }, 1000);
+  }
+
+  function stopRecording() {
+    if (!isRecording) return;
+    isRecording = false;
+    recordingIndicator.classList.remove('active');
+    voiceBtn.querySelector('.material-icons').textContent = 'mic';
+    if (recordingTimer) { clearInterval(recordingTimer); recordingTimer = null; }
+    const duration = Math.floor(Math.random() * 15) + 3;
+    addMessage(`🎤 Voice message (${duration}s)`, true);
+    setTimeout(() => addMessage("Got your voice note!", false), 1000 + Math.random() * 800);
+    recordingStatusText.textContent = 'Recording...';
+  }
+
+  voiceBtn.addEventListener('click', function() {
+    if (isRecording) { stopRecording(); } else { startRecording(); }
+  });
+  document.getElementById('stopRecordingBtn').addEventListener('click', stopRecording);
+
+  // ================================================================
+  // NAVIGATION
+  // ================================================================
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+      const page = this.dataset.page;
+      if (page === 'add') { showToast('Create Post'); return; }
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      this.classList.add('active');
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('page-' + page);
+      if (target) target.classList.add('active');
+    });
+  });
+
+  // ================================================================
+  // PROFILE
+  // ================================================================
+  document.getElementById('profileBack').addEventListener('click', function() {
+    document.getElementById('profilePage').classList.remove('active');
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', function() {
+    auth.signOut().then(() => {
+      socialApp.classList.remove('active');
+      showLogin();
+      showToast('Signed out');
+    });
+  });
+
+  document.getElementById('editProfileBtn').addEventListener('click', function() {
+    showToast('Edit profile coming soon!');
+  });
+
+  // ================================================================
+  // SEARCH
+  // ================================================================
+  function openSearchOverlay() {
+    document.getElementById('searchOverlay').classList.add('active');
+    document.getElementById('searchOverlayInput').value = '';
+    document.getElementById('searchResultsList').innerHTML = '<div class="empty-search"><span class="material-icons">search</span><p>Search for users or videos</p></div>';
+    setTimeout(() => document.getElementById('searchOverlayInput').focus(), 100);
+  }
+
+  document.getElementById('mainSearchInput').addEventListener('click', openSearchOverlay);
+  document.getElementById('closeSearchOverlay').addEventListener('click', function() {
+    document.getElementById('searchOverlay').classList.remove('active');
+  });
+
+  // ================================================================
+  // REELS
+  // ================================================================
+  document.querySelectorAll('.fy-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.fy-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      const tabName = this.dataset.fyTab;
+      document.getElementById('videoFeedContainer').style.display = 'none';
+      document.getElementById('streamsContainer').classList.remove('active');
+      document.getElementById('reelsFullContainer').classList.remove('active');
+      if (tabName === 'videos') document.getElementById('videoFeedContainer').style.display = 'block';
+      else if (tabName === 'streams') document.getElementById('streamsContainer').classList.add('active');
+      else if (tabName === 'reels') document.getElementById('reelsFullContainer').classList.add('active');
+    });
+  });
+
+  document.getElementById('closeReelsBtn').addEventListener('click', function() {
+    document.getElementById('reelsFullContainer').classList.remove('active');
+    document.querySelectorAll('.fy-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-fy-tab="videos"]').classList.add('active');
+    document.getElementById('videoFeedContainer').style.display = 'block';
+  });
+
+  // ================================================================
+  // CHANNELS
+  // ================================================================
+  document.getElementById('channelsBtn').addEventListener('click', function() {
+    document.getElementById('channelsOverlay').classList.add('active');
+  });
+  document.getElementById('closeChannelsOverlay').addEventListener('click', function() {
+    document.getElementById('channelsOverlay').classList.remove('active');
+  });
+
+  // ================================================================
+  // CONTACTS
+  // ================================================================
+  document.getElementById('fabCreate').addEventListener('click', function() {
+    document.getElementById('contactsOverlay').classList.add('active');
+  });
+  document.getElementById('contactsBack').addEventListener('click', function() {
+    document.getElementById('contactsOverlay').classList.remove('active');
+  });
+
+  // ================================================================
+  // MISCELLANEOUS
+  // ================================================================
+  document.getElementById('fileBtn').addEventListener('click', function() {
+    showToast('Share via...');
+  });
+  document.getElementById('cameraBtn').addEventListener('click', function() {
+    showToast('📷 Camera access requested');
+  });
+  document.getElementById('locationBtn').addEventListener('click', function() {
+    showToast('📍 Sharing location');
+  });
+
+  // ================================================================
+  // INIT
+  // ================================================================
+  console.log('🚀 Tether App Initialized!');
+  console.log('📱 Login with existing account or create a new one!');
+  console.log('💡 Demo: Create an account to get started!');
+
+  // Check if user is already logged in
+  auth.onAuthStateChanged(function(user) {
+    if (user) {
+      currentUser = user;
+      showToast('Welcome back!');
+      goFeed();
+    } else {
+      // Show login
+      showLogin();
+    }
+  });
+
 </script>
 </body>
 </html>
