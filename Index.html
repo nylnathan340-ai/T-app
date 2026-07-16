@@ -21,8 +21,12 @@
     @keyframes fadeSlide { 0% { opacity: 0; transform: translateY(-10px); } 100% { opacity: 1; transform: translateY(0); } }
     @keyframes dropDown { 0% { opacity: 0; transform: translateY(-10px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
     @keyframes pulse-recording { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-    @keyframes cardPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    
+    /* Shimmer Animation for White Placeholders */
+    @keyframes shimmer { 
+      0% { background-position: -200% 0; } 
+      100% { background-position: 200% 0; } 
+    }
 
     .scroll-content { flex: 1; overflow-y: auto; overflow-x: hidden; background: #fff; position: relative; }
     .page { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; flex-direction: column; background: #fff; }
@@ -39,9 +43,6 @@
     .avatar-ring { width: 64px; height: 64px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, var(--crimson), var(--crimson-dark), var(--crimson-light)); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px var(--crimson-glow); }
     .avatar-ring .avatar-img { width: 100%; height: 100%; border-radius: 50%; background: #e5e7eb; border: 3px solid #fff; }
     .user-name { font-size: 11px; font-weight: 500; color: #333; text-align: center; }
-    .suggestion-btn { padding: 4px 12px; border-radius: 12px; background: var(--crimson); color: #fff; font-size: 10px; font-weight: 600; border: none; cursor: pointer; transition: transform 0.1s; }
-    .suggestion-btn:active { transform: scale(0.9); }
-    .suggestion-btn.pending { background: #888; cursor: default; }
     .fy-search-bar { padding: 0 16px 16px 16px; background: #fff; }
     .fy-search-input { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e5e7eb; background: #f5f5f7; font-size: 14px; outline: none; transition: all 0.2s; font-family: 'Inter', sans-serif; }
     .fy-search-input:focus { background: #fff; border-color: var(--crimson); }
@@ -49,11 +50,25 @@
     .fy-tab { padding: 14px 16px; font-size: 14px; font-weight: 600; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; background: transparent; border-top: none; border-left: none; border-right: none; font-family: inherit; white-space: nowrap; }
     .fy-tab.active { color: var(--crimson); border-bottom-color: var(--crimson); }
     
+    /* REELS CONTAINER – takes full feed, hides everything else */
     .reels-full-container { display: none; flex-direction: column; height: 100%; width: 100%; background: #000; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 20; }
     .reels-full-container.active { display: flex; }
     .reels-scroll { flex: 1; overflow-y: scroll; scroll-snap-type: y mandatory; background: #000; }
     .reel-card { width: 100%; height: 100vh; max-height: 932px; flex-shrink: 0; scroll-snap-align: start; position: relative; background: #1a1a1a; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    .reel-video-placeholder { width: 100%; height: 100%; background-color: #f0f0f2; background-image: linear-gradient(90deg, #f0f0f2 0%, #e0e0e4 50%, #f0f0f2 100%); background-size: 200% 100%; animation: shimmer 2s infinite linear; position: relative; }
+    
+    /* UPDATED: White Placeholder Animation */
+    .reel-video-placeholder { 
+      width: 100%; 
+      height: 100%; 
+      /* Light gray base */
+      background-color: #f0f0f2; 
+      /* Shimmer effect */
+      background-image: linear-gradient(90deg, #f0f0f2 0%, #e0e0e4 50%, #f0f0f2 100%);
+      background-size: 200% 100%;
+      animation: shimmer 2s infinite linear;
+      position: relative; 
+    }
+    
     .reel-ui-right { position: absolute; right: 12px; bottom: 100px; display: flex; flex-direction: column; align-items: center; gap: 20px; z-index: 5; }
     .reel-action-btn { display: flex; flex-direction: column; align-items: center; color: #fff; cursor: pointer; }
     .reel-action-btn .icon-circle { width: 44px; height: 44px; background: rgba(255,255,255,0.15); backdrop-filter: blur(4px); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; transition: background 0.2s; }
@@ -63,13 +78,16 @@
     .reel-user { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
     .reel-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #e5e7eb; border: 2px solid #fff; }
     .reel-username { font-weight: 700; font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-    .reel-follow-btn { background: transparent; border: 1px solid rgba(255,255,255,0.6); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; }
+    .reel-follow-btn { background: transparent; border: 1px solid rgba(255,255,255,0.6); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
     .reel-caption { font-size: 13px; line-height: 1.4; margin-bottom: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); opacity: 0.9; }
     .reel-music { display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: 0.8; }
     .reel-music .material-icons { font-size: 14px; }
+    
+    /* close reels button */
     .close-reels-btn { position: absolute; top: 20px; left: 16px; z-index: 30; background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); color: #fff; border: none; border-radius: 30px; padding: 6px 14px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer; }
     .close-reels-btn .material-icons { font-size: 20px; }
     
+    /* streams etc */
     .streams-container { display: none; flex-direction: column; padding: 12px 16px 20px 16px; background: #fff; flex: 1; overflow-y: auto; gap: 20px; }
     .streams-container.active { display: flex; }
     .streams-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
@@ -124,6 +142,7 @@
     .fab { position: absolute; bottom: 90px; right: 20px; width: 56px; height: 56px; background: var(--crimson); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px var(--crimson-glow); cursor: pointer; z-index: 20; transition: transform 0.2s ease, opacity 0.25s ease; border: none; }
     .fab:active { transform: scale(0.90); }
     .fab.hidden { opacity: 0; pointer-events: none; transform: scale(0.8); }
+    /* quick override for reels */
     .reels-full-container .bottom-nav { display: none; }
     .search-results-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 30; flex-direction: column; animation: fadeSlide 0.2s ease-out; }
     .search-results-overlay.active { display: flex; }
@@ -141,6 +160,7 @@
     .search-result-item .result-badge { background: var(--crimson); color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; }
     .empty-search { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); padding: 40px; text-align: center; }
     .empty-search .material-icons { font-size: 48px; opacity: 0.2; margin-bottom: 12px; }
+    /* messages leftovers */
     .messages-layout { position: relative; display: flex; flex-direction: column; height: 100%; }
     .chat-search-bar { padding: 8px 16px; background: #fff; border-bottom: 1px solid rgba(0,0,0,0.04); }
     .chat-search-input { width: 100%; padding: 10px 16px; border-radius: 20px; border: 1px solid #e5e7eb; background: #f5f5f7; font-size: 14px; outline: none; transition: all 0.2s; font-family: 'Inter', sans-serif; }
@@ -189,7 +209,7 @@
     @keyframes slideUp { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
     .profile-header { display: flex; align-items: center; padding: 12px 16px; gap: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); background: #fff; flex-shrink: 0; z-index: 10; }
     .profile-content { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; align-items: center; }
-    .profile-avatar-large { width: 100px; height: 100px; border-radius: 50%; background: #e5e7eb; margin-bottom: 12px; border: 4px solid #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.1); cursor: pointer; position: relative; display: flex; align-items: center; justify-content: center; }
+    .profile-avatar-large { width: 100px; height: 100px; border-radius: 50%; background: #e5e7eb; margin-bottom: 12px; border: 4px solid #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.1); cursor: pointer; position: relative; }
     .profile-avatar-large::after { content: 'person'; font-family: 'Material Icons'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 50px; color: #d1d5db; }
     .profile-name { font-size: 22px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px; }
     .profile-bio { font-size: 14px; color: var(--text-secondary); text-align: center; margin: 8px 0 16px; max-width: 80%; line-height: 1.4; }
@@ -263,8 +283,6 @@
     .recording-indicator { display: none; padding: 8px 16px; background: var(--crimson); color: #fff; font-size: 14px; font-weight: 500; align-items: center; gap: 10px; flex-shrink: 0; }
     .recording-indicator.active { display: flex; }
     .recording-indicator .dot { width: 12px; height: 12px; background: #fff; border-radius: 50%; animation: pulse-recording 0.8s infinite; }
-    .empty-state { padding: 40px; text-align: center; color: #999; }
-    .empty-state .material-icons { font-size: 48px; opacity: 0.3; }
   </style>
 </head>
 <body>
@@ -331,16 +349,18 @@
           <div class="channels-list" id="channelsList"></div>
         </div>
 
-        <!-- REELS FULL PAGE -->
+        <!-- REELS FULL PAGE (overlay over feed) - CONTENT REMOVED FOR DYNAMIC LOADING -->
         <div class="reels-full-container" id="reelsFullContainer">
           <button class="close-reels-btn" id="closeReelsBtn"><span class="material-icons">arrow_back</span> Back</button>
-          <div class="reels-scroll" id="reelsScroll"></div>
+          <div class="reels-scroll" id="reelsScroll">
+            <!-- Dynamic Content Will Be Injected Here -->
+          </div>
         </div>
 
       </div> <!-- /feed-scroll -->
     </div> <!-- /page-feed -->
 
-    <!-- MESSAGES PAGE -->
+    <!-- MESSAGES PAGE (same as before) -->
     <div class="page active" id="page-messages">
       <header class="messages-header"><span class="page-title" style="font-size:20px;">Messages</span></header>
       <div class="messages-layout" id="messagesLayout">
@@ -379,7 +399,7 @@
             <button class="input-btn voice-btn" id="voiceBtn" style="color: var(--crimson);"><span class="material-icons">mic</span></button>
             <button class="send-btn" id="sendBtn"><span class="material-icons">send</span></button>
           </div>
-          <div class="recording-indicator" id="recordingIndicator"><span class="dot"></span><span id="recordingStatusText">Recording...</span><span style="margin-left:auto; cursor:pointer; font-size:18px;" id="stopRecordingBtn">✕</span></div>
+          <div class="recording-indicator" id="recordingIndicator"><span class="dot"></span><span>Recording...</span><span style="margin-left:auto; cursor:pointer; font-size:18px;" id="stopRecordingBtn">✕</span></div>
         </div>
         <div class="profile-page" id="profilePage">
           <div class="profile-header"><span class="material-icons back-icon" id="profileBack" style="cursor:pointer; color:var(--text-primary);">arrow_back</span><span style="font-weight:600; font-size:18px;">Profile</span><span class="material-icons settings-gear" id="settingsGear" style="margin-left:auto; cursor:pointer; color:var(--text-secondary);">settings</span></div>
@@ -405,42 +425,26 @@
   </nav>
 
   <!-- edit modal -->
-  <div class="edit-modal" id="editModal"><div class="modal-card"><h3 style="margin-bottom:16px; text-align:center;">Edit Profile</h3><div class="field-group"><label style="display:block; margin-bottom:6px; font-size:12px; font-weight:600; color:#666;">Display Name</label><input type="text" id="editUsername" /></div><div class="field-group"><label style="display:block; margin-bottom:6px; font-size:12px; font-weight:600; color:#666;">Bio</label><textarea id="editBio" rows="3"></textarea></div><div style="display:flex; gap:10px; margin-top:20px;"><button id="editCancel" style="flex:1; padding:12px; border:none; background:#f0f0f0; border-radius:12px; font-weight:600; cursor:pointer; font-family:inherit;">Cancel</button><button id="editSave" style="flex:1; padding:12px; border:none; background:var(--crimson); color:#fff; border-radius:12px; font-weight:600; cursor:pointer; font-family:inherit; box-shadow:0 2px 8px var(--crimson-glow);">Save</button></div></div></div>
+  <div class="edit-modal" id="editModal"><div class="modal-card"><h3 style="margin-bottom:16px; text-align:center;">Edit Profile</h3><div class="field-group"><label style="display:block; margin-bottom:6px; font-size:12px; font-weight:600; color:#666;">Display Name</label><input type="text" id="editUsername" value="Username" /></div><div class="field-group"><label style="display:block; margin-bottom:6px; font-size:12px; font-weight:600; color:#666;">Bio</label><textarea id="editBio" rows="3">Digital creator &amp; developer.</textarea></div><div style="display:flex; gap:10px; margin-top:20px;"><button id="editCancel" style="flex:1; padding:12px; border:none; background:#f0f0f0; border-radius:12px; font-weight:600; cursor:pointer; font-family:inherit;">Cancel</button><button id="editSave" style="flex:1; padding:12px; border:none; background:var(--crimson); color:#fff; border-radius:12px; font-weight:600; cursor:pointer; font-family:inherit; box-shadow:0 2px 8px var(--crimson-glow);">Save</button></div></div></div>
 </div>
 
 <script>
   (function() {
-    // ----- STATE MANAGEMENT (Refactored) -----
+    // ----- STATE MANAGEMENT -----
     const appState = {
-      currentUser: { 
-        id: 'me', 
-        name: 'You',
-        username: 'you',
-        bio: 'Digital creator & developer. Building things.',
-        followers: 1234,
-        following: 567
-      },
-      users: [
-        { id: 'u1', name: 'Alex Rivera', handle: '@alexr', username: 'alexr' },
-        { id: 'u2', name: 'Taylor Swift', handle: '@taylorswift', username: 'taylorswift' },
-        { id: 'u3', name: 'Chris Evans', handle: '@chrisevans', username: 'chrisevans' },
-        { id: 'u4', name: 'Zara Khan', handle: '@zarak', username: 'zarak' },
-        { id: 'u5', name: 'Mike Johnson', handle: '@mikej', username: 'mikej' },
-        { id: 'u6', name: 'Sarah Chen', handle: '@sarahc', username: 'sarahc' }
+      currentUser: { id: 'me', name: 'You' },
+      suggestions: [
+        { id: 'u1', name: 'Alex Rivera', handle: '@alexr' },
+        { id: 'u2', name: 'Taylor Swift', handle: '@taylorswift' },
+        { id: 'u3', name: 'Chris Evans', handle: '@chrisevans' },
+        { id: 'u4', name: 'Zara Khan', handle: '@zarak' },
+        { id: 'u5', name: 'Mike Johnson', handle: '@mikej' },
+        { id: 'u6', name: 'Sarah Chen', handle: '@sarahc' }
       ],
-      // Relationship states:
-      // - contacts: users I'm following AND they're following me back (mutual)
-      // - following: users I'm following (including those who haven't followed back)
-      // - followers: users who follow me (including those I haven't followed back)
-      // - requests_sent: users I've sent a follow request to
-      // - requests_received: users who've sent me a follow request
-      // - blocked: users I've blocked
-      contacts: [], // mutual follows (user IDs)
-      following: ['u3'], // I follow Chris Evans
-      followers: ['u1'], // Alex Rivera follows me
-      requests_sent: ['u2'], // I requested Taylor Swift
-      requests_received: ['u4'], // Zara Khan requested me
-      blocked: [] // blocked user IDs
+      contacts: [], // Accepted friends
+      sentRequests: [], // IDs of users I requested
+      receivedRequests: [], // IDs of users who requested me
+      blocked: [] // IDs of blocked users
     };
 
     const STORY_COUNT = 8, THREAD_COUNT = 8;
@@ -449,6 +453,8 @@
       { title: "Tech Beats Vol. 2 · DJ Mix", views: "12K", comments: "340" },
       { title: "Travel vlog: Bali edition", views: "5.2K", comments: "89" }
     ];
+
+    // NEW: Mock Data for Reels
     const mockReels = [
       { username: "alex_rivera", caption: "Trying out the new camera features! 📸 #tech #review", music: "Original Audio - Alex Rivera", likes: "12K", comments: "450", bg: "" },
       { username: "travel_diaries", caption: "Sunset in Bali 🌅 absolutely breathtaking.", music: "Tropical House Mix - DJ Sun", likes: "8.5K", comments: "120", bg: "linear-gradient(45deg,#1a2a3a,#0d1117)" },
@@ -457,398 +463,50 @@
       { username: "art_daily", caption: "Sketching session 🎨", music: "Lo-Fi Beats", likes: "2.1K", comments: "45", bg: "linear-gradient(45deg,#3a1a1a,#1a1a1a)" }
     ];
 
-    // ----- HELPER FUNCTIONS -----
-    function getUser(id) {
-      return appState.users.find(u => u.id === id);
-    }
-
-    function isContact(id) {
-      return appState.contacts.includes(id);
-    }
-
-    function isFollowing(id) {
-      return appState.following.includes(id);
-    }
-
-    function isFollower(id) {
-      return appState.followers.includes(id);
-    }
-
-    function isRequestedByMe(id) {
-      return appState.requests_sent.includes(id);
-    }
-
-    function isRequestedToMe(id) {
-      return appState.requests_received.includes(id);
-    }
-
-    function isBlocked(id) {
-      return appState.blocked.includes(id);
-    }
-
-    function getRelationshipStatus(userId) {
-      if (isBlocked(userId)) return 'blocked';
-      if (isContact(userId)) return 'contact';
-      if (isFollowing(userId)) return 'following';
-      if (isFollower(userId)) return 'follower';
-      if (isRequestedByMe(userId)) return 'request_sent';
-      if (isRequestedToMe(userId)) return 'request_received';
-      return 'none';
-    }
-
-    // ----- RENDER FUNCTIONS -----
     function renderSuggestions() {
       const container = document.getElementById('suggestionsTray');
       let html = '';
-      
-      // Filter out users who are already contacts, blocked, or have pending requests
-      const available = appState.users.filter(u => 
-        !isContact(u.id) && 
-        !isBlocked(u.id) && 
-        !isRequestedByMe(u.id) &&
-        !isRequestedToMe(u.id)
+      // Filter out people already in contacts, sent requests, or blocked
+      const available = appState.suggestions.filter(u => 
+        !appState.contacts.find(c => c.id === u.id) &&
+        !appState.sentRequests.includes(u.id) &&
+        !appState.blocked.includes(u.id)
       );
 
-      if (available.length === 0) {
-        container.innerHTML = '<div style="padding:0 16px; color:#999; font-size:12px;">No new suggestions</div>';
-        return;
+      if(available.length === 0) {
+         container.innerHTML = '<div style="padding:0 16px; color:#999; font-size:12px;">No new suggestions</div>';
+         return;
       }
 
       available.forEach(u => {
-        // Check if this user follows me (follower) - if so, show "Follow Back" option
-        const isFollowerOfMe = isFollower(u.id);
-        const btnText = isFollowerOfMe ? 'Follow Back' : 'Follow';
-        const btnClass = 'suggestion-btn';
-        
         html += `<div class="suggestion-card">
           <div class="avatar-ring"><div class="avatar-img"></div></div>
           <div class="user-name">${u.name.split(' ')[0]}</div>
-          <button class="${btnClass}" onclick="handleFollow('${u.id}')" data-userid="${u.id}">${btnText}</button>
+          <button class="suggestion-btn" onclick="handleFollowRequest('${u.id}')" style="padding:4px 12px; border-radius:12px; background:var(--crimson); color:#fff; font-size:10px; font-weight:600; border:none; cursor:pointer;">Follow</button>
         </div>`;
       });
       container.innerHTML = html;
     }
 
-    // ----- FOLLOW/UNFOLLOW/BLOCK SYSTEM (Refactored) -----
-    window.handleFollow = function(userId) {
-      const user = getUser(userId);
+    // LOGIC: Handle Follow Request
+    window.handleFollowRequest = function(userId) {
+      const user = appState.suggestions.find(u => u.id === userId);
       if (!user) return;
-      
-      const status = getRelationshipStatus(userId);
-      
-      switch(status) {
-        case 'none':
-        case 'follower': // If they follow me, following them makes it mutual
-          // Send follow request
-          if (!appState.requests_sent.includes(userId)) {
-            appState.requests_sent.push(userId);
-            
-            // Check if this user already follows me (follower)
-            if (isFollower(userId)) {
-              // Auto-accept: Move from follower to contact
-              appState.followers = appState.followers.filter(id => id !== userId);
-              appState.contacts.push(userId);
-              appState.requests_sent = appState.requests_sent.filter(id => id !== userId);
-              // Update counts
-              appState.currentUser.followers = appState.followers.length + appState.contacts.length;
-              appState.currentUser.following = appState.following.length + appState.contacts.length;
-              showToast(`You and ${user.name} are now connected!`);
-            } else {
-              showToast(`Follow request sent to ${user.name}`);
-            }
-            updateAllUI();
-          }
-          break;
-          
-        case 'request_sent':
-          // Cancel request
-          appState.requests_sent = appState.requests_sent.filter(id => id !== userId);
-          showToast(`Follow request to ${user.name} cancelled`);
-          updateAllUI();
-          break;
-          
-        case 'request_received':
-          // Accept their follow request (they follow me, I follow back = contact)
-          appState.requests_received = appState.requests_received.filter(id => id !== userId);
-          appState.contacts.push(userId);
-          appState.currentUser.followers = appState.followers.length + appState.contacts.length;
-          appState.currentUser.following = appState.following.length + appState.contacts.length;
-          showToast(`You accepted ${user.name}'s follow request`);
-          updateAllUI();
-          break;
-          
-        case 'contact':
-          // Unfollow (remove from contacts)
-          appState.contacts = appState.contacts.filter(id => id !== userId);
-          // Add them to followers (they still follow me)
-          if (!appState.followers.includes(userId)) {
-            appState.followers.push(userId);
-          }
-          appState.currentUser.followers = appState.followers.length + appState.contacts.length;
-          appState.currentUser.following = appState.following.length + appState.contacts.length;
-          showToast(`Unfollowed ${user.name}`);
-          updateAllUI();
-          break;
-          
-        case 'following':
-          // Unfollow (remove from following)
-          appState.following = appState.following.filter(id => id !== userId);
-          appState.currentUser.following = appState.following.length + appState.contacts.length;
-          showToast(`Unfollowed ${user.name}`);
-          updateAllUI();
-          break;
-          
-        case 'blocked':
-          showToast(`${user.name} is blocked`);
-          break;
-      }
-    };
 
-    // Admin functions for managing requests from contact list
-    window.acceptRequest = function(userId) {
-      const user = getUser(userId);
-      if (!user) return;
+      // Add to Sent Requests
+      appState.sentRequests.push(userId);
       
-      appState.requests_received = appState.requests_received.filter(id => id !== userId);
-      appState.contacts.push(userId);
-      appState.currentUser.followers = appState.followers.length + appState.contacts.length;
-      appState.currentUser.following = appState.following.length + appState.contacts.length;
-      showToast(`You and ${user.name} are now connected!`);
-      renderContacts();
+      // Simulate: Add to Target's Received Requests (for demo purposes, we just add to our local received array to show the flow if we were the other person, 
+      // BUT strictly speaking, if I follow them, THEY receive it. 
+      // To demonstrate the UI, let's assume some random users also followed us back into 'received')
+      
+      // For this demo: Let's move the user from Suggestions -> Sent List visually
       renderSuggestions();
-      updateProfileStats();
-    };
-
-    window.declineRequest = function(userId) {
-      const user = getUser(userId);
-      appState.requests_received = appState.requests_received.filter(id => id !== userId);
-      showToast(`Follow request from ${user ? user.name : 'user'} declined`);
-      renderContacts();
-    };
-
-    window.cancelRequest = function(userId) {
-      const user = getUser(userId);
-      appState.requests_sent = appState.requests_sent.filter(id => id !== userId);
-      showToast(`Follow request to ${user ? user.name : 'user'} cancelled`);
-      renderContacts();
-      renderSuggestions();
-    };
-
-    window.unblockUser = function(userId) {
-      const user = getUser(userId);
-      appState.blocked = appState.blocked.filter(id => id !== userId);
-      showToast(`${user ? user.name : 'User'} unblocked`);
-      renderContacts();
-      renderSuggestions();
-    };
-
-    window.clearBlocked = function() {
-      if (confirm("Unblock everyone?")) {
-        appState.blocked = [];
-        renderContacts();
-        renderSuggestions();
-      }
-    };
-
-    window.blockUser = function(userId) {
-      const user = getUser(userId);
-      if (!user) return;
+      renderContacts(); // Update lists if open
       
-      // Remove from all relationships
-      appState.contacts = appState.contacts.filter(id => id !== userId);
-      appState.following = appState.following.filter(id => id !== userId);
-      appState.followers = appState.followers.filter(id => id !== userId);
-      appState.requests_sent = appState.requests_sent.filter(id => id !== userId);
-      appState.requests_received = appState.requests_received.filter(id => id !== userId);
-      appState.blocked.push(userId);
-      
-      appState.currentUser.followers = appState.followers.length + appState.contacts.length;
-      appState.currentUser.following = appState.following.length + appState.contacts.length;
-      
-      showToast(`${user.name} blocked`);
-      updateAllUI();
+      alert(`Request sent to ${user.name}. Check your 'Sent' list.`);
     };
 
-    // ----- UI UPDATE -----
-    function updateAllUI() {
-      renderSuggestions();
-      renderContacts();
-      updateProfileStats();
-    }
-
-    function updateProfileStats() {
-      const followers = appState.followers.length + appState.contacts.length;
-      const following = appState.following.length + appState.contacts.length;
-      document.getElementById('followersCount').textContent = followers.toLocaleString();
-      document.getElementById('followingCount').textContent = following.toLocaleString();
-    }
-
-    // ----- TOAST SYSTEM -----
-    function showToast(message) {
-      // Simple toast implementation
-      let toast = document.getElementById('toast');
-      if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'toast';
-        toast.style.cssText = `
-          position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-          background: rgba(0,0,0,0.8); color: #fff; padding: 12px 24px;
-          border-radius: 12px; font-size: 14px; font-weight: 500;
-          z-index: 9999; max-width: 90%; text-align: center;
-          opacity: 0; transition: opacity 0.3s ease;
-          pointer-events: none;
-        `;
-        document.body.appendChild(toast);
-      }
-      toast.textContent = message;
-      toast.style.opacity = '1';
-      clearTimeout(toast._hideTimeout);
-      toast._hideTimeout = setTimeout(() => {
-        toast.style.opacity = '0';
-      }, 2500);
-    }
-
-    // ----- RENDER CONTACTS (Refactored) -----
-    let currentContactTab = 'contacts';
-    let currentRequestSubTab = 'received';
-
-    function renderContacts() {
-      const container = document.getElementById('contactListContainer');
-      const searchContainer = document.getElementById('searchContainer');
-      container.innerHTML = '';
-      
-      if (currentContactTab === 'contacts') {
-        searchContainer.style.display = 'block';
-        const contactList = appState.contacts.map(id => getUser(id)).filter(Boolean);
-        
-        if (contactList.length === 0) {
-          container.innerHTML = `<div class="empty-state"><span class="material-icons">people_outline</span><p>No contacts yet</p></div>`;
-        } else {
-          contactList.forEach(c => {
-            container.innerHTML += `<div class="contact-item">
-              <div class="contact-avatar"></div>
-              <div class="contact-info">
-                <div class="contact-name">${c.name}</div>
-                <div class="contact-status">${c.handle || 'Active'}</div>
-              </div>
-              <div class="contact-actions">
-                <button class="btn-action btn-add" onclick="startChatFromContacts('${c.name}')">Message</button>
-                <button class="btn-action btn-decline" onclick="handleFollow('${c.id}')">Unfollow</button>
-                <button class="btn-action btn-decline" onclick="blockUser('${c.id}')">Block</button>
-              </div>
-            </div>`;
-          });
-        }
-      } else if (currentContactTab === 'requests') {
-        searchContainer.style.display = 'none';
-        const subTabs = document.getElementById('requestSubTabs');
-        subTabs.classList.add('active');
-        
-        if (currentRequestSubTab === 'received') {
-          const receivedList = appState.requests_received.map(id => getUser(id)).filter(Boolean);
-          if (receivedList.length === 0) {
-            container.innerHTML = `<div class="empty-state"><span class="material-icons">inbox</span><p>No new requests</p></div>`;
-          } else {
-            receivedList.forEach(u => {
-              container.innerHTML += `<div class="contact-item">
-                <div class="contact-avatar"></div>
-                <div class="contact-info">
-                  <div class="contact-name">${u.name}</div>
-                  <div class="contact-status">Wants to follow you</div>
-                </div>
-                <div class="contact-actions">
-                  <button class="btn-action btn-accept" onclick="acceptRequest('${u.id}')">Accept</button>
-                  <button class="btn-action btn-decline" onclick="declineRequest('${u.id}')">Decline</button>
-                </div>
-              </div>`;
-            });
-          }
-        } else { // Sent
-          const sentList = appState.requests_sent.map(id => getUser(id)).filter(Boolean);
-          if (sentList.length === 0) {
-            container.innerHTML = `<div class="empty-state"><span class="material-icons">send</span><p>No sent requests</p></div>`;
-          } else {
-            sentList.forEach(u => {
-              // Check if this user is also a follower (mutual)
-              const isMutual = isFollower(u.id);
-              container.innerHTML += `<div class="contact-item">
-                <div class="contact-avatar"></div>
-                <div class="contact-info">
-                  <div class="contact-name">${u.name}</div>
-                  <div class="contact-status" style="color:${isMutual ? '#2e7d32' : '#e65100'}">
-                    ${isMutual ? '✓ Mutual follow' : 'Request sent'}
-                  </div>
-                </div>
-                <div class="contact-actions">
-                  ${isMutual ? `<button class="btn-action btn-accept" onclick="acceptRequest('${u.id}')">Accept</button>` : ''}
-                  <button class="btn-action btn-decline" onclick="cancelRequest('${u.id}')">Cancel</button>
-                </div>
-              </div>`;
-            });
-          }
-        }
-      } else if (currentContactTab === 'blocked') {
-        searchContainer.style.display = 'none';
-        document.getElementById('requestSubTabs').classList.remove('active');
-        
-        const blockedList = appState.blocked.map(id => getUser(id)).filter(Boolean);
-        if (blockedList.length === 0) {
-          container.innerHTML = `<div class="empty-state"><span class="material-icons">block</span><p>No blocked users</p></div>`;
-        } else {
-          blockedList.forEach(u => {
-            container.innerHTML += `<div class="contact-item">
-              <div class="contact-avatar"></div>
-              <div class="contact-info">
-                <div class="contact-name">${u.name}</div>
-                <div class="contact-status" style="color:var(--crimson)">Blocked</div>
-              </div>
-              <div class="contact-actions">
-                <button class="btn-action btn-unblock" onclick="unblockUser('${u.id}')">Unblock</button>
-              </div>
-            </div>`;
-          });
-          container.innerHTML += `<div style="padding:16px; text-align:center;">
-            <button class="btn-action btn-clear" onclick="clearBlocked()">Clear All Blocked</button>
-          </div>`;
-        }
-      }
-    }
-
-    // ----- TAB SWITCHING -----
-    window.switchContactTab = function(tab) {
-      currentContactTab = tab;
-      const tabs = document.querySelectorAll('.contacts-tab');
-      tabs.forEach(t => t.classList.remove('active'));
-      
-      if (tab === 'contacts') tabs[0].classList.add('active');
-      else if (tab === 'requests') tabs[1].classList.add('active');
-      else if (tab === 'blocked') tabs[2].classList.add('active');
-      
-      const subTabs = document.getElementById('requestSubTabs');
-      if (tab === 'requests') {
-        subTabs.classList.add('active');
-      } else {
-        subTabs.classList.remove('active');
-      }
-      renderContacts();
-    };
-
-    window.switchRequestSubTab = function(subTab) {
-      currentRequestSubTab = subTab;
-      document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
-      if (subTab === 'received') {
-        document.querySelectorAll('.sub-tab')[0].classList.add('active');
-      } else {
-        document.querySelectorAll('.sub-tab')[1].classList.add('active');
-      }
-      renderContacts();
-    };
-
-    window.startChatFromContacts = function(userName) {
-      window.openChat(userName, false);
-    };
-
-    // ----- OTHER RENDER FUNCTIONS -----
     function renderStories() {
       const container = document.getElementById('storiesTray');
       let html = `<div class="story-skeleton"><div class="ring" style="background:#ddd; padding:0; border:2px dashed #ccc;"><div class="avatar-placeholder" style="border:none; background:#f0f0f0; display:flex; align-items:center; justify-content:center;"><span class="material-icons" style="color:#ccc;">add</span></div></div><div class="username-placeholder" style="width:30px;"></div></div>`;
@@ -860,21 +518,7 @@
       const container = document.getElementById('threadList');
       let html = '';
       for (let i=0; i<THREAD_COUNT; i++) {
-        // Show different statuses based on contacts
-        let statusClass = '';
-        let statusText = '';
-        if (i < appState.contacts.length) {
-          const contact = getUser(appState.contacts[i]);
-          if (contact) {
-            statusText = `Online`;
-            statusClass = 'avatar-status';
-          }
-        }
-        html += `<div class="thread-skeleton" onclick="openChat('User ${i+1}', false)">
-          <div class="avatar-wrap"><div class="${statusClass}"></div></div>
-          <div class="thread-info"><div class="name-line"></div><div class="snippet-line"></div></div>
-          <div class="timestamp-line"></div>
-        </div>`;
+        html += `<div class="thread-skeleton" onclick="openChat('User ${i+1}', false)"><div class="avatar-wrap"><div class="avatar-status"></div></div><div class="thread-info"><div class="name-line"></div><div class="snippet-line"></div></div><div class="timestamp-line"></div></div>`;
       }
       container.innerHTML = html;
     }
@@ -905,8 +549,7 @@
       ];
       let html = '';
       sports.forEach(s => {
-        const iconName = s.name.toLowerCase();
-        html += `<div class="sport-list-item"><div class="sport-icon-placeholder material-icons">sports_${iconName}</div><div class="sport-info"><div class="sport-name-line"></div><div class="sport-desc-line"></div></div><span class="sport-badge-placeholder">Watch</span></div>`;
+        html += `<div class="sport-list-item"><div class="sport-icon-placeholder material-icons">sports_${s.name.toLowerCase()}</div><div class="sport-info"><div class="sport-name-line"></div><div class="sport-desc-line"></div></div><span class="sport-badge-placeholder">Watch</span></div>`;
       });
       container.innerHTML = html;
     }
@@ -926,11 +569,15 @@
       container.innerHTML = html;
     }
 
+    // NEW: Render Reels dynamically
     function renderReels() {
       const container = document.getElementById('reelsScroll');
       let html = '';
+      
       mockReels.forEach((reel, index) => {
+        // Determine background style (white shimmer if no specific gradient provided)
         const bgStyle = reel.bg ? `background:${reel.bg};` : '';
+        
         html += `
           <div class="reel-card">
             <div class="reel-video-placeholder" style="${bgStyle}"></div>
@@ -941,117 +588,83 @@
               <div class="reel-action-btn"><div class="icon-circle"><span class="material-icons">more_vert</span></div></div>
             </div>
             <div class="reel-info-bottom">
-              <div class="reel-user"><div class="reel-user-avatar"></div><span class="reel-username">${reel.username}</span><button class="reel-follow-btn" onclick="handleFollowFromReel('${reel.username}')">Follow</button></div>
+              <div class="reel-user"><div class="reel-user-avatar"></div><span class="reel-username">${reel.username}</span><button class="reel-follow-btn">Follow</button></div>
               <div class="reel-caption">${reel.caption}</div>
               <div class="reel-music"><span class="material-icons">music_note</span><span>${reel.music}</span></div>
             </div>
           </div>
         `;
       });
+      
       container.innerHTML = html;
     }
 
-    // Handle follow from reel (stub - find user by username)
-    window.handleFollowFromReel = function(username) {
-      const user = appState.users.find(u => u.username === username);
-      if (user) {
-        handleFollow(user.id);
-      } else {
-        showToast(`Could not find user: ${username}`);
-      }
-    };
-
-    // ----- SEARCH OVERLAY -----
+    // ----- search overlay -----
     const searchOverlay = document.getElementById('searchOverlay');
     const searchOverlayInput = document.getElementById('searchOverlayInput');
     const searchResultsList = document.getElementById('searchResultsList');
-    
     window.openSearchOverlay = function() {
       searchOverlay.classList.add('active');
       searchOverlayInput.value = '';
       searchResultsList.innerHTML = `<div class="empty-search"><span class="material-icons">search</span><p>Search for users or videos</p></div>`;
       setTimeout(() => searchOverlayInput.focus(), 100);
     };
-    
     document.getElementById('closeSearchOverlay').addEventListener('click', () => searchOverlay.classList.remove('active'));
-    
     searchOverlayInput.addEventListener('input', function() {
       const query = this.value.trim().toLowerCase();
       const results = [];
       
+      // BLOCKING LOGIC: If current user has blocked someone, they shouldn't appear in search
       if (query.length > 0) {
-        // Search users (exclude blocked and current user)
-        appState.users.forEach(u => {
-          if (!isBlocked(u.id) && u.id !== 'me') {
-            if (u.name.toLowerCase().includes(query) || u.handle.toLowerCase().includes(query)) {
-              const status = getRelationshipStatus(u.id);
-              let statusText = '';
-              if (status === 'contact') statusText = '✓ Following';
-              else if (status === 'following') statusText = 'Following';
-              else if (status === 'follower') statusText = 'Follows you';
-              else if (status === 'request_sent') statusText = 'Request sent';
-              else if (status === 'request_received') statusText = 'Follow request';
-              results.push({ type: 'user', data: u, status: statusText });
-            }
+        appState.suggestions.forEach(u => { 
+          // Check if blocked
+          if (!appState.blocked.includes(u.id)) {
+             if (u.name.toLowerCase().includes(query) || u.handle.toLowerCase().includes(query)) {
+               results.push({ type: 'user', data: u }); 
+             }
           }
         });
-        // Search videos
-        mockVideos.forEach(v => {
-          if (v.title.toLowerCase().includes(query)) {
-            results.push({ type: 'video', data: v });
-          }
-        });
+        mockVideos.forEach(v => { if (v.title.toLowerCase().includes(query)) results.push({ type: 'video', data: v }); });
       }
       
       if (results.length === 0 && query.length > 0) {
         searchResultsList.innerHTML = `<div class="empty-search"><span class="material-icons">search_off</span><p>No results for "${query}"</p></div>`;
         return;
       }
-      
       let html = '';
       results.forEach(r => {
         if (r.type === 'user') {
-          const statusText = r.status ? ` · ${r.status}` : '';
-          html += `<div class="search-result-item" onclick="handleFollow('${r.data.id}')">
-            <div class="result-avatar"></div>
-            <div class="result-info">
-              <div class="result-name">${r.data.name}</div>
-              <div class="result-sub">${r.data.handle}${statusText}</div>
-            </div>
-            <span class="result-badge">User</span>
-          </div>`;
+          html += `<div class="search-result-item" onclick="alert('View profile: ${r.data.name}')"><div class="result-avatar"></div><div class="result-info"><div class="result-name">${r.data.name}</div><div class="result-sub">${r.data.handle}</div></div><span class="result-badge">User</span></div>`;
         } else {
-          html += `<div class="search-result-item" onclick="alert('Play video: ${r.data.title}')">
-            <div class="result-avatar" style="border-radius:8px; background:#f0f0f2; display:flex; align-items:center; justify-content:center;">
-              <span class="material-icons" style="color:#ccc; font-size:24px;">play_circle_outline</span>
-            </div>
-            <div class="result-info">
-              <div class="result-name">${r.data.title}</div>
-              <div class="result-sub">${r.data.views} views · ${r.data.comments} comments</div>
-            </div>
-            <span class="result-badge" style="background:#666;">Video</span>
-          </div>`;
+          html += `<div class="search-result-item" onclick="alert('Play video: ${r.data.title}')"><div class="result-avatar" style="border-radius:8px; background:#f0f0f2; display:flex; align-items:center; justify-content:center;"><span class="material-icons" style="color:#ccc; font-size:24px;">play_circle_outline</span></div><div class="result-info"><div class="result-name">${r.data.title}</div><div class="result-sub">${r.data.views} views · ${r.data.comments} comments</div></div><span class="result-badge" style="background:#666;">Video</span></div>`;
         }
       });
       searchResultsList.innerHTML = html;
     });
 
-    // ----- REELS NAVIGATION -----
+    // ----- channels overlay -----
+    document.getElementById('channelsBtn').addEventListener('click', () => document.getElementById('channelsOverlay').classList.add('active'));
+    document.getElementById('closeChannelsOverlay').addEventListener('click', () => document.getElementById('channelsOverlay').classList.remove('active'));
+
+    // ----- REELS: show fullscreen reels, hide feed intro/tabs -----
     const reelsFullContainer = document.getElementById('reelsFullContainer');
     const closeReelsBtn = document.getElementById('closeReelsBtn');
     const feedIntro = document.querySelector('.feed-intro');
     const videoFeed = document.getElementById('videoFeedContainer');
     const streamsContainer = document.getElementById('streamsContainer');
 
+    // override fy-tab click for reels
     document.querySelectorAll('.fy-tab').forEach(tab => {
       tab.addEventListener('click', function() {
         document.querySelectorAll('.fy-tab').forEach(t => t.classList.remove('active'));
         this.classList.add('active');
         const tabName = this.dataset.fyTab;
 
+        // hide all feed content first
         videoFeed.style.display = 'none';
         streamsContainer.classList.remove('active');
         reelsFullContainer.classList.remove('active');
+        // re-enable feed intro (it might be hidden)
         feedIntro.style.display = 'block';
 
         if (tabName === 'videos') {
@@ -1059,6 +672,7 @@
         } else if (tabName === 'streams') {
           streamsContainer.classList.add('active');
         } else if (tabName === 'reels') {
+          // show reels full page, hide the intro and any other content inside feed
           feedIntro.style.display = 'none';
           videoFeed.style.display = 'none';
           streamsContainer.classList.remove('active');
@@ -1067,16 +681,18 @@
       });
     });
 
+    // close reels (back button)
     closeReelsBtn.addEventListener('click', function() {
       reelsFullContainer.classList.remove('active');
       feedIntro.style.display = 'block';
+      // restore videos tab by default
       document.querySelectorAll('.fy-tab').forEach(t => t.classList.remove('active'));
       document.querySelector('[data-fy-tab="videos"]').classList.add('active');
       videoFeed.style.display = 'block';
       streamsContainer.classList.remove('active');
     });
 
-    // ----- NAVIGATION -----
+    // ----- navigation (pages) -----
     const navItems = document.querySelectorAll('.nav-item');
     const fab = document.getElementById('fabCreate');
     const bottomNav = document.getElementById('bottomNav');
@@ -1091,7 +707,7 @@
       document.getElementById('contactsOverlay').classList.remove('active');
       searchOverlay.classList.remove('active');
       document.getElementById('channelsOverlay').classList.remove('active');
-      
+      // close reels if open
       reelsFullContainer.classList.remove('active');
       feedIntro.style.display = 'block';
       videoFeed.style.display = 'block';
@@ -1099,33 +715,18 @@
       document.querySelectorAll('.fy-tab').forEach(t => t.classList.remove('active'));
       document.querySelector('[data-fy-tab="videos"]').classList.add('active');
 
-      if (pageId === 'add') {
-        // Open contacts overlay for adding
-        document.getElementById('contactsOverlay').classList.add('active');
-        switchContactTab('contacts');
-        return;
-      }
-      
+      if (pageId === 'add') { alert("Create Post Action"); return; }
       const targetPage = document.getElementById('page-' + pageId);
       if (targetPage) targetPage.classList.add('active');
       if (pageId === 'feed' && feedScroll) feedScroll.scrollTop = 0;
-      
-      navItems.forEach(item => {
-        item.classList.remove('active');
-        if (item.dataset.page === pageId) item.classList.add('active');
-      });
-      
-      if (pageId === 'feed' || pageId === 'messages') {
-        fab.classList.remove('hidden');
-      } else {
-        fab.classList.add('hidden');
-      }
+      navItems.forEach(item => { item.classList.remove('active'); if (item.dataset.page === pageId) item.classList.add('active'); });
+      if (pageId === 'feed' || pageId === 'messages') fab.classList.remove('hidden');
+      else fab.classList.add('hidden');
       bottomNav.classList.remove('hidden');
     }
-
     navItems.forEach(item => item.addEventListener('click', () => switchPage(item.dataset.page)));
 
-    // ----- CHAT FUNCTIONS -----
+    // ----- chat functions (stubs) -----
     window.openChat = function(userName, showInitialMessages = true) {
       document.getElementById('chatNameDisplay').textContent = userName;
       document.getElementById('chatView').classList.add('active');
@@ -1135,7 +736,6 @@
         setTimeout(() => { addMessage("Hey there! 👋", false); setTimeout(() => addMessage("Hi! How are you?", true), 500); }, 100);
       }
     };
-
     function addMessage(text, isSent) {
       const div = document.createElement('div');
       div.className = 'chat-message' + (isSent ? ' sent' : '');
@@ -1145,90 +745,47 @@
       document.getElementById('chatMessages').appendChild(div);
       document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
     }
-
-    document.getElementById('chatBack').addEventListener('click', () => {
-      document.getElementById('chatView').classList.remove('active');
-      bottomNav.classList.remove('hidden');
-    });
-
+    document.getElementById('chatBack').addEventListener('click', () => { document.getElementById('chatView').classList.remove('active'); bottomNav.classList.remove('hidden'); });
     document.getElementById('sendBtn').addEventListener('click', function() {
       const input = document.getElementById('messageInput');
       const text = input.value.trim();
       if (!text) return;
       addMessage(text, true);
       input.value = '';
-      setTimeout(() => {
-        const replies = ["That's cool! ", "I agree!", "Nice!", "Haha 😂", "Got it!", "Sounds good!", "Sure thing!", "Awesome! 👏"];
-        addMessage(replies[Math.floor(Math.random()*replies.length)], false);
-      }, 800+Math.random()*1200);
+      setTimeout(() => { const replies = ["That's cool! ", "I agree!", "Nice!", "Haha 😂", "Got it!", "Sounds good!", "Sure thing!", "Awesome! 👏"]; addMessage(replies[Math.floor(Math.random()*replies.length)], false); }, 800+Math.random()*1200);
     });
+    document.getElementById('messageInput').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('sendBtn').click(); });
 
-    document.getElementById('messageInput').addEventListener('keypress', e => {
-      if (e.key === 'Enter') document.getElementById('sendBtn').click();
+    // voice recording stub
+    let isRecording = false, recordingTimer = null;
+    document.getElementById('voiceBtn').addEventListener('click', function() {
+      if (isRecording) { stopRecording(); } else { startRecording(); }
     });
-
-    // ----- VOICE RECORDING (Fixed) -----
-    let isRecording = false;
-    let recordingTimer = null;
-    let recordingSeconds = 0;
-    const voiceBtn = document.getElementById('voiceBtn');
-    const recordingIndicator = document.getElementById('recordingIndicator');
-    const recordingStatusText = document.getElementById('recordingStatusText');
-
     function startRecording() {
-      if (isRecording) return;
       isRecording = true;
-      recordingSeconds = 0;
-      recordingIndicator.classList.add('active');
-      voiceBtn.querySelector('.material-icons').textContent = 'stop';
-      recordingStatusText.textContent = 'Recording... 0:00';
-      
-      recordingTimer = setInterval(() => {
-        recordingSeconds++;
-        const mins = Math.floor(recordingSeconds / 60);
-        const secs = recordingSeconds % 60;
-        recordingStatusText.textContent = `Recording... ${mins}:${secs.toString().padStart(2, '0')}`;
-      }, 1000);
+      document.getElementById('recordingIndicator').classList.add('active');
+      this.querySelector('.material-icons').textContent = 'stop';
+      let seconds = 0;
+      recordingTimer = setInterval(() => { seconds++; const mins=Math.floor(seconds/60); const secs=seconds%60; document.querySelector('#recordingIndicator span:not(.dot):not(#stopRecordingBtn)').textContent = `Recording... ${mins}:${secs.toString().padStart(2,'0')}`; }, 1000);
     }
-
     function stopRecording() {
-      if (!isRecording) return;
       isRecording = false;
-      recordingIndicator.classList.remove('active');
-      voiceBtn.querySelector('.material-icons').textContent = 'mic';
-      if (recordingTimer) {
-        clearInterval(recordingTimer);
-        recordingTimer = null;
-      }
-      const duration = Math.floor(Math.random() * 15) + 3;
-      addMessage(`🎤 Voice message (${duration}s)`, true);
-      setTimeout(() => addMessage("Got your voice note!", false), 1000 + Math.random() * 800);
-      recordingStatusText.textContent = 'Recording...';
+      document.getElementById('recordingIndicator').classList.remove('active');
+      document.getElementById('voiceBtn').querySelector('.material-icons').textContent = 'mic';
+      if (recordingTimer) clearInterval(recordingTimer);
+      addMessage(`🎤 Voice message (${Math.floor(Math.random()*15)+3}s)`, true);
+      setTimeout(() => addMessage("Got your voice note!", false), 1000+Math.random()*800);
     }
-
-    voiceBtn.addEventListener('click', function() {
-      if (isRecording) {
-        stopRecording();
-      } else {
-        startRecording();
-      }
-    });
-
     document.getElementById('stopRecordingBtn').addEventListener('click', stopRecording);
 
-    // ----- OTHER EVENT LISTENERS -----
+    // file / link popup
     document.getElementById('fileBtn').addEventListener('click', () => document.getElementById('linkPopupOverlay').classList.add('active'));
     document.getElementById('linkPopupCancel').addEventListener('click', () => document.getElementById('linkPopupOverlay').classList.remove('active'));
-    document.getElementById('linkPopupOverlay').addEventListener('click', function(e) {
-      if (e.target === this) this.classList.remove('active');
-    });
+    document.getElementById('linkPopupOverlay').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
 
-    document.getElementById('moreMenuBtn').addEventListener('click', function(e) {
-      e.stopPropagation();
-      document.getElementById('dropdownMenu').classList.toggle('active');
-    });
+    // dropdown
+    document.getElementById('moreMenuBtn').addEventListener('click', function(e) { e.stopPropagation(); document.getElementById('dropdownMenu').classList.toggle('active'); });
     document.addEventListener('click', () => document.getElementById('dropdownMenu').classList.remove('active'));
-    
     document.querySelectorAll('.menu-item').forEach(item => {
       item.addEventListener('click', function() {
         const action = this.dataset.action;
@@ -1237,153 +794,205 @@
         if (action === 'view-contact') { 
           document.getElementById('profilePage').classList.add('active'); 
           document.getElementById('editProfileBtn').style.display = 'none'; 
-        } else if (action === 'block') { 
-          // Find user by name to block
-          const user = appState.users.find(u => u.name === chatName);
-          if (user) {
-            if (confirm(`Block ${chatName}? They will be removed from your contacts and searches.`)) {
-              blockUser(user.id);
-              document.getElementById('chatView').classList.remove('active'); 
-              bottomNav.classList.remove('hidden');
-              renderContacts();
-              renderSuggestions();
-            }
-          }
-        } else if (action === 'media') {
-          showToast("Media gallery would open here");
         }
+        else if (action === 'block') { 
+          if (confirm(`Block ${chatName}? They will disappear from search and contacts.`)) {
+             // Find ID logic would go here, for demo we just alert
+             alert(`${chatName} has been blocked.`);
+             document.getElementById('chatView').classList.remove('active'); 
+             bottomNav.classList.remove('hidden'); 
+          } 
+        }
+        else if (action === 'media') alert("Media gallery would open here");
         document.getElementById('dropdownMenu').classList.remove('active');
       });
     });
 
-    document.getElementById('voiceCallBtn').addEventListener('click', function() {
-      showToast(`📞 Voice call to ${document.getElementById('chatNameDisplay').textContent}...`);
-    });
-    document.getElementById('videoCallBtn').addEventListener('click', function() {
-      showToast(`📹 Video call to ${document.getElementById('chatNameDisplay').textContent}...`);
-    });
+    // calls
+    document.getElementById('voiceCallBtn').addEventListener('click', function() { alert(` Voice call to ${document.getElementById('chatNameDisplay').textContent}...`); });
+    document.getElementById('videoCallBtn').addEventListener('click', function() { alert(` Video call to ${document.getElementById('chatNameDisplay').textContent}...`); });
 
-    // ----- PROFILE -----
-    document.getElementById('profileBack').addEventListener('click', () => {
-      document.getElementById('profilePage').classList.remove('active');
-      bottomNav.classList.remove('hidden');
-    });
-    document.getElementById('settingsGear').addEventListener('click', () => {
-      document.getElementById('settingsPage').classList.add('active');
-    });
+    // profile, settings, etc
+    document.getElementById('profileBack').addEventListener('click', () => { document.getElementById('profilePage').classList.remove('active'); bottomNav.classList.remove('hidden'); });
+    document.getElementById('settingsGear').addEventListener('click', () => { document.getElementById('settingsPage').classList.add('active'); document.getElementById('editProfileBtn').style.display = 'block'; });
     document.getElementById('settingsBack').addEventListener('click', () => document.getElementById('settingsPage').classList.remove('active'));
     document.getElementById('callLogBack').addEventListener('click', () => document.getElementById('callLogPage').classList.remove('active'));
     document.getElementById('contactsBack').addEventListener('click', () => document.getElementById('contactsOverlay').classList.remove('active'));
-    document.getElementById('fabCreate').addEventListener('click', () => {
-      document.getElementById('contactsOverlay').classList.add('active');
-      switchContactTab('contacts');
-    });
+    document.getElementById('fabCreate').addEventListener('click', () => { document.getElementById('contactsOverlay').classList.add('active'); switchContactTab('contacts'); });
 
-    // ----- EDIT PROFILE (Fixed) -----
-    document.getElementById('editProfileBtn').addEventListener('click', function() {
-      document.getElementById('editUsername').value = document.getElementById('profileDisplayName').textContent;
-      document.getElementById('editBio').value = document.getElementById('profileBio').textContent;
-      document.getElementById('editModal').classList.add('active');
-    });
+    // edit profile
+    document.getElementById('editProfileBtn').addEventListener('click', () => document.getElementById('editModal').classList.add('active'));
     document.getElementById('editCancel').addEventListener('click', () => document.getElementById('editModal').classList.remove('active'));
     document.getElementById('editSave').addEventListener('click', () => {
       document.getElementById('profileDisplayName').textContent = document.getElementById('editUsername').value;
       document.getElementById('profileBio').textContent = document.getElementById('editBio').value;
       document.getElementById('editModal').classList.remove('active');
-      showToast('Profile updated!');
     });
 
-    // ----- AVATAR FULLSCREEN -----
+    // avatar fullscreen
     document.getElementById('profileAvatarLarge').addEventListener('click', () => document.getElementById('avatarFullscreen').classList.add('active'));
     document.getElementById('closeFullscreen').addEventListener('click', () => document.getElementById('avatarFullscreen').classList.remove('active'));
-    document.getElementById('avatarFullscreen').addEventListener('click', function(e) {
-      if (e.target === this) this.classList.remove('active');
-    });
+    document.getElementById('avatarFullscreen').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
 
-    // ----- FILTERS (Fixed) -----
+    // contacts
+    let currentContactTab = 'contacts', currentRequestSubTab = 'received';
+    
+    // Mock data for requests/contacts simulation
+    // Pre-populating some data to show functionality
+    appState.receivedRequests = ['u1']; // Alex Rivera requested me
+    appState.sentRequests = ['u2']; // I requested Taylor Swift
+    appState.contacts = [
+       { id: 'u3', name: 'Chris Evans', status: 'Online' }
+    ];
+    appState.blocked = [];
+
+    function renderContacts() {
+      const container = document.getElementById('contactListContainer');
+      const searchContainer = document.getElementById('searchContainer');
+      container.innerHTML = '';
+      
+      if (currentContactTab === 'contacts') {
+        searchContainer.style.display = 'block';
+        if (appState.contacts.length === 0) container.innerHTML = `<div class="empty-state" style="padding:40px; text-align:center; color:#999;"><span class="material-icons" style="font-size:48px; opacity:0.3;">people_outline</span><p>No contacts yet</p></div>`;
+        else appState.contacts.forEach(c => { 
+          container.innerHTML += `<div class="contact-item"><div class="contact-avatar"></div><div class="contact-info"><div class="contact-name">${c.name}</div><div class="contact-status">${c.status || 'Active'}</div></div><div class="contact-actions"><button class="btn-action btn-add" onclick="startChatFromContacts('${c.name}')">Message</button></div></div>`; 
+        });
+      } else if (currentContactTab === 'requests') {
+        searchContainer.style.display = 'none';
+        if (currentRequestSubTab === 'received') {
+          if (appState.receivedRequests.length === 0) container.innerHTML = `<div class="empty-state" style="padding:40px; text-align:center; color:#999;"><span class="material-icons" style="font-size:48px; opacity:0.3;">inbox</span><p>No new requests</p></div>`;
+          else {
+             appState.receivedRequests.forEach(reqId => {
+                const user = appState.suggestions.find(u => u.id === reqId) || { name: 'Unknown User', handle: '' };
+                container.innerHTML += `<div class="contact-item"><div class="contact-avatar"></div><div class="contact-info"><div class="contact-name">${user.name}</div><div class="contact-status">Wants to follow you</div></div><div class="contact-actions"><button class="btn-action btn-accept" onclick="acceptRequest('${reqId}')">Accept</button><button class="btn-action btn-decline" onclick="declineRequest('${reqId}')">Decline</button></div></div>`; 
+             });
+          }
+        } else { // Sent
+          if (appState.sentRequests.length === 0) container.innerHTML = `<div class="empty-state" style="padding:40px; text-align:center; color:#999;"><span class="material-icons" style="font-size:48px; opacity:0.3;">send</span><p>No sent requests</p></div>`;
+          else {
+             appState.sentRequests.forEach(reqId => {
+                const user = appState.suggestions.find(u => u.id === reqId) || { name: 'Unknown User' };
+                container.innerHTML += `<div class="contact-item"><div class="contact-avatar"></div><div class="contact-info"><div class="contact-name">${user.name}</div><div class="contact-status" style="color:#e65100">Request Sent</div></div><div class="contact-actions"><button class="btn-action btn-decline" onclick="cancelRequest('${reqId}')">Cancel</button></div></div>`; 
+             });
+          }
+        }
+      } else if (currentContactTab === 'blocked') {
+        searchContainer.style.display = 'none';
+        if (appState.blocked.length === 0) container.innerHTML = `<div class="empty-state" style="padding:40px; text-align:center; color:#999;"><span class="material-icons" style="font-size:48px; opacity:0.3;">block</span><p>No blocked users</p></div>`;
+        else {
+           appState.blocked.forEach(blockedId => {
+              const user = appState.suggestions.find(u => u.id === blockedId) || { name: 'Unknown User' };
+              container.innerHTML += `<div class="contact-item"><div class="contact-avatar"></div><div class="contact-info"><div class="contact-name">${user.name}</div><div class="contact-status" style="color:var(--crimson)">Blocked</div></div><div class="contact-actions"><button class="btn-action btn-unblock" onclick="unblockUser('${blockedId}')">Unblock</button></div></div>`; 
+           });
+           container.innerHTML += `<div style="padding:16px; text-align:center;"><button class="btn-action btn-clear" onclick="clearBlocked()">Clear All Blocked</button></div>`;
+        }
+      }
+    }
+
+    // Request Actions
+    window.acceptRequest = function(userId) {
+       const user = appState.suggestions.find(u => u.id === userId);
+       if(user) {
+          appState.contacts.push({ id: user.id, name: user.name, status: 'Online' });
+          appState.receivedRequests = appState.receivedRequests.filter(id => id !== userId);
+          renderContacts();
+       }
+    };
+
+    window.declineRequest = function(userId) {
+       appState.receivedRequests = appState.receivedRequests.filter(id => id !== userId);
+       renderContacts();
+    };
+
+    window.cancelRequest = function(userId) {
+       appState.sentRequests = appState.sentRequests.filter(id => id !== userId);
+       renderContacts();
+       renderSuggestions(); // Make them appear in suggestions again
+    };
+
+    window.unblockUser = function(userId) {
+       appState.blocked = appState.blocked.filter(id => id !== userId);
+       renderContacts();
+    };
+
+    window.clearBlocked = function() {
+       if(confirm("Unblock everyone?")) {
+          appState.blocked = [];
+          renderContacts();
+       }
+    };
+
+    window.switchContactTab = function(tab) {
+      currentContactTab = tab;
+      document.querySelectorAll('.contacts-tab').forEach(t => t.classList.remove('active'));
+      // Find index based on text content or order
+      const tabs = document.querySelectorAll('.contacts-tab');
+      if(tab === 'contacts') tabs[0].classList.add('active');
+      if(tab === 'requests') tabs[1].classList.add('active');
+      if(tab === 'blocked') tabs[2].classList.add('active');
+
+      const subTabs = document.getElementById('requestSubTabs');
+      if (tab === 'requests') subTabs.classList.add('active'); else subTabs.classList.remove('active');
+      renderContacts();
+    };
+
+    window.switchRequestSubTab = function(subTab) {
+      currentRequestSubTab = subTab;
+      document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+      if (subTab === 'received') document.querySelectorAll('.sub-tab')[0].classList.add('active');
+      else if (subTab === 'sent') document.querySelectorAll('.sub-tab')[1].classList.add('active');
+      renderContacts();
+    };
+    
+    window.startChatFromContacts = function(userName) { window.openChat(userName, false); };
+
+    // filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
         const filter = this.dataset.filter;
         document.querySelectorAll('.thread-skeleton').forEach((el, i) => {
-          if (filter === 'all') {
-            el.style.display = 'flex';
-          } else if (filter === 'friends') {
-            // Show only threads that have contacts (first N where N = contacts length)
-            el.style.display = (i < appState.contacts.length) ? 'flex' : 'none';
-          } else if (filter === 'groups') {
-            el.style.display = (i >= appState.contacts.length) ? 'flex' : 'none';
-          }
+          if (filter === 'all') el.style.display = 'flex';
+          else if (filter === 'friends') el.style.display = (i % 2 === 0) ? 'flex' : 'none';
+          else el.style.display = (i % 2 === 1) ? 'flex' : 'none';
         });
       });
     });
 
-    // ----- CHAT SEARCH -----
+    // camera / location
+    document.getElementById('cameraBtn').addEventListener('click', () => alert("Camera access would be requested here."));
+    document.getElementById('locationBtn').addEventListener('click', () => alert("Sharing current location..."));
+
+    // init
+    renderSuggestions();
+    renderStories();
+    renderThreads();
+    renderContacts(); // Init contacts view
+    renderLiveCards();
+    renderSportsList();
+    renderChannels();
+    renderReels(); // Initialize Reels
+
+    // ensure videos visible
+    document.getElementById('videoFeedContainer').style.display = 'block';
+    document.getElementById('streamsContainer').classList.remove('active');
+    document.getElementById('reelsFullContainer').classList.remove('active');
+
+    // chat search
     document.getElementById('chatSearchInput').addEventListener('input', function(e) {
       const term = e.target.value.toLowerCase();
       document.querySelectorAll('.thread-skeleton').forEach(el => {
-        const nameLine = el.querySelector('.name-line');
-        if (term === '') {
-          el.style.display = 'flex';
-        } else if (term.length > 2) {
-          // Simple search - hide if no match
-          el.style.display = 'none';
-        } else {
-          el.style.display = 'flex';
-        }
+        if (term === "") el.style.display = "flex";
+        else if (term.length > 2) el.style.display = "none";
+        else el.style.display = "flex";
       });
     });
 
-    // ----- MAIN SEARCH -----
+    // main search click
     document.getElementById('mainSearchInput').addEventListener('click', window.openSearchOverlay);
 
-    // ----- CHANNELS -----
-    document.getElementById('channelsBtn').addEventListener('click', () => document.getElementById('channelsOverlay').classList.add('active'));
-    document.getElementById('closeChannelsOverlay').addEventListener('click', () => document.getElementById('channelsOverlay').classList.remove('active'));
-
-    // ----- CAMERA / LOCATION -----
-    document.getElementById('cameraBtn').addEventListener('click', () => showToast("📷 Camera access would be requested here."));
-    document.getElementById('locationBtn').addEventListener('click', () => showToast("📍 Sharing current location..."));
-
-    // ----- INIT -----
-    function init() {
-      // Set initial profile stats
-      updateProfileStats();
-      
-      // Render all components
-      renderSuggestions();
-      renderStories();
-      renderThreads();
-      renderContacts();
-      renderLiveCards();
-      renderSportsList();
-      renderChannels();
-      renderReels();
-
-      // Ensure videos visible
-      document.getElementById('videoFeedContainer').style.display = 'block';
-      document.getElementById('streamsContainer').classList.remove('active');
-      document.getElementById('reelsFullContainer').classList.remove('active');
-
-      console.log("App initialized with refactored follow/block system");
-      console.log("Current state:", {
-        contacts: appState.contacts.map(id => getUser(id)?.name),
-        following: appState.following.map(id => getUser(id)?.name),
-        followers: appState.followers.map(id => getUser(id)?.name),
-        requests_sent: appState.requests_sent.map(id => getUser(id)?.name),
-        requests_received: appState.requests_received.map(id => getUser(id)?.name),
-        blocked: appState.blocked.map(id => getUser(id)?.name)
-      });
-    }
-
-    init();
-
-    // Expose for debugging
-    window.__appState = appState;
-    window.__getUser = getUser;
-    window.__getRelationshipStatus = getRelationshipStatus;
-
+    console.log("Reels full page: hides feed intro & shows only reels.");
   })();
 </script>
 </body>
