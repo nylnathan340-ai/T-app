@@ -995,5 +995,24 @@
     console.log("Reels full page: hides feed intro & shows only reels.");
   })();
 </script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAqtKoK3dJtpVQrndcuYL8urHGOj5dAK68",
+    authDomain: "social-app-2ca14.firebaseapp.com",
+    projectId: "social-app-2ca14",
+    storageBucket: "social-app-2ca14.firebasestorage.app",
+    messagingSenderId: "913957400692",
+    appId: "1:913957400692:web:b5653cdef3c4bb46cd2121"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+  console.log("🔥 Firebase Connected!");
+</script>
 </body>
 </html>
